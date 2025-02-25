@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace API_DUAN_C5.Models
+namespace DuAnTN.Models
 {
     public class Voucher
     {
