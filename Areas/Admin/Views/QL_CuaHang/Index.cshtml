@@ -1,0 +1,71 @@
+﻿    <h3 class="text-center text-dark">CỬA HÀNG</h3>
+
+    <div class="d-flex align-items-center justify-content-between mb-3">
+    <a asp-area="Admin" asp-controller="DsDangKy" asp-action="Index" class="btn btn-success">Danh sách đăng kí kinh doanh</a>
+        <!-- Thanh tìm kiếm -->
+
+
+
+        <input type="text" class="form-control w-25" placeholder="Tìm kiếm khách hàng ...">
+    </div>
+
+
+    <!-- Bảng khách hàng -->
+    <div class="table-container">
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Tên <i class="bi bi-arrow-down-up px-1"></i></th>
+                    <th>Ảnh</th>
+                    <th>Địa chỉ</th>
+                    <th>Giấy phép kinh doanh</th>
+                    <th>Mã số thuế</th>
+                    <th>Chủ cửa hàng</th>
+                    <th>Ngày đăng kí <i class="bi bi-arrow-down-up px-1"></i></th>
+                    <th>Công cụ</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>Go Shop</td>
+                    <td><img src="Cơm(1)(1).png" alt="" height="60"></td>
+                    <td>Cái Răng, Cần Thơ</td>
+                    <td>11221821288</td>
+                    <td>a121222323</td>
+                    <td>Nguyen</td>
+                    <td>12/09/2022</td>
+                    <td>
+                        <div class="dropdown">
+                            <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                &#8942;
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item text-danger" href="#">Ngừng kinh doanh</a></li>
+                                <li><a class="dropdown-item text-danger" href="#">Xóa</a></li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Phân trang (Cố định góc phải) -->
+    <div class="pagination-container">
+        <nav>
+            <ul class="pagination">
+                <li class="page-item">
+                    <a class="page-link bg-danger text-white border-danger" href="#"><i class="bi bi-chevron-left"></i></a>
+                </li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item">
+                    <a class="page-link bg-danger text-white border-danger" href="#"><i class="bi bi-chevron-right"></i></a>
+                </li>
+            </ul>
+        </nav>
+    </div>
