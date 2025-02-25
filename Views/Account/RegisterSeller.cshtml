@@ -1,0 +1,56 @@
+﻿@{
+    ViewData["Title"] = "RegisterSeller Page";
+}
+
+
+<div class="container mt-4">
+    <div class="container-box">
+        <h2>Đăng kí trở thành người bán</h2>
+        <hr>
+        <div class="alert alert-danger" role="alert">
+            Hãy đảm bảo thông tin bạn đang cung cấp là hoàn toàn chính xác. Người bán hoàn toàn chịu trách nhiệm về tính chính xác của thông tin trước pháp luật.
+        </div>
+        <!-- Form nhập thông tin -->
+        <form>
+            <div class="mb-3">
+                <label class="form-label"><strong>* Tên Shop</strong></label>
+                <input type="text" class="form-control" placeholder="Nhập tên shop" value="nguyench124">
+            </div>
+            <label class="form-label"><strong>Địa chỉ</strong></label>
+            <input type="text" class="form-control" placeholder="Nhập địa chỉ lấy hàng">
+            <label class="form-label"><strong>Chi tiết</strong></label>
+            <textarea class="form-control" placeholder="Chi tiết"></textarea>
+
+            <div class="mb-3">
+                <label class="form-label"><strong>* Email</strong></label>
+                <input type="email" class="form-control">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label"><strong>* Số điện thoại</strong></label>
+                <input type="text" class="form-control">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label"><strong>* Số CCCD</strong></label>
+                <input type="text" class="form-control" placeholder="Nhập số CCCD" required>
+            </div>
+
+            <div class="preview-box" id="previewBox">
+                <strong>Ảnh CCCD đã chọn:</strong>
+                <img id="previewImage" class="preview-img">
+            </div><!-- Upload ảnh CCCD -->
+            <div class="mb-3">
+                <label class="form-label"><strong>* Ảnh CCCD</strong></label>
+                <input type="file" class="form-control" id="uploadCCCD" accept="image/*" required>
+                <img id="previewImage" class="preview-img">
+            </div>
+
+            <hr>
+
+            <div class="d-flex justify-content-end">
+                <button type="button" class="btn btn-danger">Xác nhận</button>
+            </div>
+        </form>
+    </div>
+</div>

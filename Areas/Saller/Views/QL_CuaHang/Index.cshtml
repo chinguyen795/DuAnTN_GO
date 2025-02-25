@@ -1,0 +1,47 @@
+﻿        <!-- Content -->
+<div class="content mb-4" style="margin-left: 250px; padding: 20px;">
+    <form id="userForm" action="" method="POST">
+        <div class="row">
+            <!-- Main Image -->
+            <div class="col-md-4">
+                <img src="./Cơm(1)(1).png" alt="Main Image" height="100" class="img-fluid mb-3" id="mainImage">
+                <div class="row">
+                    <!-- Secondary Images -->
+                    <div class="col-6">
+                        <img src="./Cơm(1)(1).png" alt="Image 1" height="60" class="img-fluid mb-3" id="image1">
+                        <input type="file" class="form-control" id="image1Input" name="image1" />
+                    </div>
+                    <div class="col-6">
+                        <img src="./Cơm(1)(1).png" alt="Image 2" height="60" class="img-fluid mb-3" id="image2">
+                        <input type="file" class="form-control" id="image2Input" name="image2" />
+                    </div>
+                </div>
+                <input type="file" class="form-control" id="mainImageInput" name="mainImage" />
+            </div>
+
+            <!-- Info Section -->
+            <div class="col-md-8">
+                <h4>Thông Tin</h4>
+                <div class="mb-3">
+                    <label for="Name" class="form-label">Tên cửa hàng:</label>
+                    <input type="text" class="form-control" id="Name" name="Name" value="GO shop" />
+                </div>
+                <div class="mb-3">
+                    <label for="address" class="form-label">Địa chỉ:</label>
+                    <input type="text" class="form-control" id="address" name="address" value="123 Đường ABC, Thành phố XYZ" />
+                </div>
+                <div class="mb-3">
+                    <label for="phone" class="form-label">Số điện thoại:</label>
+                    <input type="text" class="form-control" id="phone" name="phone" value="0123456789" />
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email:</label>
+                    <input type="email" class="form-control" id="email" name="email" value="example@example.com" />
+                </div>
+
+                <!-- Save Button -->
+                <button type="submit" class="btn btn-success mt-3">Lưu</button>
+            </div>
+        </div>
+    </form>
+</div>
