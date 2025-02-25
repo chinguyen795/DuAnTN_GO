@@ -1,4 +1,4 @@
-namespace DuAnTN.Models
+namespace API_DUAN_C5.Models
 {
     public class ErrorViewModel
     {
