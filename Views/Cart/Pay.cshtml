@@ -1,0 +1,55 @@
+﻿@{
+    ViewData["Title"] = "CART PAY";
+}
+
+<!-- Header chính -->
+<div class="pay-header">
+    <div class="container d-flex align-items-center">
+        <div class="pay-logo">
+            <img src="IMG-GO.png" alt="Shopee">
+        </div>
+        <div class="pay-address">
+            <i class="fas fa-map-marker-alt"></i>
+            <strong>Địa Chỉ Nhận Hàng</strong>
+            <span>Chị Nguyễn (+84) 383649343</span>
+            <span> - Nha trọ Thành Đạt, Cầu Rạch Cái Nai, Phường Hưng Thanh, Quận Cái Răng, Cần Thơ</span>
+            <span class="badge badge-danger ml-2">Mặc Định</span>
+        </div>
+        <div class="pay-change-address m-2">
+            <a href="Address.html">Thay Đổi</a>
+        </div>
+    </div>
+</div>
+
+<!-- Nội dung chính -->
+<div class="container my-4">
+    <div class="pay-box">
+        <h5>Sản phẩm</h5>
+        <div class="pay-product-item">
+            <div>Trà Cozy Hòa Tan (240g - 16 gói) Hương Vị Cực Ngon</div>
+            <div>39.500 VND</div>
+        </div>
+    </div>
+
+    <div class="pay-box">
+        <label for="pay-message">Lời nhắn:</label>
+        <textarea class="form-control" id="pay-message" placeholder="Lưu ý cho Người bán..."></textarea>
+    </div>
+
+
+    <div class="pay-box">
+        <h5>Phương thức thanh toán</h5>
+        <select class="form-control">
+            <option>Chọn phương thức thanh toán</option>
+            <option>Thẻ tín dụng</option>
+            <option>Chuyển khoản ngân hàng</option>
+            <option>Tiền mặt khi nhận hàng</option>
+        </select>
+    </div>
+
+    <div class="pay-box">
+        <h5 class="pay-total-price">Tổng số tiền: 68.200 VND</h5>
+    </div>
+
+    <button class="pay-btn-red btn btn-lg">Đặt Hàng</button>
+</div>
