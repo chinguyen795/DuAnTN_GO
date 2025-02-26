@@ -1,51 +1,123 @@
-﻿    <h3 class="text-center text-dark">QUẢN LÝ KHÁCH HÀNG</h3>
+﻿@model List<DuAnTN.Models.Food>
 
-    <!-- Thanh tìm kiếm -->
-    <div class="d-flex justify-content-end mb-3">
-        <input type="text" class="form-control w-25" placeholder="Tìm kiếm khách hàng...">
-    </div>
+@{
+    var searchTerm = ViewBag.SearchTerm as string;
+    var currentPage = ViewBag.CurrentPage;
+    var totalPages = ViewBag.TotalPages;
+}
 
-    <!-- Bảng khách hàng -->
-    <div class="table-container">
-        <table class="table table-striped table-hover">
-            <thead>
+<h3 class="text-center text-dark">QUẢN LÝ SẢN PHẨM</h3>
+
+<!-- Thanh tìm kiếm -->
+<div class="d-flex justify-content-end mb-3">
+    <form method="get">
+        <input type="text" class="form-control w-200" name="search" value="@searchTerm" placeholder="Tìm kiếm sản phẩm...">
+        <button type="submit" class="btn btn-primary">Tìm</button>
+    </form>
+</div>
+
+<!-- Bảng sản phẩm -->
+<div class="table-container">
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Tên sản phẩm</th>
+                <th>Danh mục</th>
+                <th>Giá</th>
+                <th>Trạng thái</th>
+                <th>Cửa hàng</th>
+                <th>Công cụ</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var food in Model)
+            {
                 <tr>
-                    <th>#</th>
-                    <th>Tên <i class="bi bi-arrow-down-up px-1"></i></th>
-                    <th>Danh mục</th>
-                    <th>Giá <i class="bi bi-arrow-down-up px-1"></i></th>
-                    <th>Số lượng</th>
-                    <th>Địa chỉ</th>
-                    <th>Ảnh</th>
-                    <th>Cửa hàng</th>
-                    <th>Trạng thái</th>
-                    <th>Công cụ</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>1</td>
-                    <td>Bún bò Huế</td>
-                    <td>Đồ ăn chí nguyện</td>
-                    <td>50.000đ</td>
-                    <td>20</td>
-                    <td>Cái Răng, Cần Thơ</td>
-                    <td><img src="Cơm(1)(1).png" alt="" height="60"></td>
-                    <td>Go Shop</td>
-                    <td>Đang bán</td>
+                    <td>@food.Id</td>
+                    <td>@food.FoodName</td>
+                    <td>@food.Category?.CategoryName</td>
+                    <td>@food.Price</td>
+                    <td>@food.Status</td>
+                    <td>@food.Diner?.DinerName</td>
                     <td>
                         <div class="dropdown">
                             <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
                                 &#8942;
                             </button>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item text-danger" href="#">Xóa</a></li>
+                                <li>
+                                    <a class="dropdown-item text-danger" href="@Url.Action("Index", "Products", new { area = "Admin", deleteId = food.Id })">
+                                        Xóa
+                                    </a>
+                                </li>
                             </ul>
                         </div>
                     </td>
                 </tr>
+            }
+        </tbody>
+    </table>
+</div>
 
-            </tbody>
-        </table>
+@if (Context.Request.Query["deleteId"].Count > 0)
+{
+    int deleteId = int.Parse(Context.Request.Query["deleteId"]);
+    var foodToDelete = Model.FirstOrDefault(c => c.Id == deleteId);
 
-    </div>
+    if (foodToDelete != null)
+    {
+        <div class="modal fade show" style="display:block;" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="false">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 id="deleteModalLabel" class="modal-title text-danger">Xác nhận xóa</h5>
+                        <a href="@Url.Action("Index", "Products", new { area = "Admin" })" class="btn-close"></a>
+                    </div>
+                    <div class="modal-body">
+                        <p>Bạn có chắc chắn muốn xóa danh mục "<strong>@foodToDelete.FoodName</strong>" không?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="@Url.Action("Index", "Products", new { area = "Admin" })" class="btn btn-secondary">Hủy</a>
+                        <form method="post" action="@Url.Action("Delete", "Products", new { area = "Admin" })">
+                            <input type="hidden" name="id" value="@deleteId" />
+                            <button type="submit" class="btn btn-danger">Xóa</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+<!-- Phân trang -->
+<div class="pagination-container">
+    <nav>
+        <ul class="pagination">
+            @if (ViewBag.Page > 1)
+            {
+                <li class="page-item">
+                    <a class="page-link bg-danger text-white border-danger" href="@Url.Action("Index", "Products", new { search = ViewBag.Search, page = ViewBag.Page - 1 })">
+                        <i class="bi bi-chevron-left"></i>
+                    </a>
+                </li>
+            }
+
+            @for (int i = 1; i <= ViewBag.TotalPages; i++)
+            {
+                <li class="page-item @(i == ViewBag.Page ? "active" : "")">
+                    <a class="page-link" href="@Url.Action("Index", "Products", new { search = ViewBag.Search, page = i })">@i</a>
+                </li>
+            }
+
+            @if (ViewBag.Page < ViewBag.TotalPages)
+            {
+                <li class="page-item">
+                    <a class="page-link bg-danger text-white border-danger" href="@Url.Action("Index", "Products", new { search = ViewBag.Search, page = ViewBag.Page + 1 })">
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </li>
+            }
+        </ul>
+    </nav>
+</div>
