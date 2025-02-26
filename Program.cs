@@ -1,4 +1,19 @@
-﻿var builder = WebApplication.CreateBuilder(args);
+﻿using DuAnTN.Areas.Admin.Controllers;
+using DuAnTN.Models;
+using DuAnTN.Services;
+using Microsoft.AspNetCore.Identity;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Đăng ký QUANLY
+builder.Services.AddScoped<UserService>();
+
+// Đăng ký QUANLY
+builder.Services.AddScoped<UserInfoServices>();
+
+// Đăng ký QUANLY
+builder.Services.AddHttpClient<DinerService>();
+
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

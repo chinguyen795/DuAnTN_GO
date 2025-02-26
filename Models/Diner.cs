@@ -12,6 +12,12 @@ namespace DuAnTN.Models
         public string Image2 { get; set; }
         public string PhoneNumber { get; set; }
 
+        // Mã số thuế
+        public string TaxCode { get; set; }
+
+        // Thời gian tạo
+        public DateTime CreateAt { get; set; } = DateTime.Now;
+
         // Khóa ngoại đến User (1-n)
         public int UserId { get; set; }
 
