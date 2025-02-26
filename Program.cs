@@ -24,7 +24,12 @@ builder.Services.AddScoped<FoodService>();
 builder.Services.AddScoped<DinerService>();
 // Thêm Razor Pages vào dịch vụ
 builder.Services.AddRazorPages();
+builder.Services.AddHttpClient<FoodService>();
+builder.Services.AddHttpClient<DinerService>();
 
+builder.Services.AddScoped<CategoryService>();
+builder.Services.AddScoped<FoodService>();
+builder.Services.AddScoped<DinerService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
