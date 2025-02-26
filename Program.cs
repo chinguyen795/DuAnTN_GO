@@ -16,12 +16,12 @@ builder.Services.AddScoped<UserService>();
 // Các dịch vụ khác
 builder.Services.AddControllersWithViews();
 // Đăng ký HttpClient
-builder.Services.AddHttpClient<FoodServices>();
-builder.Services.AddHttpClient<DinerServices>();
+builder.Services.AddHttpClient<FoodService>();
+builder.Services.AddHttpClient<DinerService>();
 
 // Đăng ký Service
-builder.Services.AddScoped<FoodServices>();
-builder.Services.AddScoped<DinerServices>();
+builder.Services.AddScoped<FoodService>();
+builder.Services.AddScoped<DinerService>();
 // Thêm Razor Pages vào dịch vụ
 builder.Services.AddRazorPages();
 

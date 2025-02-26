@@ -6,13 +6,13 @@ namespace DuAnTN.Controllers
 {
     public class FoodController : Controller
     {
-        private readonly FoodServices _foodService;
-        private readonly DinerServices _dinerServices;
+        private readonly FoodService _foodService;
+        private readonly DinerService _dinerService;
 
-        public FoodController(FoodServices foodService, DinerServices dinerServices)
+        public FoodController(FoodService foodService, DinerService dinerService)
         {
             _foodService = foodService;
-            _dinerServices = dinerServices;
+            _dinerService = dinerService;
         }
 
         public async Task<IActionResult> Food(string sortOrder)
@@ -21,7 +21,7 @@ namespace DuAnTN.Controllers
 
             foreach (var food in foods)
             {
-                food.Diner = await _dinerServices.GetDiner(food.DinerId);  // Liên kết thông tin danh mục
+                food.Diner = await _dinerService.GetDinerByIdAsync(food.DinerId);  // Liên kết thông tin danh mục
             }
 
             
@@ -52,7 +52,7 @@ namespace DuAnTN.Controllers
                 return View("NotFound"); // Nếu không tìm thấy sản phẩm, hiển thị trang lỗi
             }
 
-            food.Diner = await _dinerServices.GetDiner(food.DinerId);
+            food.Diner = await _dinerService.GetDinerByIdAsync(food.DinerId);
 
             return View(food); // Truyền Food duy nhất cho View, bao gồm cả thông tin Diner
         }
