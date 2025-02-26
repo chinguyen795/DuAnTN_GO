@@ -67,7 +67,7 @@ namespace DuAnTN.Controllers
                 food.Image1 = await SaveImageAsync(Image1);
                 food.Image2 = await SaveImageAsync(Image2);
 
-                bool result = await _foodService.PostFood(food);
+                bool result = await _foodService.CreateFoodAsync(food);
                 if (result)
                 {
                     return RedirectToAction(nameof(Index));

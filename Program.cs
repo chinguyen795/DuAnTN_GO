@@ -1,7 +1,5 @@
 ﻿using DuAnTN.Services;
-
 using DuAnTN.Models;
-using DuAnTN.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHttpClient<CategoryService>(client =>

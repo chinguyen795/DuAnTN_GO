@@ -58,5 +58,13 @@ namespace DuAnTN.Services
             var response = await _httpClient.GetStringAsync($"{_apiUrl}/Category/{categoryId}");
             return JsonConvert.DeserializeObject<List<Food>>(response);
         }
+
+        public async Task<List<Food>> GetFoodsByDinerIdAsync(int dinerId)
+        {
+            // Ép luôn dinerId = 1
+            dinerId = 1;
+            var response = await _httpClient.GetStringAsync($"{_apiUrl}?dinerId={dinerId}");
+            return JsonConvert.DeserializeObject<List<Food>>(response);
+        }
     }
 }

@@ -22,7 +22,7 @@ namespace DuAnTN.Areas.Saller.Controllers
         public async Task<IActionResult> Index()
         {
             int userId = 1; // Tạm thời set cứng userId là 1
-            var diner = await _dinerService.GetDinerByUserIdAsync(userId);
+            var diner = await _dinerService.GetDinerByIdAsync(userId);
 
             if (diner == null)
             {
@@ -40,7 +40,7 @@ namespace DuAnTN.Areas.Saller.Controllers
             if (ModelState.IsValid)
             {
                 int userId = GetCurrentUserId();
-                var existingDiner = await _dinerService.GetDinerByUserIdAsync(userId);
+                var existingDiner = await _dinerService.GetDinerByIdAsync(userId);
 
                 if (existingDiner == null)
                 {
