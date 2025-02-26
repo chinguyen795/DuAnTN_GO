@@ -1,22 +1,31 @@
-﻿        <!-- Content -->
+﻿@model DuAnTN.Models.Diner
+
+@{
+    ViewData["Title"] = "Quản Lý Cửa Hàng";
+}
+
+<!-- Content -->
 <div class="content mb-4" style="margin-left: 250px; padding: 20px;">
-    <form id="userForm" action="" method="POST">
+    <form id="userForm" asp-action="Update" method="post" enctype="multipart/form-data">
         <div class="row">
             <!-- Main Image -->
             <div class="col-md-4">
-                <img src="./Cơm(1)(1).png" alt="Main Image" height="100" class="img-fluid mb-3" id="mainImage">
+                <img src="@(!string.IsNullOrEmpty(Model.MainImage) ? Model.MainImage : "/images/default.png")"
+                     alt="Main Image" height="100" class="img-fluid mb-3" id="mainImage">
                 <div class="row">
                     <!-- Secondary Images -->
                     <div class="col-6">
-                        <img src="./Cơm(1)(1).png" alt="Image 1" height="60" class="img-fluid mb-3" id="image1">
-                        <input type="file" class="form-control" id="image1Input" name="image1" />
+                        <img src="@(!string.IsNullOrEmpty(Model.Image1) ? Model.Image1 : "/images/default.png")"
+                             alt="Image 1" height="60" class="img-fluid mb-3" id="image1">
+                        <input type="file" class="form-control" id="image1Input" name="image1File" />
                     </div>
                     <div class="col-6">
-                        <img src="./Cơm(1)(1).png" alt="Image 2" height="60" class="img-fluid mb-3" id="image2">
-                        <input type="file" class="form-control" id="image2Input" name="image2" />
+                        <img src="@(!string.IsNullOrEmpty(Model.Image2) ? Model.Image2 : "/images/default.png")"
+                             alt="Image 2" height="60" class="img-fluid mb-3" id="image2">
+                        <input type="file" class="form-control" id="image2Input" name="image2File" />
                     </div>
                 </div>
-                <input type="file" class="form-control" id="mainImageInput" name="mainImage" />
+                <input type="file" class="form-control" id="mainImageInput" name="mainImageFile" />
             </div>
 
             <!-- Info Section -->
@@ -24,19 +33,15 @@
                 <h4>Thông Tin</h4>
                 <div class="mb-3">
                     <label for="Name" class="form-label">Tên cửa hàng:</label>
-                    <input type="text" class="form-control" id="Name" name="Name" value="GO shop" />
+                    <input type="text" class="form-control" id="Name" name="DinerName" value="@Model.DinerName" />
                 </div>
                 <div class="mb-3">
                     <label for="address" class="form-label">Địa chỉ:</label>
-                    <input type="text" class="form-control" id="address" name="address" value="123 Đường ABC, Thành phố XYZ" />
+                    <input type="text" class="form-control" id="address" name="DinerAddress" value="@Model.DinerAddress" />
                 </div>
                 <div class="mb-3">
                     <label for="phone" class="form-label">Số điện thoại:</label>
-                    <input type="text" class="form-control" id="phone" name="phone" value="0123456789" />
-                </div>
-                <div class="mb-3">
-                    <label for="email" class="form-label">Email:</label>
-                    <input type="email" class="form-control" id="email" name="email" value="example@example.com" />
+                    <input type="text" class="form-control" id="phone" name="PhoneNumber" value="@Model.PhoneNumber" />
                 </div>
 
                 <!-- Save Button -->

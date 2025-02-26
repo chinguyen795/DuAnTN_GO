@@ -1,0 +1,15 @@
+﻿@model DuAnTN.Models.Food
+@{
+    ViewData["Title"] = "Xóa món ăn";
+}
+<div class="content mb-4">
+    <h3>Xác nhận xóa món ăn</h3>
+    <div class="alert alert-warning">
+        Bạn có chắc chắn muốn xóa món ăn <strong>@Model.FoodName</strong> không?
+    </div>
+    <form asp-action="Delete" method="post">
+        <input type="hidden" asp-for="Id" />
+        <button type="submit" class="btn btn-danger">Xóa</button>
+        <a asp-action="Index" class="btn btn-secondary">Hủy</a>
+    </form>
+</div>
