@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using DuAnTN.Services;
 using System.Threading.Tasks;
 using System.Net.Http;
-using DuAnTN.Service;
+using DuAnTN.Services;
 
 namespace DuAnTN.Controllers
 {
@@ -86,7 +86,7 @@ namespace DuAnTN.Controllers
             }
             return View(address);  // Trả về form nếu có lỗi
         }
-        public async Task<IActionResult> Profile()
+       /* public async Task<IActionResult> Profile()
         {
             // Call the service to get user info for UserId = 1
             var userInfo = await _userService.GetUserInfoByIdAsync(1);
@@ -97,7 +97,7 @@ namespace DuAnTN.Controllers
             }
 
             return View(userInfo);  // Pass the userInfo to the view
-        }
+        }*/
 
     }
 }

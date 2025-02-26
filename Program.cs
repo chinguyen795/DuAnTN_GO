@@ -11,23 +11,21 @@ builder.Services.AddScoped<CategoryService>(); // hoặc AddTransient hoặc Add
 builder.Services.AddScoped<FoodService>();
 builder.Services.AddScoped<DinerService>();
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<AddressService>();
+
 // Các dịch vụ khác
 builder.Services.AddControllersWithViews();
 // Đăng ký HttpClient
 builder.Services.AddHttpClient<FoodService>();
 builder.Services.AddHttpClient<DinerService>();
-
-// Đăng ký Service
-builder.Services.AddScoped<FoodService>();
-builder.Services.AddScoped<DinerService>();
-// Thêm Razor Pages vào dịch vụ
-builder.Services.AddRazorPages();
 builder.Services.AddHttpClient<FoodService>();
 builder.Services.AddHttpClient<DinerService>();
+builder.Services.AddHttpClient<AddressService>();
 
-builder.Services.AddScoped<CategoryService>();
-builder.Services.AddScoped<FoodService>();
-builder.Services.AddScoped<DinerService>();
+// Thêm Razor Pages vào dịch vụ
+builder.Services.AddRazorPages();
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
