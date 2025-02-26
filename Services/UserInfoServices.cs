@@ -38,6 +38,13 @@ namespace DuAnTN.Services
             Console.WriteLine("Trạng thái phản hồi: " + response.StatusCode); // Kiểm tra response API
 
             return response.IsSuccessStatusCode;
+
         }
-    }
+		public async Task<bool> DeleteUserInfoAsync(int id)
+		{
+			var response = await _httpClient.DeleteAsync($"{_apiUrl}/{id}");
+			return response.IsSuccessStatusCode;
+		}
+
+	}
 }
