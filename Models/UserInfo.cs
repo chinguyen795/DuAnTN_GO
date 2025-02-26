@@ -11,6 +11,7 @@ namespace DuAnTN.Models
         public string Phone { get; set; }
         public string Address { get; set; }
         public DateTime BirthDay { get; set; }
+        public string IdentityImageCard { get; set; }
         public string IdentityCard { get; set; }
         public DateTime CreateAt { get; set; }
         public string Avatar { get; set; }

@@ -1,0 +1,80 @@
+﻿@model DuAnTN.Models.Food
+
+<div class="container mt-4">
+    <div class="row">
+        <!-- Ảnh sản phẩm -->
+        <div class="col-md-6">
+            <div class="product-details__image-container">
+                <img id="mainImage" src="@Model.MainImage" alt="FoodName">
+            </div>
+            <div class="product-details__thumbnail mt-2">
+                <img src="@Model.MainImage" alt="Thumbnail 1" class="thumb" onclick="changeMainImage(this)">
+                <img src="@Model.Image1" alt="Thumbnail 2" class="thumb" onclick="changeMainImage(this)">
+                <img src="@Model.Image2" alt="Thumbnail 3" class="thumb" onclick="changeMainImage(this)">
+            </div>
+        </div>
+
+        <!-- Thông tin sản phẩm -->
+        <div class="col-md-6 product-details">
+            <span class="badge bg-danger">❤️ Yêu thích</span>
+            <h2 class="product-details__title mt-2">@Model.FoodName</h2>
+            <p class="product-details__info">@Model.Diner?.DinerName | @Model.Diner?.DinerAddress</p>
+
+            <div class="product-details__rating">
+                <span>⭐ 4.7</span>
+                <span class="text-success">• 586 đánh giá</span>
+                <span class="text-success">• Mở cửa</span>
+            </div>
+
+            <p class="mt-3">Số Lượng</p>
+            <div class="cart-quantity-control align-items-start has-out-of-stock">
+                <div class="cart-quantity-buttons">
+                    <button class="btn btn-light" onclick="changeQuantity(-1)">-</button>
+                    <input type="number" id="quantity" value="1" min="1">
+                    <button class="btn btn-light" onclick="changeQuantity(1)">+</button>
+                </div>
+            </div>
+
+            <p class="mt-3">Tạm tính: <span id="totalPrice" class="product-details__price">@Model.Price.ToString("N0")đ</span></p>
+
+            <a href="Pay.html" class="btn btn-buy mt-3">Mua ngay</a>
+            <button class="btn btn-cart mt-2">Thêm vào giỏ</button>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-6">
+            <p class="fw-bold fs-4">Ưu đãi khác</p>
+            <button class="btn btn-danger mt-2">Chưa có</button>
+        </div>
+        <div class="col-6">
+            <div class="product-details__shipping">
+                <img src="icon-shipping.png" alt="Shipping Icon">
+                <p>Hãy nhập địa chỉ nhận hàng để được dự báo thời gian & chi phí giao hàng chính xác nhất.</p>
+            </div>
+            <button class="btn btn-primary mt-2">Nhập địa chỉ</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function changeQuantity(amount) {
+        let quantityInput = document.getElementById("quantity");
+        let totalPriceElement = document.getElementById("totalPrice");
+        let pricePerItem = @Model.Price; // Giá mặc định
+
+        let currentValue = parseInt(quantityInput.value);
+        let newValue = currentValue + amount;
+
+        if (newValue >= 1) {
+            quantityInput.value = newValue;
+            let total = newValue * pricePerItem;
+            totalPriceElement.textContent = total.toLocaleString('vi-VN') + "đ";
+        }
+    }
+
+    function changeMainImage(thumbnail) {
+        let mainImage = document.getElementById("mainImage");
+        mainImage.src = thumbnail.src; // Cập nhật ảnh chính
+    }
+</script>

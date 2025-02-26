@@ -1,8 +1,16 @@
-﻿var builder = WebApplication.CreateBuilder(args);
+﻿using DuAnTN.Services;
+
+var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+// Đăng ký HttpClient
+builder.Services.AddHttpClient<FoodServices>();
+builder.Services.AddHttpClient<DinerServices>();
 
+// Đăng ký Service
+builder.Services.AddScoped<FoodServices>();
+builder.Services.AddScoped<DinerServices>();
 // Thêm Razor Pages vào dịch vụ
 builder.Services.AddRazorPages();
 
