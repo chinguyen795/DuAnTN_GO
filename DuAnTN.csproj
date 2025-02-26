@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Areas\Admin\Data\" />
+    <Folder Include="Areas\Admin\Data\NewFolder\" />
     <Folder Include="Areas\Admin\Models\" />
     <Folder Include="Areas\Saller\Data\" />
     <Folder Include="Areas\Saller\Models\" />
