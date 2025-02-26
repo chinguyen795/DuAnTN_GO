@@ -1,0 +1,147 @@
+﻿@model List<DuAnTN.Models.Food>
+
+<div class="filter-basic container mt-4">
+    <div class="d-flex justify-content-between align-items-center combo-box">
+        <select class="form-select me-3">
+            <option selected>Đồ ăn</option>
+            <option value="1">Pizza</option>
+            <option value="2">Bánh mì</option>
+            <option value="3">Mì Ý</option>
+        </select>
+        <select class="form-select me-3">
+            <option selected>Thức uống</option>
+            <option value="1">Cà phê</option>
+            <option value="2">Trà sữa</option>
+            <option value="3">Sinh tố</option>
+        </select>
+        <select class="form-select me-3">
+            <option selected>Hot</option>
+            <option value="1">Giảm giá</option>
+            <option value="2">Mới nhất</option>
+            <option value="3">Bán chạy</option>
+        </select>
+        <select class="form-select me-3">
+            <option selected>Tỉnh/Thành phố</option>
+            <option value="1">Hà Nội</option>
+            <option value="2">TP. Hồ Chí Minh</option>
+            <option value="3">Đà Nẵng</option>
+        </select>
+        <select class="form-select">
+            <option selected>Quận/Huyện</option>
+            <option value="1">Quận 1</option>
+            <option value="2">Quận 3</option>
+            <option value="3">Quận 7</option>
+        </select>
+    </div>
+</div>
+
+<div class="row filter-main mt-4">
+    <div class="col-3">
+        <div class="filter-section">
+            <div class="filter-title d-flex align-items-center justify-content-between">
+                <h5>Bộ lọc tìm kiếm</h5>
+                <i class="bi bi-funnel-fill"></i>
+            </div>
+            <div class="filter-divider"></div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Khoản giá</label>
+                <div class="d-flex gap-2">
+                    <input type="number" class="form-control" placeholder="Từ">
+                    <input type="number" class="form-control" placeholder="Đến">
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Loại shop</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="shop1">
+                    <label class="form-check-label" for="shop1">Shop yêu thích</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="shop2">
+                    <label class="form-check-label" for="shop2">Shop Mall</label>
+                </div>
+            </div>
+
+            <div class="filter-divider"></div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Phương thức vận chuyển</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="shipping1">
+                    <label class="form-check-label" for="shipping1">Freeship</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="shipping2">
+                    <label class="form-check-label" for="shipping2">Nhanh</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="shipping3">
+                    <label class="form-check-label" for="shipping3">Tiêu chuẩn</label>
+                </div>
+            </div>
+
+            <div class="filter-divider"></div>
+        </div>
+    </div>
+
+    <div class="col-9">
+        <div class="sort-container d-flex align-items-center">
+            <span class="fw-bold me-3">Sắp xếp theo:</span>
+            <a asp-action="Food" asp-route-sortOrder="price_asc" class="btn me-2">Giá tăng dần ↑</a>
+            <a asp-action="Food" asp-route-sortOrder="price_desc" class="btn me-2">Giá giảm dần ↓</a>
+            <div class="ms-auto">
+                <!-- Các nút sắp xếp khác, ví dụ: theo tên hoặc theo ngày -->
+                <button class="btn me-2">Mới nhất</button>
+                <button class="btn me-2">Gần nhất</button>
+                <button class="btn me-2">Đã thích</button>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            @foreach (var food in Model)
+            {
+                <div class="col-md-3 product my-3">
+                    <div class="product-card">
+                        <a href="@Url.Action("Detail", "Food", new { id = food.Id })" class="text-decoration-none">
+                            <img src="@food.MainImage" alt="@food.FoodName">
+                            <div class="p-3">
+                                <h5 class="product-title">@food.FoodName</h5>
+                                <div class="d-flex align-items-center mb-2">
+                                    <span class="product-price me-3">@food.Price.ToString("N0")đ</span>
+                                </div>
+                                <div class="product-stats d-flex align-items-center mb-3">
+                                    <span class="me-3"><i class="bi bi-cart"></i> 378</span>
+                                    <span class="me-3"><i class="bi bi-heart"></i> 843</span>
+                                    <span><i class="bi bi-eye"></i> 1K8</span>
+                                </div>
+                                <div class="seller-info">
+                                    <img src="@food.MainImage" alt="Seller" class="me-2">
+                                    <div>
+                                        <span class="product-seller">@food.Diner?.DinerName</span>
+                                        <p class="product-location mb-0">@food.Diner?.DinerAddress</p>
+                                    </div>
+                                </div>
+                                <div class="product-rating mt-2">
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+
+</div>
+
+
+
+
+
+
+
