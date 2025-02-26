@@ -1,0 +1,52 @@
+﻿@model DuAnTN.Models.AddressModel
+
+@{
+    ViewData["Title"] = "Thêm Địa Chỉ Mới";
+}
+
+<div class="container-fluid profile-main">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav class="col-md-3 sidebar">
+            <h5 class="mb-4">Thông tin</h5>
+            <a asp-area="" asp-controller="Account" asp-action="Profile" class="sidebar__link"><i class="bi bi-person-circle"></i> Hồ sơ</a>
+            <a href="#" class="sidebar__link"><i class="bi bi-box"></i> Đơn hàng của tôi</a>
+            <a asp-area="" asp-controller="Account" asp-action="Address" class="sidebar__link"><i class="bi bi-geo-alt"></i> Địa Chỉ Nhận Hàng</a>
+            <a href="#" class="sidebar__link"><i class="bi bi-gear"></i> Dịch vụ</a>
+            <a href="#" class="sidebar__link"><i class="bi bi-credit-card"></i> Phương thức thanh toán</a>
+            <a href="#" class="sidebar__link"><i class="bi bi-sliders"></i> Cài đặt</a>
+            <a href="#" class="sidebar__link"><i class="bi bi-question-circle"></i> Trung tâm trợ giúp</a>
+            <a asp-area="" asp-controller="" asp-action="" class="sidebar__link"><i class="bi bi-person-video2"></i> Kênh bán hàng</a>
+        </nav>
+
+        <!-- Main content -->
+        <main class="col-md-9 p-4">
+            <h4>📍 Thêm Địa Chỉ Mới</h4>
+
+            <!-- Form thêm địa chỉ mới -->
+            <form asp-action="AddAddress" method="post" class="mt-4">
+                <div class="form-group">
+                    <label for="FullName">Tên người nhận</label>
+                    <input type="text" class="form-control" id="FullName" name="FullName" required />
+                </div>
+                <div class="form-group">
+                    <label for="PhoneNumber">Số điện thoại</label>
+                    <input type="text" class="form-control" id="PhoneNumber" name="PhoneNumber" required />
+                </div>
+                <div class="form-group">
+                    <label for="AddressLine">Địa chỉ</label>
+                    <input type="text" class="form-control" id="AddressLine" name="AddressLine" required />
+                </div>
+                <div class="form-group form-check">
+                    <input type="checkbox" class="form-check-input" id="IsDefault" name="IsDefault" />
+                    <label class="form-check-label" for="IsDefault">Đặt làm địa chỉ mặc định</label>
+                </div>
+                <button type="submit" class="btn btn-primary">Lưu Địa Chỉ</button>
+            </form>
+        </main>
+    </div>
+</div>
+
+<!-- Add Bootstrap and custom CSS if necessary -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />

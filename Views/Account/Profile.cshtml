@@ -1,81 +1,21 @@
-﻿@{
-    ViewData["Title"] = "Profile Page";
-}
+﻿@model DuAnTN.Models.UserInfo
 
-<div class="container-fluid profile-main">
+<div class="container">
+    <h3 class="text-center">Thông Tin Cá Nhân</h3>
     <div class="row">
-        <!-- Sidebar -->
-        <nav class="col-md-3 sidebar">
-            <h5 class="mb-4">Thông tin</h5>
-            <a asp-area="" asp-controller="Account" asp-action="Profile" class="sidebar__link"><i class="bi bi-person-circle"></i> Hồ sơ</a>
-            <a href="#" class="sidebar__link"><i class="bi bi-box"></i> Đơn hàng của tôi</a>
-            <a asp-area="" asp-controller="Account" asp-action="Address" class="sidebar__link"><i class="bi bi-geo-alt"></i> Địa Chỉ Nhận Hàng</a>
-            <a href="#" class="sidebar__link"><i class="bi bi-gear"></i> Dịch vụ</a>
-            <a href="#" class="sidebar__link"><i class="bi bi-credit-card"></i> Phương thức thanh toán</a>
-            <a href="#" class="sidebar__link"><i class="bi bi-sliders"></i> Cài đặt</a>
-            <a href="#" class="sidebar__link"><i class="bi bi-question-circle"></i> Trung tâm trợ giúp</a>
-            <a asp-area="" asp-controller="" asp-action="" class="sidebar__link"><i class="bi bi-person-video2"></i> Kênh bán hàng</a>
-
-        </nav>
-
-        <!-- Main Content -->
-        <main class="col-md-9 p-4">
-            <h3 class="text-center text-black page-title mt-4">Thông tin cá nhân</h3>
-
-            <div class="row justify-content-center">
-                <!-- Profile Avatar -->
-                <div class="col-md-4 d-flex flex-column align-items-center">
-                    <div class="profile">
-                        <div class="profile__avatar">
-                            <img src="https://i.pinimg.com/736x/44/80/45/448045692c52f8e84fdad5ccc69f1939.jpg"
-                                 alt="Ảnh" class="profile__avatar-img">
-                        </div>
-                        <button class="btn btn--primary mt-3"><i class="bi bi-pencil-square"></i> Sửa</button>
-                    </div>
-                </div>
-
-                <!-- Profile Form -->
-                <div class="col-md-7">
-                    <form>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <label class="form__label">Họ tên:</label>
-                                <input type="text" class="form-control">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form__label">Giới tính:</label>
-                                <input type="text" class="form-control">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form__label">Địa chỉ:</label>
-                                <input type="email" class="form-control" readonly>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form__label">Số điện thoại:</label>
-                                <input type="text" class="form-control" readonly>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form__label">Ngày sinh:</label>
-                                <input type="date" class="form-control">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form__label">Số CCCD:</label>
-                                <input type="text" class="form-control">
-                            </div>
-                        </div>
-                        <div class="mt-4 text-center">
-                            <button type="submit" class="btn btn--primary">
-                                <i class="bi bi-arrow-clockwise"></i> Sửa
-                                thông tin
-                            </button>
-                            <button type="button" class="btn btn--primary ms-2">
-                                <i class="bi bi-lock"></i> Đổi mật
-                                khẩu
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </main>
+        <div class="col-md-4">
+            <img src="@Model.Avatar" alt="Avatar" class="img-fluid">
+        </div>
+        <div class="col-md-8">
+            <h4>@Model.FullName</h4>
+            <p><strong>Giới tính:</strong> @Model.Gender</p>
+            <p><strong>Địa chỉ:</strong> @Model.Address</p>
+            <p><strong>Số điện thoại:</strong> @Model.Phone</p>
+            <p><strong>Ngày sinh:</strong> @Model.BirthDay.ToString("dd/MM/yyyy")</p>
+            <p><strong>Số CCCD:</strong> @Model.IdentityCard</p>
+            <form method="post" action="@Url.Action("EditProfile", "Account")">
+                <button type="submit" class="btn btn-primary">Chỉnh sửa thông tin</button>
+            </form>
+        </div>
     </div>
 </div>

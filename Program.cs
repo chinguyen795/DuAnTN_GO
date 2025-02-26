@@ -48,10 +48,10 @@ app.UseAuthorization();
 // Map Razor Pages
 app.MapRazorPages();
 
-// Định tuyến với khu vực (Areas)
-app.MapControllerRoute(
-    name: "areas",
-    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+//// Định tuyến với khu vực (Areas)
+//app.MapControllerRoute(
+//    name: "areas",
+//    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 
 // Định tuyến mặc định
 app.MapControllerRoute(
