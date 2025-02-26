@@ -1,7 +1,14 @@
-﻿var builder = WebApplication.CreateBuilder(args);
+﻿using DuAnTN.Service;
+using DuAnTN.Services;
+
+var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddHttpClient();
+builder.Services.AddHttpClient<AddressService>();
+builder.Services.AddScoped<UserService>();  // Add this line to register UserService
+
 
 // Thêm Razor Pages vào dịch vụ
 builder.Services.AddRazorPages();
@@ -26,10 +33,10 @@ app.UseAuthorization();
 // Map Razor Pages
 app.MapRazorPages();
 
-// Định tuyến với khu vực (Areas)
-app.MapControllerRoute(
-    name: "areas",
-    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+//// Định tuyến với khu vực (Areas)
+//app.MapControllerRoute(
+//    name: "areas",
+//    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 
 // Định tuyến mặc định
 app.MapControllerRoute(
