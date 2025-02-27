@@ -21,7 +21,7 @@
 		<div class="container mt-4">
 			<div class="address-container">
 				<h4>📍 Địa chỉ của tôi</h4>
-					<button asp-controller="Account" asp-action="AddAddress" class="btn btn-danger btn-sm mb-3">➕ Thêm địa chỉ mới</button>
+					<a href="@Url.Action("AddAddress", "Account")" class="btn btn-danger btn-sm mb-3">➕ Thêm địa chỉ mới</a>
 				<div class="list-group">
 					<!-- Địa chỉ 1 - Mặc định -->
 						@foreach (var address in Model)

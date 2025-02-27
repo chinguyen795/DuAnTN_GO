@@ -105,7 +105,7 @@
                 <div class="col-md-3 product my-3">
                     <div class="product-card">
                         <a href="@Url.Action("Detail", "Food", new { id = food.Id })" class="text-decoration-none">
-                            <img src="@food.MainImage" alt="@food.FoodName">
+                            <img style="height: 325px !important" src="@food.MainImage" alt="@food.FoodName">
                             <div class="p-3">
                                 <h5 class="product-title">@food.FoodName</h5>
                                 <div class="d-flex align-items-center mb-2">
@@ -117,7 +117,7 @@
                                     <span><i class="bi bi-eye"></i> 1K8</span>
                                 </div>
                                 <div class="seller-info">
-                                    <img src="@food.MainImage" alt="Seller" class="me-2">
+                                    <img src="@food.Diner?.MainImage" alt="Seller" class="me-2">
                                     <div>
                                         <span class="product-seller">@food.Diner?.DinerName</span>
                                         <p class="product-location mb-0">@food.Diner?.DinerAddress</p>

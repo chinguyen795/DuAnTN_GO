@@ -35,15 +35,13 @@ namespace DuAnTN.Controllers
         [HttpPost]
         public async Task<IActionResult> AddAddress(AddressModel address)
         {
-            if (ModelState.IsValid)
-            {
+            
                 var result = await _addressService.AddAddressAsync(address);
                 if (result)
                 {
                     return RedirectToAction("Address");  // Điều hướng về trang danh sách địa chỉ
                 }
-                ModelState.AddModelError("", "Không thể thêm địa chỉ.");
-            }
+            
             return View(address);  // Nếu có lỗi, quay lại form nhập
         }
 

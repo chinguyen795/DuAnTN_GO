@@ -21,7 +21,7 @@ builder.Services.AddHttpClient<DinerService>();
 builder.Services.AddHttpClient<FoodService>();
 builder.Services.AddHttpClient<DinerService>();
 builder.Services.AddHttpClient<AddressService>();
-
+builder.Services.AddHttpClient<UserInfoServices>();
 // Thêm Razor Pages vào dịch vụ
 builder.Services.AddRazorPages();
 
@@ -46,10 +46,9 @@ app.UseAuthorization();
 // Map Razor Pages
 app.MapRazorPages();
 
-//// Định tuyến với khu vực (Areas)
-//app.MapControllerRoute(
-//    name: "areas",
-//    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+app.MapControllerRoute(
+    name: "areas",
+    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 
 // Định tuyến mặc định
 app.MapControllerRoute(
