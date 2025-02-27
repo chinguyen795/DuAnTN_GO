@@ -24,7 +24,7 @@
             <h4>📍 Thêm Địa Chỉ Mới</h4>
 
             <!-- Form thêm địa chỉ mới -->
-            <form asp-action="AddAddress" method="post" class="mt-4">
+            <form asp-controller="Account" asp-action="AddAddress" method="post" class="mt-4">
                 <div class="form-group">
                     <label for="FullName">Tên người nhận</label>
                     <input type="text" class="form-control" id="FullName" name="FullName" required />
