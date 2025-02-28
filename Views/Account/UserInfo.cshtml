@@ -1,0 +1,61 @@
+﻿@model DuAnTN.Models.UserInfo
+
+@{
+    ViewData["Title"] = "Thông Tin Người Dùng";
+    var isLoggedIn = Context.Session.GetString("JwtToken") != null;
+}
+<!-- Hiển thị thông báo từ TempData -->
+@if (TempData["ToastMessage"] != null)
+{
+    <div class="alert alert-@TempData["ToastType"]" role="alert">
+        @TempData["ToastMessage"]
+    </div>
+}
+<div class="container mt-4">
+    @if (Model != null)
+    {
+        <h2>Thông Tin Người Dùng</h2>
+        <table class="table table-bordered mt-3">
+            <tr>
+                <th>Họ và tên</th>
+                <td>@Model.FullName</td>
+            </tr>
+            <tr>
+                <th>Giới tính</th>
+                <td>@Model.Gender</td>
+            </tr>
+            <tr>
+                <th>Số điện thoại</th>
+                <td>@Model.Phone</td>
+            </tr>
+            <tr>
+                <th>Ngày sinh</th>
+                <td>@Model.BirthDay.ToString("dd/MM/yyyy")</td>
+            </tr>
+            <tr>
+                <th>Số CCCD</th>
+                <td>@Model.IdentityCard</td>
+            </tr>
+            <tr>
+                <th>Ảnh đại diện</th>
+                <td>
+                    @if (!string.IsNullOrEmpty(Model.Avatar))
+                    {
+                        <img src="@Model.Avatar" alt="Avatar" class="img-thumbnail" style="width: 100px; height: 100px;" />
+                    }
+                    else
+                    {
+                        <span>Không có ảnh</span>
+                    }
+                </td>
+            </tr>
+        </table>
+        <a asp-controller="Account" asp-action="EditUserInfo" class="btn btn-primary">Sửa Thông Tin</a>
+    }
+    else
+    {
+        <div class="alert alert-warning" role="alert">
+            Vui lòng <a asp-controller="Home" asp-action="Index">đăng nhập</a> để xem thông tin cá nhân.
+        </div>
+    }
+</div>

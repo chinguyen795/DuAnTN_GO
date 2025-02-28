@@ -1,52 +1,134 @@
-﻿@model DuAnTN.Models.AddressModel
-
+﻿@using Newtonsoft.Json
 @{
-    ViewData["Title"] = "Thêm Địa Chỉ Mới";
+    ViewData["Title"] = "Thêm Địa Chỉ Giao Hàng";
 }
-
-<div class="container-fluid profile-main">
-    <div class="row">
-        <!-- Sidebar -->
-        <nav class="col-md-3 sidebar">
-            <h5 class="mb-4">Thông tin</h5>
-            <a asp-area="" asp-controller="Account" asp-action="Profile" class="sidebar__link"><i class="bi bi-person-circle"></i> Hồ sơ</a>
-            <a href="#" class="sidebar__link"><i class="bi bi-box"></i> Đơn hàng của tôi</a>
-            <a asp-area="" asp-controller="Account" asp-action="Address" class="sidebar__link"><i class="bi bi-geo-alt"></i> Địa Chỉ Nhận Hàng</a>
-            <a href="#" class="sidebar__link"><i class="bi bi-gear"></i> Dịch vụ</a>
-            <a href="#" class="sidebar__link"><i class="bi bi-credit-card"></i> Phương thức thanh toán</a>
-            <a href="#" class="sidebar__link"><i class="bi bi-sliders"></i> Cài đặt</a>
-            <a href="#" class="sidebar__link"><i class="bi bi-question-circle"></i> Trung tâm trợ giúp</a>
-            <a asp-area="" asp-controller="" asp-action="" class="sidebar__link"><i class="bi bi-person-video2"></i> Kênh bán hàng</a>
-        </nav>
-
-        <!-- Main content -->
-        <main class="col-md-9 p-4">
-            <h4>📍 Thêm Địa Chỉ Mới</h4>
-
-            <!-- Form thêm địa chỉ mới -->
-            <form asp-controller="Account" asp-action="AddAddress" method="post" class="mt-4">
-                <div class="form-group">
-                    <label for="FullName">Tên người nhận</label>
-                    <input type="text" class="form-control" id="FullName" name="FullName" required />
-                </div>
-                <div class="form-group">
-                    <label for="PhoneNumber">Số điện thoại</label>
-                    <input type="text" class="form-control" id="PhoneNumber" name="PhoneNumber" required />
-                </div>
-                <div class="form-group">
-                    <label for="AddressLine">Địa chỉ</label>
-                    <input type="text" class="form-control" id="AddressLine" name="AddressLine" required />
-                </div>
-                <div class="form-group form-check">
-                    <input type="checkbox" class="form-check-input" id="IsDefault" name="IsDefault" />
-                    <label class="form-check-label" for="IsDefault">Đặt làm địa chỉ mặc định</label>
-                </div>
-                <button type="submit" class="btn btn-primary">Lưu Địa Chỉ</button>
-            </form>
-        </main>
+<!-- Hiển thị thông báo từ TempData -->
+@if (TempData["ToastMessage"] != null)
+{
+    <div class="alert alert-@TempData["ToastType"]" role="alert">
+        @TempData["ToastMessage"]
     </div>
+}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<div class="container">
+    <h2>Thêm Địa Chỉ Giao Hàng</h2>
+    <form method="post">
+        <!-- Tên địa chỉ -->
+        <div class="form-group">
+            <label for="NameAddress">Số nhà/Tên Đường</label>
+            <input type="text" class="form-control" id="NameAddress" name="NameAddress" required />
+        </div>
+
+        <!-- Tỉnh/Thành phố -->
+        <div class="form-group">
+            <label for="Province">Tỉnh/Thành phố</label>
+            <select class="form-control" id="Province" name="Province" required>
+                <option value="">Chọn Tỉnh/Thành phố</option>
+                @foreach (var province in ViewBag.Provinces)
+                {
+                    <option value="@province.name">@province.name</option>
+                }
+            </select>
+        </div>
+
+        <!-- Quận/Huyện -->
+        <div class="form-group">
+            <label for="District">Huyện/Quận</label>
+            <select class="form-control" id="District" name="District" required>
+                <option value="">Chọn Huyện/Quận</option>
+            </select>
+        </div>
+
+        <!-- Xã/Phường -->
+        <div class="form-group">
+            <label for="Ward">Xã/Phường</label>
+            <select class="form-control" id="Ward" name="Ward" required>
+                <option value="">Chọn Xã/Phường</option>
+            </select>
+        </div>
+
+        <!-- Địa chỉ (Read-Only) -->
+        <div class="form-group">
+            <label for="Description">Địa Chỉ</label>
+            <input type="text" class="form-control" id="Description" name="Description" readonly />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Lưu Địa Chỉ</button>
+    </form>
 </div>
 
-<!-- Add Bootstrap and custom CSS if necessary -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        // Pass the ViewBag data to a JavaScript variable
+        var provinces = @Html.Raw(JsonConvert.SerializeObject(ViewBag.Provinces));
+
+        function updateAddressField() {
+            var provinceName = $('#Province').val();
+            var districtName = $('#District').val();
+            var wardName = $('#Ward').val();
+
+            var address = "";
+
+            if (provinceName) {
+                address += provinceName;
+            }
+            if (districtName) {
+                address += ", " + districtName;
+            }
+            if (wardName) {
+                address += ", " + wardName;
+            }
+
+            $('#Description').val(address);  // Set the "Description" field with the concatenated address
+        }
+
+        // Update address field on change
+        $('#Province, #District, #Ward').change(function () {
+            updateAddressField();
+        });
+
+        // Initial update in case the user selects something beforehand
+        updateAddressField();
+
+        $('#Province').change(function () {
+            var provinceName = $(this).val(); // Get selected province
+            if (provinceName) {
+                // Find the selected province data
+                var province = provinces.find(p => p.name === provinceName);
+
+                var districts = province.districts;
+                $('#District').empty().append('<option value="">Chọn Huyện/Quận</option>');
+
+                $.each(districts, function (index, district) {
+                    $('#District').append('<option value="' + district.name + '">' + district.name + '</option>');
+                });
+
+                $('#Ward').empty().append('<option value="">Chọn Xã/Phường</option>');
+            } else {
+                $('#District').empty().append('<option value="">Chọn Huyện/Quận</option>');
+                $('#Ward').empty().append('<option value="">Chọn Xã/Phường</option>');
+            }
+        });
+
+        $('#District').change(function () {
+            var districtName = $(this).val();
+            if (districtName) {
+                var provinceName = $('#Province').val();
+                var province = provinces.find(p => p.name === provinceName);
+                var district = province.districts.find(d => d.name === districtName);
+                var wards = district.wards;
+
+                $('#Ward').empty().append('<option value="">Chọn Xã/Phường</option>');
+
+                $.each(wards, function (index, ward) {
+                    $('#Ward').append('<option value="' + ward.name + '">' + ward.name + '</option>');
+                });
+            } else {
+                $('#Ward').empty().append('<option value="">Chọn Xã/Phường</option>');
+            }
+        });
+    });
+</script>

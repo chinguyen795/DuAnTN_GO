@@ -3,7 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using DuAnTN.Services;
 using System.Threading.Tasks;
 using System.Net.Http;
-using DuAnTN.Services;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace DuAnTN.Controllers
 {
@@ -11,91 +12,315 @@ namespace DuAnTN.Controllers
     {
         private readonly HttpClient _httpClient;
         private readonly AddressService _addressService;
-        private readonly UserService _userService;  // Add the UserService as a private field
+        private readonly UserService _userService;
+        private readonly UserInfoServices _userInfoService;
+        private readonly ILogger<AccountController> _logger;
 
-        public AccountController(HttpClient httpClient, AddressService addressService, UserService userService)
+        public AccountController(HttpClient httpClient, AddressService addressService, UserService userService, UserInfoServices userInfoService, ILogger<AccountController> logger)
         {
             _httpClient = httpClient;
             _addressService = addressService;
             _userService = userService;
-        }
-        // Action để hiển thị thông tin profile
-       
-        // Lấy danh sách địa chỉ từ API
-        public async Task<IActionResult> Address()
-        {
-            var addresses = await _addressService.GetAddressesAsync(); // Gọi service lấy dữ liệu
-            return View(addresses);
-        }
-        // Hiển thị form thêm địa chỉ mới
-        public IActionResult AddAddress()
-        {
-            return View();
-        }
-        [HttpPost]
-        public async Task<IActionResult> AddAddress(AddressModel address)
-        {
-            
-                var result = await _addressService.AddAddressAsync(address);
-                if (result)
-                {
-                    return RedirectToAction("Address");  // Điều hướng về trang danh sách địa chỉ
-                }
-            
-            return View(address);  // Nếu có lỗi, quay lại form nhập
+            _userInfoService = userInfoService;
+            _logger = logger;
         }
 
+        // Action to display the address list
+        public async Task<IActionResult> Address()
+        {
+            var userId = HttpContext.Session.GetString("Id");
+            if (string.IsNullOrEmpty(userId))
+            {
+                TempData["ToastMessage"] = "❌ Vui lòng đăng nhập để xem địa chỉ!";
+                TempData["ToastType"] = "danger";
+                return RedirectToAction("Index", "Home");
+            }
+
+            var addresses = await _addressService.GetAddressesAsync();
+            var userAddresses = addresses.Where(a => a.UserId == int.Parse(userId)).ToList();
+            return View(userAddresses);
+        }
+
+        private readonly string _jsonFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "data", "provinces.json");
+
+        // GET: Show Add Address Form
+        public IActionResult AddAddress()
+        {
+            var json = System.IO.File.ReadAllText(_jsonFilePath);
+            var data = JsonConvert.DeserializeObject<List<dynamic>>(json);
+            ViewBag.Provinces = data;
+            return View();
+        }
+
+        // POST: Handle Add Address Submission
+        [HttpPost]
+        public async Task<IActionResult> AddAddress(Address address, string Province, string District, string Ward)
+        {
+            var userId = HttpContext.Session.GetString("Id");
+            if (string.IsNullOrEmpty(userId))
+            {
+                TempData["ToastMessage"] = "❌ Vui lòng đăng nhập để thêm địa chỉ!";
+                TempData["ToastType"] = "danger";
+                return RedirectToAction("Index", "Home");
+            }
+
+            // Combine the address fields into one
+            address.Description = $"{Province}, {District}, {Ward}";
+            address.UserId = int.Parse(userId);
+
+            // Save the address using the service
+            var result = await _addressService.AddAddressAsync(address);
+            if (result)
+            {
+                TempData["ToastMessage"] = "✅ Địa chỉ đã được lưu!";
+                TempData["ToastType"] = "success";
+                return RedirectToAction("Address");
+            }
+
+            TempData["ToastMessage"] = "❌ Đã có lỗi xảy ra!";
+            TempData["ToastType"] = "danger";
+            return View(address); // If error, return to the form
+        }
+
+        // POST: Handle Delete Address
         [HttpPost]
         public async Task<IActionResult> DeleteAddress(int id)
         {
             var result = await _addressService.DeleteAddressAsync(id);
             if (result)
             {
-                return RedirectToAction("Address");  // Quay lại danh sách địa chỉ sau khi xóa
+                TempData["ToastMessage"] = "✅ Địa chỉ đã được xóa!";
+                TempData["ToastType"] = "success";
+                return RedirectToAction("Address");
             }
 
-            ModelState.AddModelError("", "Không thể xóa địa chỉ.");
+            TempData["ToastMessage"] = "❌ Không thể xóa địa chỉ!";
+            TempData["ToastType"] = "danger";
             return RedirectToAction("Address");
         }
-        // GET: Account/EditAddress/{id}
-        [HttpGet]
-        public async Task<IActionResult> EditAddress(int id)
-        {
-            var address = await _addressService.GetAddressByIdAsync(id); // Lấy địa chỉ theo id
-            if (address == null)
-            {
-                return NotFound();  // Trả về lỗi 404 nếu không tìm thấy địa chỉ
-            }
-            return View(address);  // Trả về view chỉnh sửa với thông tin địa chỉ
-        }
 
-        // POST: Account/EditAddress
-        [HttpPost]
-        public async Task<IActionResult> EditAddress(AddressModel address)
+        //[HttpGet]
+        //public async Task<IActionResult> EditAddress(int id)
+        //{
+        //    // Get the address to edit
+        //    var address = await _addressService.GetAddressByIdAsync(id);
+        //    if (address == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    // Pass provinces data to the view
+        //    var json = System.IO.File.ReadAllText(_jsonFilePath);
+        //    var data = JsonConvert.DeserializeObject<List<dynamic>>(json);
+        //    ViewBag.Provinces = data;
+
+        //    return View(address); // Return the edit view with the existing address
+        //}
+
+        //[HttpPost]
+        //public async Task<IActionResult> EditAddress(Address address, string Province, string District, string Ward)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        // Combine the address fields into one
+        //        address.Description = $"{Province}, {District}, {Ward}";
+
+        //        // Update the address via the service
+        //        var result = await _addressService.UpdateAddressAsync(address);
+        //        if (result)
+        //        {
+        //            TempData["ToastMessage"] = "✅ Địa chỉ đã được cập nhật!";
+        //            TempData["ToastType"] = "success";
+        //            return RedirectToAction("Address");
+        //        }
+
+        //        TempData["ToastMessage"] = "❌ Cập nhật không thành công!";
+        //        TempData["ToastType"] = "danger";
+        //    }
+        //    return View(address); // If error, return to the edit form
+        //}
+
+        // GET: UserInfo
+        [HttpGet]
+        public async Task<IActionResult> UserInfo()
         {
-            if (ModelState.IsValid)
+            var userId = HttpContext.Session.GetString("Id");
+            if (string.IsNullOrEmpty(userId))
             {
-                var result = await _addressService.UpdateAddressAsync(address); // Cập nhật địa chỉ thông qua service
-                if (result)
-                {
-                    return RedirectToAction("Address"); // Quay lại danh sách địa chỉ sau khi cập nhật
-                }
-                ModelState.AddModelError("", "Không thể cập nhật địa chỉ.");
+                TempData["ToastMessage"] = "❌ Vui lòng đăng nhập để xem thông tin!";
+                TempData["ToastType"] = "danger";
+                return RedirectToAction("Index", "Home");
             }
-            return View(address);  // Trả về form nếu có lỗi
+
+            var userInfo = await _userInfoService.GetUserInfo(int.Parse(userId));
+            if (userInfo == null)
+            {
+                TempData["ToastMessage"] = "⚠ Không tìm thấy thông tin người dùng!";
+                return View(null);
+            }
+
+            return View(userInfo);
         }
-       /* public async Task<IActionResult> Profile()
+        // GET: Hiển thị form chỉnh sửa thông tin người dùng
+        [HttpGet]
+        public async Task<IActionResult> EditUserInfo()
         {
-            // Call the service to get user info for UserId = 1
-            var userInfo = await _userService.GetUserInfoByIdAsync(1);
+            var userId = HttpContext.Session.GetString("Id");
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                TempData["ToastMessage"] = "❌ Vui lòng đăng nhập để chỉnh sửa thông tin!";
+                TempData["ToastType"] = "danger";
+                return RedirectToAction("Index", "Home");
+            }
+
+            var userInfo = await _userInfoService.GetUserInfo(int.Parse(userId));
 
             if (userInfo == null)
             {
-                return NotFound();  // Return 404 if no user info is found
+                TempData["ToastMessage"] = "⚠ Không tìm thấy thông tin người dùng!";
+                return View(null); // Nếu không tìm thấy, trả về view null
             }
 
-            return View(userInfo);  // Pass the userInfo to the view
-        }*/
+            return View(userInfo); // Trả về view để sửa thông tin
+        }
 
+        [HttpPost]
+        public async Task<IActionResult> EditUserInfo(UserInfo userInfo, IFormFile avatar)
+        {
+            var userId = HttpContext.Session.GetString("Id");
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                TempData["ToastMessage"] = "❌ Bạn cần đăng nhập để thay đổi thông tin!";
+                TempData["ToastType"] = "danger";
+                return RedirectToAction("Login", "Home");
+            }
+
+            if (ModelState.IsValid)
+            {
+                // Kiểm tra ảnh đại diện
+                if (avatar != null && avatar.Length > 0)
+                {
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", avatar.FileName);
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await avatar.CopyToAsync(stream); // Lưu file vào thư mục images
+                    }
+                    userInfo.Avatar = "/images/" + avatar.FileName; // Cập nhật đường dẫn ảnh vào model
+                }
+
+                // Gọi service để cập nhật thông tin người dùng
+                var result = await _userInfoService.UpdateUserInfoAsync(userInfo);
+                if (result)
+                {
+                    TempData["ToastMessage"] = "✅ Thông tin người dùng đã được cập nhật!";
+                    TempData["ToastType"] = "success";
+                    return RedirectToAction("UserInfo");
+                }
+
+                TempData["ToastMessage"] = "❌ Cập nhật không thành công!";
+                TempData["ToastType"] = "danger";
+            }
+
+            return View(userInfo); // Nếu có lỗi, trả về form để người dùng sửa lại
+        }
+
+        // GET: Hiển thị form đổi mật khẩu
+        [HttpGet]
+        public IActionResult ChangePassword()
+        {
+            return View();
+        }
+
+        // POST: Xử lý đổi mật khẩu
+        [HttpPost]
+        public async Task<IActionResult> ChangePassword(string currentPassword, string newPassword, string confirmPassword)
+        {
+            var userId = HttpContext.Session.GetString("Id");
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                TempData["ToastMessage"] = "❌ Bạn cần đăng nhập để thay đổi mật khẩu!";
+                TempData["ToastType"] = "danger";
+                return RedirectToAction("Login", "Home");
+            }
+
+            if (newPassword != confirmPassword)
+            {
+                TempData["ToastMessage"] = "❌ Mật khẩu mới không khớp!";
+                TempData["ToastType"] = "danger";
+                return View();
+            }
+
+            // Gọi API hoặc Service để thay đổi mật khẩu
+            var result = await _userService.ChangePasswordAsync(int.Parse(userId), currentPassword, newPassword);
+
+            if (result)
+            {
+                TempData["ToastMessage"] = "✅ Mật khẩu đã được cập nhật thành công!";
+                TempData["ToastType"] = "success";
+                return RedirectToAction("Index", "Home"); // Redirect về trang chủ
+            }
+
+            TempData["ToastMessage"] = "❌ Đổi mật khẩu thất bại. Mật khẩu cũ không đúng!";
+            TempData["ToastType"] = "danger";
+            return View(); // Nếu có lỗi, trả về lại form
+        }
+        // GET: Hiển thị form chỉnh sửa địa chỉ
+        [HttpGet]
+        public async Task<IActionResult> EditAddress(int id)
+        {
+            var userId = HttpContext.Session.GetString("Id");
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                TempData["ToastMessage"] = "❌ Bạn cần đăng nhập để thay đổi địa chỉ!";
+                TempData["ToastType"] = "danger";
+                return RedirectToAction("Login", "Home");
+            }
+
+            var address = await _addressService.GetAddressByIdAsync(id);
+            if (address == null || address.UserId != int.Parse(userId))
+            {
+                TempData["ToastMessage"] = "❌ Địa chỉ không hợp lệ!";
+                TempData["ToastType"] = "danger";
+                return RedirectToAction("Address");
+            }
+
+            return View(address);
+        }
+
+        // POST: Xử lý thay đổi địa chỉ
+        [HttpPost]
+        public async Task<IActionResult> EditAddress(Address address)
+        {
+            var userId = HttpContext.Session.GetString("Id");
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                TempData["ToastMessage"] = "❌ Bạn cần đăng nhập để thay đổi địa chỉ!";
+                TempData["ToastType"] = "danger";
+                return RedirectToAction("Login", "Home");
+            }
+
+            if (ModelState.IsValid)
+            {
+                var result = await _addressService.UpdateAddressAsync(address);
+                if (result)
+                {
+                    TempData["ToastMessage"] = "✅ Địa chỉ đã được cập nhật!";
+                    TempData["ToastType"] = "success";
+                    return RedirectToAction("Address");
+                }
+                else
+                {
+                    TempData["ToastMessage"] = "❌ Cập nhật địa chỉ thất bại!";
+                    TempData["ToastType"] = "danger";
+                }
+            }
+
+            return View(address);  // Nếu có lỗi, trả về form
+        }
     }
 }

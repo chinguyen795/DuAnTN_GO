@@ -18,21 +18,21 @@ namespace DuAnTN.Services
         }
 
         // Lấy danh sách địa chỉ từ API
-        public async Task<List<AddressModel>> GetAddressesAsync()
+        public async Task<List<Address>> GetAddressesAsync()
         {
             var response = await _httpClient.GetAsync(_apiUrl);
 
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<List<AddressModel>>(content);
+                return JsonConvert.DeserializeObject<List<Address>>(content);
             }
 
-            return new List<AddressModel>(); // Trả về danh sách trống nếu có lỗi
+            return new List<Address>(); // Trả về danh sách trống nếu có lỗi
         }
 
         // Thêm địa chỉ mới vào API
-        public async Task<bool> AddAddressAsync(AddressModel address)
+        public async Task<bool> AddAddressAsync(Address address)
         {
             var json = JsonConvert.SerializeObject(address);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -47,29 +47,22 @@ namespace DuAnTN.Services
             var response = await _httpClient.DeleteAsync($"{_apiUrl}/{id}");
             return response.IsSuccessStatusCode;  // Trả về true nếu xóa thành công
         }
-
         // Lấy địa chỉ theo ID từ API
-        public async Task<AddressModel> GetAddressByIdAsync(int id)
+        public async Task<Address> GetAddressByIdAsync(int id)
         {
-            var response = await _httpClient.GetAsync($"{_apiUrl}/{id}");
-
-            if (response.IsSuccessStatusCode)
-            {
-                var content = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<AddressModel>(content); // Trả về địa chỉ tìm thấy
-            }
-
-            return null; // Nếu không tìm thấy, trả về null
+            var response = await _httpClient.GetStringAsync($"{_apiUrl}/{id}");
+            return JsonConvert.DeserializeObject<Address>(response);
         }
 
         // Cập nhật địa chỉ
-        public async Task<bool> UpdateAddressAsync(AddressModel address)
+        public async Task<bool> UpdateAddressAsync(Address address)
         {
             var json = JsonConvert.SerializeObject(address);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
             var response = await _httpClient.PutAsync($"{_apiUrl}/{address.Id}", content);
-            return response.IsSuccessStatusCode; // Trả về true nếu cập nhật thành công
+            return response.IsSuccessStatusCode;
         }
+
     }
 }

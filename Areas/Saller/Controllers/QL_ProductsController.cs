@@ -47,12 +47,12 @@ namespace DuAnTN.Controllers
         }
 
         // GET: Hiển thị form tạo món ăn mới
-        public async Task<IActionResult> Create()
+       /* public async Task<IActionResult> Create()
         {
             var categories = await _categoryService.GetCategoriesAsync() ?? new List<Category>();
             ViewBag.Categories = new SelectList(categories, "Id", "CategoryName");
             return View(new Food { DinerId = FakeDinerId });
-        }
+        }*/
 
 
         // POST: Xử lý tạo món ăn mới

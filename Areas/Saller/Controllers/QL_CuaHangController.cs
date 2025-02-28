@@ -26,8 +26,8 @@ namespace DuAnTN.Areas.Saller.Controllers
 
             if (diner == null)
             {
-                diner = new Diner(); // Hiển thị form trống nếu chưa có dữ liệu
-            }
+/*                diner = new Diner(); // Hiển thị form trống nếu chưa có dữ liệu
+*/            }
 
             return View(diner);
         }

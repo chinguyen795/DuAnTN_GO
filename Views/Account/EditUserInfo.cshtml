@@ -1,0 +1,59 @@
+﻿@model DuAnTN.Models.UserInfo
+
+@{
+    ViewData["Title"] = "Chỉnh sửa thông tin người dùng";
+}
+
+@if (TempData["ToastMessage"] != null)
+{
+    <div class="alert alert-@TempData["ToastType"]" role="alert">
+        @TempData["ToastMessage"]
+    </div>
+}
+
+<div class="container mt-4">
+    <h2>Chỉnh sửa thông tin người dùng</h2>
+
+    <form method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="FullName">Họ và tên</label>
+            <input type="text" class="form-control" id="FullName" name="FullName" value="@Model.FullName" required />
+        </div>
+
+        <div class="form-group">
+            <label for="Gender">Giới tính</label><br />
+            <input type="radio" id="Male" name="Gender" value="Male" @(Model.Gender == "Male" ? "checked" : "") />
+            <label for="Male">Nam</label>
+
+            <input type="radio" id="Female" name="Gender" value="Female" @(Model.Gender == "Female" ? "checked" : "") />
+            <label for="Female">Nữ</label>
+        </div>
+
+        <div class="form-group">
+            <label for="Phone">Số điện thoại</label>
+            <input type="text" class="form-control" id="Phone" name="Phone" value="@Model.Phone" required />
+        </div>
+
+        <div class="form-group">
+            <label for="BirthDay">Ngày sinh</label>
+            <input type="date" class="form-control" id="BirthDay" name="BirthDay" value="@Model.BirthDay.ToString("yyyy-MM-dd")" required />
+        </div>
+
+        <div class="form-group">
+            <label for="IdentityCard">Số CCCD</label>
+            <input type="text" class="form-control" id="IdentityCard" name="IdentityCard" value="@Model.IdentityCard" required />
+        </div>
+
+        <div class="form-group">
+            <label for="Avatar">Ảnh đại diện</label>
+            <input type="file" class="form-control" id="Avatar" name="Avatar" />
+            @if (!string.IsNullOrEmpty(Model.Avatar))
+            {
+                <br />
+                <img src="@Model.Avatar" class="img-thumbnail" style="width: 100px; height: 100px;" />
+            }
+        </div>
+
+        <button type="submit" class="btn btn-primary">Cập nhật thông tin</button>
+    </form>
+</div>
