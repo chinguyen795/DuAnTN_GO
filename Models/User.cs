@@ -37,8 +37,8 @@ namespace DuAnTN.Models
         [JsonIgnore]
         public virtual ICollection<Comment>? Comments { get; set; }
 
-            [JsonIgnore]
-            public virtual ICollection<Address>? Addresses { get; set; }
+        [JsonIgnore]
+        public virtual ICollection<Address>? Addresses { get; set; }
 
         public int RoleId { get; set; }
 
