@@ -3,6 +3,7 @@ using DuAnTN.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using NuGet.Packaging.Signing;
 using X.PagedList.Extensions;
 
@@ -21,51 +22,125 @@ namespace DuAnTN.Areas.Admin.Controllers
             _userService = userService;
         }
 
-        public async Task<IActionResult> Index(string search, int page = 1)
+        public async Task<IActionResult> Index(int? id, string search, int page = 1)
         {
             // Lấy danh sách các món ăn
-            var userinfo = await _userInfoService.GetUserInfosAsync();
-            // Lọc theo tìm kiếm nếu có
+            var user = await _userService.GetUsersAsync();
+
+            //Lọc theo tìm kiếm nếu có
+            //foreach (var user in users)
+            //{
+            //    user = await _userService.GetUserByIdAsync(user.Id);  // Liên kết thông tin danh mục
+            //}
+
             if (!string.IsNullOrEmpty(search))
             {
-                userinfo = userinfo.Where(c => c.FullName.Contains(search, StringComparison.OrdinalIgnoreCase)).ToList();
+                user = user.Where(f => f.Email.Contains(search, StringComparison.OrdinalIgnoreCase)).ToList();
             }
-            foreach (var user in userinfo)
+            // Lấy danh sách khách hàng bị ẩn từ Cookies
+            var hiddenCustomers = Request.Cookies["HiddenCustomers"]?.Split(',')
+                                     .Where(s => !string.IsNullOrEmpty(s))
+                                     .Select(int.Parse)
+                                     .ToList() ?? new List<int>();
+
+            // Loại bỏ khách hàng bị ẩn khỏi danh sách hiển thị
+            ViewBag.HiddenCustomers = hiddenCustomers; // Lưu vào ViewBag để dùng trong View
+            user = user.Where(u => !hiddenCustomers.Contains(u.Id)).ToList();
+
+            // Nếu có id, lấy danh mục cần chỉnh sửa
+            if (id.HasValue)
             {
-                user.User = await _userService.GetUserByIdAsync(user.UserId);  // Liên kết thông tin danh mục
-            }
-            if (!string.IsNullOrEmpty(search))
-            {
-                userinfo = userinfo.Where(f => f.FullName.Contains(search, StringComparison.OrdinalIgnoreCase)).ToList();
+                ViewBag.CategoryToEdit = await _userService.GetUserByIdAsync(id.Value);
             }
 
-            // Phân trang: lấy các sản phẩm cho trang hiện tại
-            var pagedFoods = userinfo.Skip((page - 1) * 10).Take(10).ToList(); // Số lượng sản phẩm mỗi trang là 10
-
-            // Lấy tổng số trang
-            var totalFoods = userinfo.Count();
+            var pagedFoods = user.Skip((page - 1) * 10).Take(10).ToList();
+            var totalFoods = user.Count();
             var totalPages = (int)Math.Ceiling(totalFoods / (double)10);
 
-            // Truyền dữ liệu vào ViewBag
             ViewBag.TotalPages = totalPages;
             ViewBag.Page = page;
-            ViewBag.Search = search; // Truyền lại giá trị tìm kiếm vào ViewBag
+            ViewBag.Search = search;
 
             return View(pagedFoods);
-            return View(userinfo);  // Trả lại View với danh sách món ăn đã liên kết thông tin danh mục
         }
-
-
+        [HttpGet]
+        public IActionResult Create() { return View(); }
 
         [HttpPost]
+        public async Task<IActionResult> Create(User category)
+        {
+
+                // Gọi service để lưu danh mục vào cơ sở dữ liệu
+                await _userService.CreateUserAsync(category);
+
+                // Sau khi lưu thành công, chuyển hướng về trang danh sách danh mục
+                return RedirectToAction(nameof(Index));
+   
+            return View(category); // Nếu có lỗi, trả lại view và hiển thị thông báo lỗi
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var category = await _userService.GetUserByIdAsync(id);
+            if (category == null)
+            {
+                return NotFound();
+            }
+            return View(category); // Trả về View có chứa Modal
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(User category)
+        {
+
+                await _userService.UpdateUserAsync(category.Id, category);
+                return RedirectToAction(nameof(Index));
+            
+        }
+
+
+        [HttpGet]
+        [Route("Users/Delete/{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var food = await _userInfoService.DeleteUserInfoAsync(id);
-            if (food != null)
-            {
-                await _userInfoService.DeleteUserInfoAsync(id);
-            }
+            var user = await _userService.GetUserByIdAsync(id);
+            if (user == null) return NotFound();
+
+            await _userService.DeleteUserAsync(id);
+            TempData["SuccessMessage"] = $"Danh mục '{user.Email}' đã được xoá thành công.";
             return RedirectToAction(nameof(Index));
         }
+
+        [HttpPost]
+        public IActionResult Hide(int id)
+        {
+            // Lấy danh sách ID khách hàng bị ẩn từ Cookies
+            var hiddenCustomers = Request.Cookies["HiddenCustomers"]?.Split(',')
+                                     .Where(s => !string.IsNullOrEmpty(s))
+                                     .Select(int.Parse)
+                                     .ToList() ?? new List<int>();
+
+            // Nếu khách hàng đã bị ẩn, xóa khỏi danh sách để hiện lên lại
+            if (hiddenCustomers.Contains(id))
+            {
+                hiddenCustomers.Remove(id);
+            }
+            else
+            {
+                hiddenCustomers.Add(id); // Nếu chưa bị ẩn, thêm vào danh sách
+            }
+
+            // Cập nhật lại Cookies với danh sách mới
+            Response.Cookies.Append("HiddenCustomers", string.Join(",", hiddenCustomers), new CookieOptions
+            {
+                Expires = DateTime.UtcNow.AddDays(7), // Lưu trong 7 ngày
+                HttpOnly = true
+            });
+
+            return RedirectToAction(nameof(Index));
+        }
+
+
     }
 }

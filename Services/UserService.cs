@@ -30,9 +30,9 @@ namespace DuAnTN.Models
         }
 
         // Tạo User mới
-        public async Task<bool> CreateUserAsync(User User)
+        public async Task<bool> CreateUserAsync(User category)
         {
-            var json = JsonConvert.SerializeObject(User);
+            var json = JsonConvert.SerializeObject(category);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var response = await _httpClient.PostAsync(_apiUrl, content);
             return response.IsSuccessStatusCode;

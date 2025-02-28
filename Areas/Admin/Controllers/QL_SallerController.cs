@@ -22,62 +22,77 @@ namespace DuAnTN.Areas.Admin.Controllers
 
         public async Task<IActionResult> Index(string search, int page = 1)
         {
-            // Lấy danh sách UserInfo
-            var userinfo = await _dinerService.GetDiningsAsync();
+            //Lấy danh sách UserInfo
+            var diners = await _dinerService.GetDiningsAsync();
 
-            //foreach (var user in userinfo)
-            //{
-            //    user.User = await _userService.GetUserByIdAsync(user.UserId);  // Liên kết UserInfo với User
-            //}
+            foreach (var diner in diners)
+            {
+                diner.User = await _userService.GetUserByIdAsync(diner.Id);  // Liên kết thông tin danh mục
+            }
+            // Tìm kiếm nếu có
+            if (!string.IsNullOrEmpty(search))
+            {
+                diners = diners.Where(u => u.DinerName.Contains(search, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
 
-            //// Lấy danh sách Diner
-            //var diners = await _dinerService.GetDiningsAsync();
+            // Lấy danh sách khách hàng bị ẩn từ Cookies
+            var hiddenCustomers = Request.Cookies["HiddenCustomers"]?.Split(',')
+                                     .Where(s => !string.IsNullOrEmpty(s))
+                                     .Select(int.Parse)
+                                     .ToList() ?? new List<int>();
 
-            //foreach (var diner in diners)
-            //{
-            //    diner.User = await _userService.GetUserByIdAsync(diner.UserId);  // Liên kết Diner với User
-            //}
+            // Loại bỏ khách hàng bị ẩn khỏi danh sách hiển thị
+            ViewBag.HiddenCustomers = hiddenCustomers; // Lưu vào ViewBag để dùng trong View
+            diners = diners.Where(u => !hiddenCustomers.Contains(u.Id)).ToList();
 
-            //// Tìm kiếm nếu có
-            //if (!string.IsNullOrEmpty(search))
-            //{
-            //    userinfo = userinfo.Where(u => u..Contains(search, StringComparison.OrdinalIgnoreCase)).ToList();
-            //}
+            var pagedFoods = diners.Skip((page - 1) * 10).Take(10).ToList();
+            var totalFoods = diners.Count();
+            var totalPages = (int)Math.Ceiling(totalFoods / (double)10);
 
-            // Gộp dữ liệu UserInfo và Diner vào ViewModel (có thể tạo ViewModel riêng nếu cần)
-            //var viewModel = userinfo.Select(user => new
-            //{
-            //    User = user.User,
-            //    UserInfo = user,
-            //    Diner = diners.FirstOrDefault(d => d.UserId == user.UserId) // Tìm Diner tương ứng với UserInfo
-            //}).ToList();
+            ViewBag.TotalPages = totalPages;
+            ViewBag.Page = page;
+            ViewBag.Search = search;
 
-            // Phân trang
-            //int pageSize = 10;
-            //int totalItems = viewModel.Count();
-            //int totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
-            //var pagedData = viewModel.Skip((page - 1) * pageSize).Take(pageSize).ToList();
-
-            // Truyền dữ liệu vào ViewBag
-            //ViewBag.TotalPages = totalPages;
-            //ViewBag.Page = page;
-            //ViewBag.Search = search;
-
-            //return View(pagedData); // Trả về danh sách đã xử lý
-            return View(userinfo);
+            return View(pagedFoods);
         }
 
-
-
-
-        [HttpPost]
+        [HttpGet]
+        [Route("Dines/Delete/{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var food = await _dinerService.DeleteDinerAsync(id);
-            if (food != null)
+            var diner = await _dinerService.GetDinerByIdAsync(id);
+            if (diner == null) return NotFound();
+
+            await _dinerService.DeleteDinerAsync(id);
+            TempData["SuccessMessage"] = $"Danh mục '{diner.DinerName}' đã được xoá thành công.";
+            return RedirectToAction(nameof(Index));
+        }
+        [HttpPost]
+        public IActionResult Hide(int id)
+        {
+            // Lấy danh sách ID khách hàng bị ẩn từ Cookies
+            var hiddenCustomers = Request.Cookies["HiddenCustomers"]?.Split(',')
+                                     .Where(s => !string.IsNullOrEmpty(s))
+                                     .Select(int.Parse)
+                                     .ToList() ?? new List<int>();
+
+            // Nếu khách hàng đã bị ẩn, xóa khỏi danh sách để hiện lên lại
+            if (hiddenCustomers.Contains(id))
             {
-                await _dinerService.DeleteDinerAsync(id);
+                hiddenCustomers.Remove(id);
             }
+            else
+            {
+                hiddenCustomers.Add(id); // Nếu chưa bị ẩn, thêm vào danh sách
+            }
+
+            // Cập nhật lại Cookies với danh sách mới
+            Response.Cookies.Append("HiddenCustomers", string.Join(",", hiddenCustomers), new CookieOptions
+            {
+                Expires = DateTime.UtcNow.AddDays(7), // Lưu trong 7 ngày
+                HttpOnly = true
+            });
+
             return RedirectToAction(nameof(Index));
         }
     }

@@ -26,7 +26,7 @@ namespace DuAnTN.Areas.Admin.Controllers
             // Lấy thông tin danh mục cho mỗi món ăn
             foreach (var diner in diners)
             {
-                diner.User = await _userService.GetUserByIdAsync(diner.UserId);  // Liên kết thông tin danh mục
+                diner.User = await _userService.GetUserByIdAsync(diner.Id);  // Liên kết thông tin danh mục
             }
             if (!string.IsNullOrEmpty(search))
             {

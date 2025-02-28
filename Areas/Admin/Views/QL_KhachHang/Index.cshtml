@@ -3,16 +3,20 @@
 @{
     ViewData["Title"] = "Quản Lý Khách Hàng";
 }
-
+@{
+    var searchTerm = ViewBag.SearchTerm as string;
+    var currentPage = ViewBag.CurrentPage;
+    var totalPages = ViewBag.TotalPages;
+}
 
 <h3 class="text-center text-dark">QUẢN LÝ KHÁCH HÀNG</h3>
 
 <!-- Thanh tìm kiếm -->
-<form method="get" class="d-flex align-items-center justify-content-between mb-3">
-    
-
-    <input type="text" class="form-control w-25" name="search" value="@ViewBag.Search" placeholder="Tìm kiếm danh mục...">
-</form>
+<div class="d-flex justify-content-end mb-3">
+    <form method="get">
+        <input type="text" class="form-control w-200" name="search" value="@searchTerm" placeholder="Tìm kiếm khách hàng...">
+    </form>
+</div>
 
 <!-- Bảng khách hàng -->
 <div class="table-container">
@@ -23,7 +27,8 @@
                 <th>Tên</th>
                 <th>Điện thoại</th>
                 <th>Sinh nhật</th>
-                <th>Địa chỉ</th>
+                <th>Email</th>
+                <th>Giới tính</th>
                 <th>CCCD</th>
                 <th>Công cụ</th>
             </tr>
@@ -35,9 +40,10 @@
                     <td>@userInfo.Id</td>
                     <td>@userInfo.FullName</td>
                     <td>@userInfo.Phone</td>
+                    <td>@userInfo.BirthDay</td>
                     <td>@userInfo.User?.Email</td>
-@*                     <td>@userInfo.Address</td>
- *@                    <td>@userInfo.IdentityCard</td>
+                    <td>@userInfo.Gender</td>    @*   <td>@userInfo.User?.Addresses?</td> *@
+                    <td>@userInfo.IdentityCard</td>
                     <td>
                         <div class="dropdown">
                             <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
@@ -45,12 +51,21 @@
                             </button>
                             <ul class="dropdown-menu">
                                 <li>
-                                    <a class="dropdown-item text-danger" href="@Url.Action("Delete", "QL_KhachHang", new { area = "Admin", deleteId = userInfo.Id })">
-                                        Xóa
+                                    <a asp-action="Delete" asp-route-id="@userInfo.Id" class="dropdown-item text-danger fw-bold"
+                                       onclick="return confirm('Bạn có chắc muốn xóa?')">
+                                        <i class="bi bi-trash3-fill me-2"></i> Xóa
                                     </a>
                                 </li>
-                                <li><a class="dropdown-item" href="#">Ẩn</a></li>
+                                <li>
+                                    <form method="post" asp-action="Hide" asp-route-id="@userInfo.Id">
+                                        <button type="submit" class="dropdown-item text-warning fw-bold">
+                                            <i class="bi @(ViewBag.HiddenCustomers != null && ((List<int>)ViewBag.HiddenCustomers).Contains(userInfo.Id) ? "bi-eye-fill" : "bi-eye-slash-fill") me-2"></i>
+                                            @(ViewBag.HiddenCustomers != null && ((List<int>)ViewBag.HiddenCustomers).Contains(userInfo.Id) ? "Hiện" : "Ẩn")
+                                        </button>
+                                    </form>
+                                </li>
                             </ul>
+
                         </div>
                     </td>
                 </tr>
