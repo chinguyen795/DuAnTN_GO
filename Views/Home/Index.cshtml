@@ -736,8 +736,15 @@
             <div class="modal-body">
                 <h2 class="modal-title">ĐĂNG NHẬP</h2>
                 <form id="loginForm" method="post" action="@Url.Action("Login", "Home")">
-                    <input type="text" class="form-control" name="Email" placeholder="Email" required>
-                    <input type="password" class="form-control" name="Password" placeholder="Mật khẩu" required>
+                    <div class="mb-3">
+                        <input type="text" class="form-control" name="Email" placeholder="Email" required asp-for="Email">
+                        <span class="text-danger" asp-validation-for="Email"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <input type="password" class="form-control" name="Password" placeholder="Mật khẩu" required asp-for="Password">
+                        <span class="text-danger" asp-validation-for="Password"></span>
+                    </div>
                     <button type="submit" class="btn-login">Đăng nhập</button>
                 </form>
 
@@ -757,14 +764,25 @@
             <div class="custom-close-btn" data-bs-dismiss="modal" aria-label="Close"></div>
 
             <div class="modal-header justify-content-center">
-                <img src="~/image/GOGO.pn" alt="GO Logo" width="35%">
+                <img src="~/image/GOGO.png" alt="GO Logo" width="35%">
             </div>
             <div class="modal-body">
                 <h2 class="modal-title">ĐĂNG KÍ</h2>
                 <form method="post" action="@Url.Action("Index", "Home")">
-                    <input type="text" class="form-control" id="Email" name="Email" placeholder="Email" required>
-                    <input type="password" id="Password" name="Password" class="form-control" placeholder="Mật khẩu" required>
-                    <input type="password" class="form-control" placeholder="Nhập lại mật khẩu" required>
+                    <div class="mb-3">
+                        <input type="text" class="form-control" name="Email" placeholder="Email" required asp-for="Email">
+                        <span class="text-danger" asp-validation-for="Email"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <input type="password" class="form-control" name="Password" placeholder="Mật khẩu" required asp-for="Password">
+                        <span class="text-danger" asp-validation-for="Password"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <input type="password" class="form-control" name="RePassword" placeholder="Nhập lại mật khẩu" required asp-for="RePassword">
+                        <span class="text-danger" asp-validation-for="RePassword"></span>
+                    </div>
                     <button type="submit" class="btn-login">Đăng Kí</button>
                     <p>Đã có tài khoản tại GO? <a class="text-danger" href="#">Đăng nhập</a></p>
                 </form>
@@ -800,3 +818,7 @@
         }
     });
 </script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.11/jquery.validate.unobtrusive.min.js"></script>

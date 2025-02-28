@@ -43,15 +43,18 @@
                 <i class="bi bi-funnel-fill"></i>
             </div>
             <div class="filter-divider"></div>
+            <form method="get" action="@Url.Action("Food", "Food")">
+                <button type="submit" class="btn btn-primary">Lọc</button>
 
             <div class="mb-3">
-                <label class="form-label fw-bold">Khoản giá</label>
+                <label class="form-label fw-bold">Khoảng giá</label>
                 <div class="d-flex gap-2">
-                    <input type="number" class="form-control" placeholder="Từ">
-                    <input type="number" class="form-control" placeholder="Đến">
+                    <input type="number" class="form-control" name="minPrice" placeholder="Từ" value="@ViewBag.MinPrice">
+                    <input type="number" class="form-control" name="maxPrice" placeholder="Đến" value="@ViewBag.MaxPrice">
                 </div>
             </div>
 
+            </form>
             <div class="mb-3">
                 <label class="form-label fw-bold">Loại shop</label>
                 <div class="form-check">

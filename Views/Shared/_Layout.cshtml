@@ -48,7 +48,7 @@
                 <div class="actions-account d-flex align-items-center text-center">
                     @if (Context.Session.GetString("Id") != null)
                     {
-                        <p class="text-white">@Context.Session.GetString("Fullname")</p>
+                        <p class="text-white">@Context.Session.GetString("FullName")</p>
                         <a href="@Url.Action("Logout", "Home")" class="text-white">Đăng xuất</a>
                     }
                     else

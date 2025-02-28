@@ -15,32 +15,44 @@ namespace DuAnTN.Controllers
             _dinerService = dinerService;
         }
 
-        public async Task<IActionResult> Food(string sortOrder)
+        public async Task<IActionResult> Food(string sortOrder, decimal? minPrice, decimal? maxPrice)
         {
             var foods = await _foodService.GetFoodsAsync();
 
             foreach (var food in foods)
             {
-                food.Diner = await _dinerService.GetDinerByIdAsync(food.DinerId);  // Liên kết thông tin danh mục
+                food.Diner = await _dinerService.GetDinerByIdAsync(food.DinerId);
             }
 
-            
+            // Lọc theo khoảng giá
+            if (minPrice.HasValue)
+            {
+                foods = foods.Where(f => f.Price >= minPrice.Value).ToList();
+            }
+            if (maxPrice.HasValue)
+            {
+                foods = foods.Where(f => f.Price <= maxPrice.Value).ToList();
+            }
+
+            // Sắp xếp theo giá
             switch (sortOrder)
             {
                 case "price_asc":
-                    foods = foods.OrderBy(f => f.Price).ToList(); // Sắp xếp theo giá tăng dần
+                    foods = foods.OrderBy(f => f.Price).ToList();
                     break;
                 case "price_desc":
-                    foods = foods.OrderByDescending(f => f.Price).ToList(); // Sắp xếp theo giá giảm dần
+                    foods = foods.OrderByDescending(f => f.Price).ToList();
                     break;
                 default:
-                    foods = foods.OrderBy(f => f.FoodName).ToList(); // Sắp xếp theo tên mặc định
+                    foods = foods.OrderBy(f => f.FoodName).ToList();
                     break;
             }
 
-            ViewBag.SortOrder = sortOrder; // Truyền lại giá trị sắp xếp vào ViewBag
+            ViewBag.SortOrder = sortOrder;
+            ViewBag.MinPrice = minPrice;
+            ViewBag.MaxPrice = maxPrice;
 
-            return View(foods);  // Trả lại View với danh sách món ăn đã sắp xếp
+            return View(foods);
         }
 
         public async Task<IActionResult> Detail(int id)
@@ -57,5 +69,20 @@ namespace DuAnTN.Controllers
             return View(food); // Truyền Food duy nhất cho View, bao gồm cả thông tin Diner
         }
 
+        [HttpGet]
+        public async Task<IActionResult> UpdateQuantity(int foodId, int quantity)
+        {
+            var food = await _foodService.GetFoodByIdAsync(foodId);
+            if (food == null) return NotFound();
+
+            if (quantity < 1) quantity = 1;
+
+            return Json(new { quantity, totalPrice = quantity * food.Price });
+        }
+
+        public async Task<IActionResult> Cart()
+        {
+            return View();
+        }
     }
 }

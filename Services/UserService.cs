@@ -1,4 +1,5 @@
 ﻿using DuAnTN.Models;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.Text;
 
@@ -52,6 +53,20 @@ namespace DuAnTN.Models
             var response = await _httpClient.DeleteAsync($"{_apiUrl}/{id}");
             return response.IsSuccessStatusCode;
         }
+
+        public async Task<bool> IsEmailExistsAsync(string email)
+        {
+            var response = await _httpClient.GetAsync($"{_apiUrl}/CheckEmail?email={email}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadAsStringAsync();
+                return bool.Parse(result); // API trả về true nếu email tồn tại
+            }
+
+            return false; // Mặc định trả về false nếu có lỗi
+        }
+
 
     }
 }

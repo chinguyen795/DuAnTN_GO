@@ -28,7 +28,6 @@ namespace DuAnTN.Services
             }
 
             var responseContent = await response.Content.ReadAsStringAsync();
-            Console.WriteLine($"✅ API trả về: {responseContent}");
 
             try
             {

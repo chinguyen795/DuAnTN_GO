@@ -29,16 +29,16 @@
             <p class="mt-3">Số Lượng</p>
             <div class="cart-quantity-control align-items-start has-out-of-stock">
                 <div class="cart-quantity-buttons">
-                    <button class="btn btn-light" onclick="changeQuantity(-1)">-</button>
-                    <input type="number" id="quantity" value="1" min="1">
-                    <button class="btn btn-light" onclick="changeQuantity(1)">+</button>
+                    <button type="button" class="btn btn-light" onclick="updateQuantity(-1)">-</button>
+                    <input type="number" id="quantity" value="1" min="1" readonly>
+                    <button type="button" class="btn btn-light" onclick="updateQuantity(1)">+</button>
                 </div>
             </div>
 
             <p class="mt-3">Tạm tính: <span id="totalPrice" class="product-details__price">@Model.Price.ToString("N0")đ</span></p>
 
             <a href="Pay.html" class="btn btn-buy mt-3">Mua ngay</a>
-            <button class="btn btn-cart mt-2">Thêm vào giỏ</button>
+            <button type="button" class="btn btn-cart mt-2" onclick="addToCart()">Thêm vào giỏ</button>
         </div>
     </div>
 
@@ -57,24 +57,42 @@
     </div>
 </div>
 
-<script>
-    function changeQuantity(amount) {
-        let quantityInput = document.getElementById("quantity");
-        let totalPriceElement = document.getElementById("totalPrice");
-        let pricePerItem = @Model.Price; // Giá mặc định
 
-        let currentValue = parseInt(quantityInput.value);
-        let newValue = currentValue + amount;
-
-        if (newValue >= 1) {
-            quantityInput.value = newValue;
-            let total = newValue * pricePerItem;
-            totalPriceElement.textContent = total.toLocaleString('vi-VN') + "đ";
+    <script>
+        function changeMainImage(thumbnail) {
+            let mainImage = document.getElementById("mainImage");
+            mainImage.src = thumbnail.src;
         }
+
+    function updateQuantity(change) {
+        let quantitySpan = document.getElementById("quantity");
+        let totalPriceSpan = document.getElementById("totalPrice");
+
+        let quantity = parseInt(quantitySpan.textContent) + change;
+        if (quantity < 1) quantity = 1;
+
+        quantitySpan.textContent = quantity;
+        totalPriceSpan.textContent = (quantity * price).toLocaleString() + "đ";
     }
 
-    function changeMainImage(thumbnail) {
-        let mainImage = document.getElementById("mainImage");
-        mainImage.src = thumbnail.src; // Cập nhật ảnh chính
+    let price = @Model.Price;
+
+    function addToCart() {
+        let foodId = "@Model.Id";
+        let foodName = "@Model.FoodName";
+        let foodImage = "@Model.MainImage";
+        let quantity = parseInt(document.getElementById("quantity").textContent); // Lấy số lượng đúng cách
+
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+        let existingItem = cart.find(item => item.foodId == foodId);
+        if (existingItem) {
+            existingItem.quantity += quantity;
+        } else {
+            cart.push({ foodId, foodName, foodImage, price, quantity });
+        }
+
+        localStorage.setItem("cart", JSON.stringify(cart));
+        alert("🛒 Sản phẩm đã được thêm vào giỏ hàng!");
     }
 </script>
