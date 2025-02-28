@@ -14,6 +14,7 @@ namespace DuAnTN.Areas.Admin.Controllers
         private readonly UserInfoServices _userInfoService;
         private readonly UserService _userService;
 
+
         public QuanLyController(UserInfoServices userinfoService, UserService userService)
         {
             _userInfoService = userinfoService;

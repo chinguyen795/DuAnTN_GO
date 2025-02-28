@@ -1,4 +1,5 @@
-﻿@{
+﻿@model DuAnTN.Models.User
+@{
     ViewData["Title"] = "Home Page";
 }
 
@@ -730,29 +731,23 @@
             <div class="custom-close-btn" data-bs-dismiss="modal" aria-label="Close"></div>
 
             <div class="modal-header justify-content-center">
-                <img src="GOGO.png" alt="GO Logo" width="35%">
+                <img src="~/image/GOGO.png" alt="GO Logo" width="35%">
             </div>
             <div class="modal-body">
                 <h2 class="modal-title">ĐĂNG NHẬP</h2>
-                <form>
-                    <input type="text" class="form-control" placeholder="Email hoặc số điện thoại" required>
-                    <input type="password" class="form-control" placeholder="Mật khẩu" required>
+                <form id="loginForm" method="post" action="@Url.Action("Login", "Home")">
+                    <input type="text" class="form-control" name="Email" placeholder="Email" required>
+                    <input type="password" class="form-control" name="Password" placeholder="Mật khẩu" required>
                     <button type="submit" class="btn-login">Đăng nhập</button>
-                    <div class="options">
-                        <label><input type="checkbox"> Lưu đăng nhập</label>
-                        <a href="#">Bạn quên mật khẩu?</a>
-                    </div>
-                    <p>Hoặc đăng nhập bằng</p>
-                    <div class="social-login mb-4">
-                        <a class="m-4" href=""><img src="google_icon-icons.com_62736.ico" alt="Google" width="50"></a>
-                        <a class="m-4" href=""><img src="facebook_logo_icon_147291.ico" alt="Facebook" width="50"></a>
-                    </div>
-                    <p>Chưa có tài khoản tại GO? <a class="text-danger" href="#">Đăng ký</a></p>
                 </form>
+
+
+                <p class="text-danger" id="loginError" style="display: none;"></p>
             </div>
         </div>
     </div>
 </div>
+
 
 
 <div class="modal fade" id="signin" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
@@ -762,13 +757,13 @@
             <div class="custom-close-btn" data-bs-dismiss="modal" aria-label="Close"></div>
 
             <div class="modal-header justify-content-center">
-                <img src="GOGO.png" alt="GO Logo" width="35%">
+                <img src="~/image/GOGO.pn" alt="GO Logo" width="35%">
             </div>
             <div class="modal-body">
                 <h2 class="modal-title">ĐĂNG KÍ</h2>
-                <form>
-                    <input type="text" class="form-control" placeholder="Email hoặc số điện thoại" required>
-                    <input type="password" class="form-control" placeholder="Mật khẩu" required>
+                <form method="post" action="@Url.Action("Index", "Home")">
+                    <input type="text" class="form-control" id="Email" name="Email" placeholder="Email" required>
+                    <input type="password" id="Password" name="Password" class="form-control" placeholder="Mật khẩu" required>
                     <input type="password" class="form-control" placeholder="Nhập lại mật khẩu" required>
                     <button type="submit" class="btn-login">Đăng Kí</button>
                     <p>Đã có tài khoản tại GO? <a class="text-danger" href="#">Đăng nhập</a></p>
@@ -777,3 +772,31 @@
         </div>
     </div>
 </div>
+
+
+@if (TempData["ToastMessage"] != null)
+{
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+        <div id="liveToast" class="toast show" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="5000">
+            <div class="toast-header">
+                <strong class="me-auto @(TempData["ToastType"]?.ToString() == "success" ? "text-success" : "text-danger")">
+                    @((TempData["ToastType"]?.ToString() == "success") ? "✅ Thành công" : "❌ Lỗi")
+                </strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                @TempData["ToastMessage"]
+            </div>
+        </div>
+    </div>
+}
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var toastEl = document.getElementById("liveToast");
+        if (toastEl) {
+            var toast = new bootstrap.Toast(toastEl);
+            toast.show(); // Hiển thị Toast ngay khi trang load
+        }
+    });
+</script>

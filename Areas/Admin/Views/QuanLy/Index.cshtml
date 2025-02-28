@@ -1,4 +1,4 @@
-﻿@model List<DuAnTN.Models.UserInfo>
+﻿@* @model List<DuAnTN.Models.UserInfo>
 
 @{
     ViewData["Title"] = "Quản Lý Vai Trò";
@@ -35,7 +35,7 @@
                     <td>@userInfo.User?.Email</td>
                     <td>@userInfo.Address</td>
                     <td>@userInfo.IdentityCard</td>
-                    <td>@userInfo.User?.Role</td>
+                    <td>@userInfo.User?.role</td>
                     <td>
                         <div class="dropdown">
                             <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
@@ -215,3 +215,4 @@
 </div>
 
 
+ *@

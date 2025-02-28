@@ -46,14 +46,23 @@
 
 
                 <div class="actions-account d-flex align-items-center text-center">
-                    <div class="actions-account-signin" data-bs-toggle="modal" data-bs-target="#signin">
-                        <a href="#">SignIn</a>
-                    </div>
-                    <div class="line text-white">|</div>
-                    <div class="actions-account-login" data-bs-toggle="modal" data-bs-target="#login">
-                        <a href="#">LogIn</a>
-                    </div>
+                    @if (Context.Session.GetString("Id") != null)
+                    {
+                        <p class="text-white">@Context.Session.GetString("Fullname")</p>
+                        <a href="@Url.Action("Logout", "Home")" class="text-white">Đăng xuất</a>
+                    }
+                    else
+                    {
+                        <div class="actions-account-signin" data-bs-toggle="modal" data-bs-target="#signin">
+                            <a href="#">Sign In</a>
+                        </div>
+                        <div class="line text-white">|</div>
+                        <div class="actions-account-login" data-bs-toggle="modal" data-bs-target="#login">
+                            <a href="#">Log In</a>
+                        </div>
+                    }
                 </div>
+
             </div>
             <div class="col-1"></div>
 

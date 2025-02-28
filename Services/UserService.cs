@@ -6,70 +6,52 @@ namespace DuAnTN.Models
 {
     public class UserService
     {
-        private readonly HttpClient _httpClient; // Phương thức GET/POST/PUT/DELETE
-        private readonly string _apiUrl = "https://localhost:7248/api/Users"; // URL API
+        private readonly HttpClient _httpClient;
+        private readonly string _apiUrl = "https://localhost:7248/api/Users";  // API cho User
 
-        // Hàm tạo
-        public UserService()
+        public UserService(HttpClient httpClient)
         {
-            _httpClient = new HttpClient();
+            _httpClient = httpClient;
         }
 
-        // Lấy danh sách User
+        // Lấy tất cả User's
         public async Task<List<User>> GetUsersAsync()
         {
             var response = await _httpClient.GetStringAsync(_apiUrl);
-            var users = JsonConvert.DeserializeObject<List<User>>(response);
-
-            // Kiểm tra và hiển thị thông tin UserInfo của mỗi User
-            foreach (var user in users)
-            {
-                if (user.UserInfo != null)
-                {
-                    Console.WriteLine($"Thông tin UserInfo của user {user.Email}: {user.UserInfo.Address}");
-                }
-            }
-
-            return users;
+            return JsonConvert.DeserializeObject<List<User>>(response);
         }
 
-        // Lấy User theo ID
+        // Lấy User theo Id
         public async Task<User> GetUserByIdAsync(int id)
         {
             var response = await _httpClient.GetStringAsync($"{_apiUrl}/{id}");
-            var user = JsonConvert.DeserializeObject<User>(response);
-
-            // Kiểm tra và hiển thị thông tin UserInfo của User
-            if (user.UserInfo != null)
-            {
-                Console.WriteLine($"Thông tin UserInfo của user {user.Email}: {user.UserInfo.Address}");
-            }
-
-            return user;
+            return JsonConvert.DeserializeObject<User>(response);
         }
 
-        // Tạo mới User
-        public async Task CreateUserAsync(User user)
+        // Tạo User mới
+        public async Task<bool> CreateUserAsync(User User)
         {
-            var json = JsonConvert.SerializeObject(user);
+            var json = JsonConvert.SerializeObject(User);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-            await _httpClient.PostAsync(_apiUrl, content);
+            var response = await _httpClient.PostAsync(_apiUrl, content);
+            return response.IsSuccessStatusCode;
         }
 
-        // Cập nhật User
-        public async Task UpdateUserAsync(User user)
+        // Cập nhật thông tin User
+        public async Task<bool> UpdateUserAsync(int id, User User)
         {
-            var json = JsonConvert.SerializeObject(user);
+            var json = JsonConvert.SerializeObject(User);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-            await _httpClient.PutAsync($"{_apiUrl}/{user.Id}", content);
+            var response = await _httpClient.PutAsync($"{_apiUrl}/{id}", content);
+            return response.IsSuccessStatusCode;
         }
 
         // Xóa User
-        public async Task DeleteUserAsync(int id)
+        public async Task<bool> DeleteUserAsync(int id)
         {
-            await _httpClient.DeleteAsync($"{_apiUrl}/{id}");
+            var response = await _httpClient.DeleteAsync($"{_apiUrl}/{id}");
+            return response.IsSuccessStatusCode;
         }
+
     }
 }

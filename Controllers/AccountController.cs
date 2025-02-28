@@ -33,7 +33,7 @@ namespace DuAnTN.Controllers
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> AddAddress(AddressModel address)
+        public async Task<IActionResult> AddAddress(Address address)
         {
             
                 var result = await _addressService.AddAddressAsync(address);
@@ -71,7 +71,7 @@ namespace DuAnTN.Controllers
 
         // POST: Account/EditAddress
         [HttpPost]
-        public async Task<IActionResult> EditAddress(AddressModel address)
+        public async Task<IActionResult> EditAddress(Address address)
         {
             if (ModelState.IsValid)
             {
