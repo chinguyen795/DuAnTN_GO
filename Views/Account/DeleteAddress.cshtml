@@ -3,13 +3,7 @@
 @{
     ViewData["Title"] = "Danh Sách Địa Chỉ Giao Hàng";
 }
-<!-- Hiển thị thông báo từ TempData -->
-@if (TempData["ToastMessage"] != null)
-{
-    <div class="alert alert-@TempData["ToastType"]" role="alert">
-        @TempData["ToastMessage"]
-    </div>
-}
+
 <div class="container mt-4">
     <h2>📍 Danh Sách Địa Chỉ Giao Hàng</h2>
 
@@ -18,8 +12,8 @@
     <table class="table table-striped">
         <thead>
             <tr>
-                <th>Số nhà/Tên đường</th>
-                <th>Địa chỉ</th>
+                <th>Địa Chỉ</th>
+                <th>Chi Tiết</th>
                 <th>Chức Năng</th>
             </tr>
         </thead>
@@ -32,8 +26,8 @@
                     <td>
                         <a asp-controller="Account" asp-action="EditAddress" asp-route-id="@address.Id" class="btn btn-warning btn-sm">Sửa</a>
 
-                        <!-- Nút xóa với xác nhận -->
-                        <form method="post" asp-controller="Account" asp-action="DeleteAddress" asp-route-id="@address.Id" style="display:inline;" onsubmit="return confirmDelete();">
+                        <!-- Form xóa địa chỉ -->
+                        <form method="post" asp-controller="Account" asp-action="DeleteAddress" asp-route-id="@address.Id" style="display:inline;">
                             <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
                         </form>
                     </td>
@@ -42,9 +36,3 @@
         </tbody>
     </table>
 </div>
-
-<script>
-    function confirmDelete() {
-        return confirm('Bạn chắc chắn muốn xóa địa chỉ này không?');
-    }
-</script>

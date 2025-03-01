@@ -1,89 +1,62 @@
-﻿ <!-- Content -->
+﻿@{
+    ViewData["Title"] = "Quản Lý Đơn Hàng";
+}
+
 <div class="content mb-4">
-    <h3 class="text-center text-dark">QUẢN LÝ ĐƠN HÀNG</h3>
-    <div class="row my-2">
-        <!-- List Card -->
+    <h2 class="text-center">QUẢN LÝ ĐƠN HÀNG</h2>
+    <div class="row mt-4">
         <div class="col-md-3">
-            <div class="card">
-                <div class="card-header">Danh sách cần làm</div>
-                <div class="card-body">
-                    <h5 class="card-title text-center">0</h5>
-                    <p class="text-center">Chờ Lấy Hàng</p>
-                </div>
+            <div class="card text-center p-3">
+                <h4>Danh sách cần làm</h4>
+                <h2>@ViewBag.PendingOrders</h2>
+                <p>Chờ Lấy Hàng</p>
             </div>
         </div>
-        <!-- Processed Card -->
         <div class="col-md-3">
-            <div class="card">
-                <div class="card-header">Đã Xử Lý</div>
-                <div class="card-body">
-                    <h5 class="card-title text-center">0</h5>
-                    <p class="text-center">Đã Xử Lý</p>
-                </div>
+            <div class="card text-center p-3">
+                <h4>Đã Xử Lý</h4>
+                <h2>@ViewBag.ProcessedOrders</h2>
+                <p>Đã Xử Lý</p>
             </div>
         </div>
-        <!-- Return Card -->
         <div class="col-md-3">
-            <div class="card">
-                <div class="card-header">Đơn Trả hàng/Hoàn tiền/Hủy</div>
-                <div class="card-body">
-                    <h5 class="card-title text-center">0</h5>
-                    <p class="text-center">Đơn Trả Hàng</p>
-                </div>
+            <div class="card text-center p-3">
+                <h4>Đơn Trả hàng/Hoàn tiền/Hủy</h4>
+                <h2>@ViewBag.CanceledOrders</h2>
+                <p>Đơn Trả Hàng</p>
             </div>
         </div>
-        <!-- Blocked Products Card -->
         <div class="col-md-3">
-            <div class="card">
-                <div class="card-header">Sản Phẩm Bị Tạm Khóa</div>
-                <div class="card-body">
-                    <h5 class="card-title text-center">0</h5>
-                    <p class="text-center">Sản Phẩm Bị Tạm Khóa</p>
-                </div>
+            <div class="card text-center p-3">
+                <h4>Sản Phẩm Bị Tạm Khóa</h4>
+                <h2>0</h2>
+                <p>Sản Phẩm Bị Tạm Khóa</p>
             </div>
         </div>
     </div>
 
-    <!-- Sales Analysis Section -->
-    <div class="card">
-        <div class="card-header">Phân Tích Bán Hàng</div>
-        <div class="card-body">
-            <p class="mb-0">Doanh số: <strong>0</strong></p>
-            <p class="mb-0">Lượt truy cập: <strong>0</strong></p>
-            <p class="mb-0">Đơn hàng: <strong>0</strong></p>
-        </div>
+    <div class="mt-4">
+        <h3>Phân Tích Bán Hàng</h3>
+        <p>Doanh số: <strong>@ViewBag.Revenue</strong></p>
+        <p>Lượt truy cập: <strong>@ViewBag.TotalVisits</strong></p>
+        <p>Đơn hàng: <strong>@ViewBag.TotalOrders</strong></p>
     </div>
 
-    <!-- Shopee Ads Section -->
-    <div class="card my-3">
-        <div class="card-body">
-            <p>Tối đa hóa doanh số bán hàng của bạn với Quảng cáo Go!</p>
-            <a href="#" class="btn btn-primary">Tìm hiểu thêm</a>
-        </div>
+    <div class="mt-4">
+        <h4>Tối đa hóa doanh số bán hàng với Quảng cáo Go!</h4>
+        <button class="btn btn-primary">Tìm hiểu thêm</button>
     </div>
 
-    <div class="row">
-        <div class="col-sm-6">
-            <div class="card">
-                <div class="card-header">
-                    Quảng cáo đang chạy
-                </div>
-                <div class="card-body">
-                    <p class="card-text">Chưa có</p>
-                    <a href="#" class="btn btn-primary">Go</a>
-                </div>
-            </div>
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <h4>Quảng cáo đang chạy</h4>
+            <p>Chưa có</p>
+            <button class="btn btn-primary">Go</button>
         </div>
-        <div class="col-sm-6">
-            <div class="card">
-                <div class="card-header">
-                    Live stream
-                </div>
-                <div class="card-body">
-                    <p class="card-text">Chưa có</p>
-                    <a href="#" class="btn btn-primary">Bắt đầu ngay</a>
-                </div>
-            </div>
+        <div class="col-md-6">
+            <h4>Live stream</h4>
+            <p>Chưa có</p>
+            <button class="btn btn-primary">Bắt đầu ngay</button>
         </div>
     </div>
 </div>

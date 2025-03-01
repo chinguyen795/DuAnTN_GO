@@ -22,10 +22,42 @@ namespace DuAnTN.Services
         }
 
         // Lấy Diner theo Id
-        public async Task<Diner> GetDinerByIdAsync(int id)
+        public async Task<Diner?> GetDinerByIdAsync(int id)
         {
-            var response = await _httpClient.GetStringAsync($"{_apiUrl}/{id}");
-            return JsonConvert.DeserializeObject<Diner>(response);
+            var response = await _httpClient.GetAsync($"{_apiUrl}/{id}");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return null;  // Trả về null nếu không tìm thấy
+            }
+
+            return await response.Content.ReadFromJsonAsync<Diner>();
+            }
+        public async Task<bool> UpdateDinerAsync(int id, Diner diner)
+        {
+            if (id == 0)
+            {
+                Console.WriteLine("Lỗi: ID không hợp lệ!");
+                return false;
+            }
+
+            var response = await _httpClient.PutAsJsonAsync($"{_apiUrl}/{id}", diner);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                string error = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Lỗi cập nhật Diner {id}: {response.StatusCode} - {error}");
+                return false;
+            }
+
+            return true;
+        }
+
+
+        public async Task<List<Diner>> GetDinersByUserIdAsync(int userId)
+        {
+            var response = await _httpClient.GetFromJsonAsync<List<Diner>>($"{_apiUrl}/user/{userId}");
+            return response ?? new List<Diner>();
         }
 
         // Tạo Diner mới
@@ -37,14 +69,7 @@ namespace DuAnTN.Services
             return response.IsSuccessStatusCode;
         }
 
-        // Cập nhật thông tin Diner
-        public async Task<bool> UpdateDinerAsync(int id, Diner diner)
-        {
-            var json = JsonConvert.SerializeObject(diner);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var response = await _httpClient.PutAsync($"{_apiUrl}/{id}", content);
-            return response.IsSuccessStatusCode;
-        }
+         
 
         // Xóa Diner
         public async Task<bool> DeleteDinerAsync(int id)

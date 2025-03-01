@@ -60,11 +60,20 @@ namespace DuAnTN.Controllers
             var handler = new JwtSecurityTokenHandler();
             var jwtSecurityToken = handler.ReadJwtToken(token);
 
-            var Id = jwtSecurityToken.Claims.FirstOrDefault(c => c.Type == "Id")?.Value;
+            var userId = jwtSecurityToken.Claims.FirstOrDefault(c => c.Type == "id")?.Value;  // Kiểm tra đúng key của token
             var fullName = jwtSecurityToken.Claims.FirstOrDefault(c => c.Type == "FullName")?.Value;
 
+            if (string.IsNullOrEmpty(userId))
+            {
+                TempData["ToastMessage"] = "❌ Không lấy được thông tin người dùng!";
+                return RedirectToAction("Index");
+            }
+
+            // Thêm log kiểm tra ID lưu vào Session
+            Console.WriteLine($"🟢 User ID lưu vào session: {userId}");
+
             HttpContext.Session.SetString("JwtToken", token);
-            HttpContext.Session.SetString("Id", Id ?? "");
+            HttpContext.Session.SetString("Id", userId);  // Kiểm tra có đúng key không
             HttpContext.Session.SetString("FullName", fullName ?? "");
 
             TempData["ToastMessage"] = $"✅ Chào mừng {fullName}, bạn đã đăng nhập thành công!";
@@ -72,6 +81,7 @@ namespace DuAnTN.Controllers
 
             return RedirectToAction("Index");
         }
+
 
         public IActionResult Logout()
         {

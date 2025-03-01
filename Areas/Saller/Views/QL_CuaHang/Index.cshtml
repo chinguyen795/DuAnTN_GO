@@ -1,52 +1,37 @@
-﻿@model DuAnTN.Models.Diner
+﻿@model List<Diner>
 
-@{
-    ViewData["Title"] = "Quản Lý Cửa Hàng";
+<h2>Danh sách cửa hàng của bạn</h2>
+
+@if (Model.Count == 0)
+{
+    <p>❌ Bạn chưa có cửa hàng nào.</p>
 }
-
-<!-- Content -->
-<div class="content mb-4" style="margin-left: 250px; padding: 20px;">
-    <form id="userForm" asp-action="Update" method="post" enctype="multipart/form-data">
-        <div class="row">
-            <!-- Main Image -->
-            <div class="col-md-4">
-                <img src="@(!string.IsNullOrEmpty(Model.MainImage) ? Model.MainImage : "/images/default.png")"
-                     alt="Main Image" height="100" class="img-fluid mb-3" id="mainImage">
-                <div class="row">
-                    <!-- Secondary Images -->
-                    <div class="col-6">
-                        <img src="@(!string.IsNullOrEmpty(Model.Image1) ? Model.Image1 : "/images/default.png")"
-                             alt="Image 1" height="60" class="img-fluid mb-3" id="image1">
-                        <input type="file" class="form-control" id="image1Input" name="image1File" />
-                    </div>
-                    <div class="col-6">
-                        <img src="@(!string.IsNullOrEmpty(Model.Image2) ? Model.Image2 : "/images/default.png")"
-                             alt="Image 2" height="60" class="img-fluid mb-3" id="image2">
-                        <input type="file" class="form-control" id="image2Input" name="image2File" />
-                    </div>
-                </div>
-                <input type="file" class="form-control" id="mainImageInput" name="mainImageFile" />
-            </div>
-
-            <!-- Info Section -->
-            <div class="col-md-8">
-                <h4>Thông Tin</h4>
-                <div class="mb-3">
-                    <label for="Name" class="form-label">Tên cửa hàng:</label>
-                    <input type="text" class="form-control" id="Name" name="DinerName" value="@Model.DinerName" />
-                </div>
-                <div class="mb-3">
-                    <label for="address" class="form-label">Địa chỉ:</label>
-                    <input type="text" class="form-control" id="address" name="DinerAddress" value="@Model.DinerAddress" />
-                </div>
-                <div class="mb-3">
-                    <label for="phone" class="form-label">Số điện thoại:</label>
-                    <input type="text" class="form-control" id="phone" name="PhoneNumber" value="@Model.PhoneNumber" />
-                </div>
-
-                <!-- Save Button -->
-                <button type="submit" class="btn btn-success mt-3">Lưu</button>
-            </div>
-        </div>
-    </form>
-</div>
+else
+{
+    <div class="content mb-4">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Tên quán</th>
+                    <th>Địa chỉ</th>
+                    <th>Điện thoại</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var diner in Model)
+                {
+                    <tr>
+                        <td>@diner.DinerName</td>
+                        <td>@diner.DinerAddress</td>
+                        <td>@diner.PhoneNumber</td>
+                        <td>
+                            <a href="@Url.Action("Edit", "QL_CuaHang", new { id = diner.Id })" class="btn btn-warning">Sửa</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    
+}

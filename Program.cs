@@ -13,6 +13,7 @@ builder.Services.AddHttpClient<CategoryService>(client =>
 });
 
 // Đăng ký Session & HttpContext
+builder.Services.AddDistributedMemoryCache(); // Bắt buộc cho Session
 builder.Services.AddSession();
 builder.Services.AddHttpContextAccessor();
 
@@ -24,8 +25,10 @@ builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<AddressService>();
 builder.Services.AddScoped<UserInfoServices>();
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<OrderService>();
 
 // Đăng ký HttpClient cho các Service
+builder.Services.AddHttpClient<OrderService>();
 builder.Services.AddHttpClient<FoodService>();
 builder.Services.AddHttpClient<DinerService>();
 builder.Services.AddHttpClient<AddressService>();

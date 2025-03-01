@@ -37,6 +37,7 @@ namespace DuAnTN.Models
 
         [JsonIgnore]
         public virtual User? User { get; set; }
+
     }
 
 }
