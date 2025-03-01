@@ -9,7 +9,7 @@ namespace DuAnTN.Services
     public class UserInfoServices
     {
         private readonly HttpClient _httpClient;
-        private readonly string _apiUrl = "https://localhost:7248/api/UserInfos"; // Đảm bảo URL API đúng
+        private readonly string _userInfoapiUrl = "https://localhost:7248/api/UserInfos";
 
         // Constructor nhận HttpClient từ DI
         public UserInfoServices(HttpClient httpClient)
@@ -17,11 +17,38 @@ namespace DuAnTN.Services
             _httpClient = httpClient;
         }
 
-        // Lấy danh sách UserInfo
         public async Task<List<UserInfo>> GetUserInfosAsync()
         {
             var response = await _httpClient.GetStringAsync(_userInfoapiUrl);
             return JsonConvert.DeserializeObject<List<UserInfo>>(response);
+        }
+
+        public async Task<UserInfo> GetUserInfoByIdAsync(int id)
+        {
+            var response = await _httpClient.GetStringAsync($"{_userInfoapiUrl}/{id}");
+            return JsonConvert.DeserializeObject<UserInfo>(response);
+        }
+
+        public async Task<bool> CreateUserInfoAsync(UserInfo usif)
+        {
+            var json = JsonConvert.SerializeObject(usif);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = await _httpClient.PostAsync(_userInfoapiUrl, content);
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> UpdateUserInfoAsync(int id, UserInfo usif)
+        {
+            var json = JsonConvert.SerializeObject(usif);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = await _httpClient.PutAsync($"{_userInfoapiUrl}/{id}", content);
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> DeleteUserInfoAsync(int id)
+        {
+            var response = await _httpClient.DeleteAsync($"{_userInfoapiUrl}/{id}");
+            return response.IsSuccessStatusCode;
         }
 
         public async Task<UserInfo> GetUserInfo(int id)
@@ -30,21 +57,25 @@ namespace DuAnTN.Services
             return JsonConvert.DeserializeObject<UserInfo>(response);
         }
 
-        public async Task<bool> PostUserInfo(UserInfo userinfor)
+        public async Task<bool> UpdateUserInfoAsync(UserInfo userInfo)
         {
-            var json = JsonConvert.SerializeObject(userinfor);
-            Console.WriteLine("Dữ liệu gửi lên API: " + json);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync(_apiUrl, content);
+            try
+            {
+                // Serialize object UserInfo thành JSON
+                var json = JsonConvert.SerializeObject(userInfo);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            Console.WriteLine("Trạng thái phản hồi: " + response.StatusCode);
-            return response.IsSuccessStatusCode;
-        }
+                // Gửi PUT request đến API để cập nhật thông tin người dùng
+                var response = await _httpClient.PutAsync($"{_userInfoapiUrl}/{userInfo.Id}", content);
 
-        public async Task<bool> DeleteUserInfoAsync(int id)
-        {
-            var response = await _httpClient.DeleteAsync($"{_apiUrl}/{id}");
-            return response.IsSuccessStatusCode;
+                return response.IsSuccessStatusCode; // Kiểm tra nếu yêu cầu thành công
+            }
+            catch (Exception ex)
+            {
+                // Log lỗi (nếu có) và trả về false nếu gặp lỗi
+                Console.WriteLine(ex.Message);
+                return false;
+            }
         }
     }
 }

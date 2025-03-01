@@ -201,6 +201,46 @@ namespace DuAnTN.Controllers
             return View(userInfo);
         }
 
+        // GET: Hiển thị form đổi mật khẩu
+        [HttpGet]
+        public IActionResult ChangePassword()
+        {
+            return View();
+        }
 
+        // POST: Xử lý đổi mật khẩu
+        [HttpPost]
+        public async Task<IActionResult> ChangePassword(string currentPassword, string newPassword, string confirmPassword)
+        {
+            var userId = HttpContext.Session.GetString("Id");
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                TempData["ToastMessage"] = "❌ Bạn cần đăng nhập để thay đổi mật khẩu!";
+                TempData["ToastType"] = "danger";
+                return RedirectToAction("Login", "Home");
+            }
+
+            if (newPassword != confirmPassword)
+            {
+                TempData["ToastMessage"] = "❌ Mật khẩu mới không khớp!";
+                TempData["ToastType"] = "danger";
+                return View();
+            }
+
+            // Gọi API hoặc Service để thay đổi mật khẩu
+            var result = await _userService.ChangePasswordAsync(int.Parse(userId), currentPassword, newPassword);
+
+            if (result)
+            {
+                TempData["ToastMessage"] = "✅ Mật khẩu đã được cập nhật thành công!";
+                TempData["ToastType"] = "success";
+                return RedirectToAction("Index", "Home"); // Redirect về trang chủ
+            }
+
+            TempData["ToastMessage"] = "❌ Đổi mật khẩu thất bại. Mật khẩu cũ không đúng!";
+            TempData["ToastType"] = "danger";
+            return View(); // Nếu có lỗi, trả về lại form
+        }
     }
 }
