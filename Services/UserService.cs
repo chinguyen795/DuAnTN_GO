@@ -67,6 +67,22 @@ namespace DuAnTN.Models
             return false; // Mặc định trả về false nếu có lỗi
         }
 
+        // Phương thức đổi mật khẩu
+        public async Task<bool> ChangePasswordAsync(int userId, string currentPassword, string newPassword)
+        {
+            var changePasswordRequest = new
+            {
+                UserId = userId,
+                CurrentPassword = currentPassword,
+                NewPassword = newPassword
+            };
 
+            var json = JsonConvert.SerializeObject(changePasswordRequest);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.PutAsync($"{_apiUrl}/{userId}/ChangePassword", content);
+
+            return response.IsSuccessStatusCode;
+        }
     }
 }
