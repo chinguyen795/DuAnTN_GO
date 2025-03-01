@@ -1,0 +1,67 @@
+﻿@model DuAnTN.Models.Diner
+
+@{
+    ViewData["Title"] = "Chỉnh Sửa Cửa Hàng";
+}
+
+<div class="content mb-4" style="margin-left: 250px; padding: 20px;">
+    <form id="editDinerForm" asp-action="Update" method="post" enctype="multipart/form-data">
+        <div class="row">
+            <!-- Main Image -->
+            <div class="col-md-4">
+                <img src="@(!string.IsNullOrEmpty(Model.MainImage) ? Model.MainImage : "/images/default.png")"
+                     alt="Main Image" height="100" class="img-fluid mb-3" id="mainImage">
+                <input type="file" class="form-control" id="mainImageInput" asp-for="MainImage" name="mainImageFile" />
+
+                <div class="row">
+                    <!-- Secondary Images -->
+                    <div class="col-6">
+                        <img src="@(!string.IsNullOrEmpty(Model.Image1) ? Model.Image1 : "/images/default.png")"
+                             alt="Image 1" height="60" class="img-fluid mb-3" id="image1">
+                        <input type="file" class="form-control" id="image1Input" asp-for="Image1" name="image1File" />
+                    </div>
+                    <div class="col-6">
+                        <img src="@(!string.IsNullOrEmpty(Model.Image2) ? Model.Image2 : "/images/default.png")"
+                             alt="Image 2" height="60" class="img-fluid mb-3" id="image2">
+                        <input type="file" class="form-control" id="image2Input" asp-for="Image2" name="image2File" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Info Section -->
+            <div class="col-md-8">
+                <h4>Thông Tin Cửa Hàng</h4>
+
+                <!-- Hidden fields (ID, CreateAt, UserId) -->
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="CreateAt" />
+                <input type="hidden" asp-for="UserId" />
+
+                <div class="mb-3">
+                    <label for="Name" class="form-label">Tên cửa hàng:</label>
+                    <input type="text" class="form-control" id="Name" asp-for="DinerName" required />
+                </div>
+
+                <div class="mb-3">
+                    <label for="address" class="form-label">Địa chỉ:</label>
+                    <input type="text" class="form-control" id="address" asp-for="DinerAddress" required />
+                </div>
+
+                <div class="mb-3">
+                    <label for="phone" class="form-label">Số điện thoại:</label>
+                    <input type="text" class="form-control" id="phone" asp-for="PhoneNumber" required pattern="^\d{10}$"
+                           title="Số điện thoại phải có đúng 10 chữ số." />
+                </div>
+
+                <div class="mb-3">
+                    <label for="taxCode" class="form-label">Mã số thuế:</label>
+                    <input type="text" class="form-control" id="taxCode" asp-for="TaxCode" required pattern="^\d{10,13}$"
+                           title="Mã số thuế phải có từ 10 đến 13 chữ số." />
+                </div>
+
+                <!-- Save Button -->
+                <button type="submit" class="btn btn-success mt-3">Lưu</button>
+            </div>
+        </div>
+    </form>
+</div>

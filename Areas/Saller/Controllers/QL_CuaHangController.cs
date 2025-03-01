@@ -21,13 +21,34 @@ namespace DuAnTN.Areas.Saller.Controllers
         // Hiển thị thông tin cửa hàng của seller
         public async Task<IActionResult> Index()
         {
-            int userId = 1; // Tạm thời set cứng userId là 1
-            var diner = await _dinerService.GetDinerByIdAsync(userId);
+            var userId = HttpContext.Session.GetString("Id");
+            if (string.IsNullOrEmpty(userId))
+            {
+                TempData["ToastMessage"] = "❌ Vui lòng đăng nhập để xem thông tin!";
+                TempData["ToastType"] = "danger";
+                return RedirectToAction("Index", "Home");
+            }
+
+            var diners = await _dinerService.GetDinersByUserIdAsync(int.Parse(userId));
+
+            if (diners == null || diners.Count == 0)  // Sửa điều kiện kiểm tra
+            {
+                TempData["ToastMessage"] = "⚠ Không tìm thấy cửa hàng nào!";
+                return View(new List<Diner>());  // Trả về danh sách rỗng, tránh lỗi View
+            }
+
+            return View(diners);  // Truyền danh sách quán ăn vào View
+        }
+
+        public async Task<IActionResult> Edit(int id)
+        {
+            var diner = await _dinerService.GetDinerByIdAsync(id);
 
             if (diner == null)
             {
-/*                diner = new Diner(); // Hiển thị form trống nếu chưa có dữ liệu
-*/            }
+                TempData["ToastMessage"] = "⚠ Không tìm thấy cửa hàng!";
+                return RedirectToAction("Index");
+            }
 
             return View(diner);
         }
@@ -37,42 +58,39 @@ namespace DuAnTN.Areas.Saller.Controllers
         [HttpPost]
         public async Task<IActionResult> Update(Diner diner, IFormFile mainImageFile, IFormFile image1File, IFormFile image2File)
         {
-            if (ModelState.IsValid)
+            if (diner.Id == 0)
             {
-                int userId = GetCurrentUserId();
-                var existingDiner = await _dinerService.GetDinerByIdAsync(userId);
+                TempData["ToastMessage"] = "❌ ID không hợp lệ!";
+                return View("Edit", diner);
+            }
 
-                if (existingDiner == null)
-                {
-                    return NotFound();
-                }
-
-                // Cập nhật thông tin
-                existingDiner.DinerName = diner.DinerName;
-                existingDiner.DinerAddress = diner.DinerAddress;
-                existingDiner.PhoneNumber = diner.PhoneNumber;
-
-                // Cập nhật ảnh nếu có file mới
-                if (mainImageFile != null)
-                {
-                    existingDiner.MainImage = await UploadFile(mainImageFile);
-                }
-                if (image1File != null)
-                {
-                    existingDiner.Image1 = await UploadFile(image1File);
-                }
-                if (image2File != null)
-                {
-                    existingDiner.Image2 = await UploadFile(image2File);
-                }
-
-                await _dinerService.UpdateDinerAsync(existingDiner.Id, existingDiner);
-                TempData["SuccessMessage"] = "Cập nhật thông tin cửa hàng thành công!";
+            var existingDiner = await _dinerService.GetDinerByIdAsync(diner.Id);
+            if (existingDiner == null)
+            {
+                TempData["ToastMessage"] = "⚠ Không tìm thấy cửa hàng!";
                 return RedirectToAction(nameof(Index));
             }
 
-            return View("Index", diner);
+            existingDiner.DinerName = diner.DinerName;
+            existingDiner.DinerAddress = diner.DinerAddress;
+            existingDiner.PhoneNumber = diner.PhoneNumber;
+
+            if (mainImageFile != null) existingDiner.MainImage = await UploadFile(mainImageFile);
+            if (image1File != null) existingDiner.Image1 = await UploadFile(image1File);
+            if (image2File != null) existingDiner.Image2 = await UploadFile(image2File);
+
+            var success = await _dinerService.UpdateDinerAsync(existingDiner.Id, existingDiner);
+
+            if (!success)
+            {
+                TempData["ToastMessage"] = "❌ Cập nhật thất bại!";
+                return View("Edit", diner);
+            }
+
+            TempData["ToastMessage"] = "✅ Cập nhật thành công!";
+            return RedirectToAction(nameof(Index));
         }
+
 
         // Hàm xử lý upload file, lưu vào thư mục wwwroot/images và trả về đường dẫn tương đối
         private async Task<string> UploadFile(IFormFile file)

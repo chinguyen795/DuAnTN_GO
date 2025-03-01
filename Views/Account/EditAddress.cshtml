@@ -1,24 +1,51 @@
 ﻿@* @model DuAnTN.Models.Address
 
-<h4>📍 Sửa Địa Chỉ</h4>
+@{
+    ViewData["Title"] = "Chỉnh Sửa Địa Chỉ";
+}
 
-<form asp-action="EditAddress" method="post">
-    <div class="form-group">
-        <label for="FullName">Tên người nhận</label>
-        <input type="text" class="form-control" id="FullName" name="FullName" value="@Model.FullName" required />
+<!-- Hiển thị thông báo từ TempData -->
+@if (TempData["ToastMessage"] != null)
+{
+    <div class="alert alert-@TempData["ToastType"]" role="alert">
+        @TempData["ToastMessage"]
     </div>
-    <div class="form-group">
-        <label for="PhoneNumber">Số điện thoại</label>
-        <input type="text" class="form-control" id="PhoneNumber" name="PhoneNumber" value="@Model.PhoneNumber" required />
-    </div>
-    <div class="form-group">
-        <label for="AddressLine">Địa chỉ</label>
-        <input type="text" class="form-control" id="AddressLine" name="AddressLine" value="@Model.AddressLine" required />
-    </div>
-    <div class="form-group form-check">
-        <input type="checkbox" class="form-check-input" id="IsDefault" name="IsDefault" @(Model.IsDefault ? "checked" : "") />
-        <label class="form-check-label" for="IsDefault">Đặt làm địa chỉ mặc định</label>
-    </div>
-    <button type="submit" class="btn btn-primary">Lưu Địa Chỉ</button>
-</form>
+}
+
+<div class="container mt-4">
+    <h2>✏️ Chỉnh Sửa Địa Chỉ</h2>
+
+    <form method="post">
+        <div class="form-group">
+            <label for="NameAddress">Tên Địa Chỉ</label>
+            <input type="text" class="form-control" id="NameAddress" name="NameAddress" value="@Model.NameAddress" required>
+        </div>
+
+        <div class="form-group">
+            <label for="Province">Tỉnh/Thành phố</label>
+            <select class="form-control" name="Province" id="Province" required>
+                @foreach (var province in ViewBag.Provinces)
+{
+    @{
+        var isSelected = province.name == Model.Description.Split(',')[0] ? "selected" : "";
+    }
+    <option value="@province.name" @Html.Raw(isSelected)>@province.name</option>
+}
+
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="District">Quận/Huyện</label>
+            <input type="text" class="form-control" name="District" value="@Model.Description.Split(',')[1]" required>
+        </div>
+
+        <div class="form-group">
+            <label for="Ward">Phường/Xã</label>
+            <input type="text" class="form-control" name="Ward" value="@Model.Description.Split(',')[2]" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+    </form>
+</div>
  *@
