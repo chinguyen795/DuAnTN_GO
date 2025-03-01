@@ -27,7 +27,7 @@ namespace DuAnTN.Areas.Admin.Controllers
 
             foreach (var diner in diners)
             {
-                diner.User = await _userService.GetUserByIdAsync(diner.Id);  // Liên kết thông tin danh mục
+                diner.User = await _userService.GetUserByIdAsync(diner.UserId);  // Liên kết thông tin danh mục
             }
             // Tìm kiếm nếu có
             if (!string.IsNullOrEmpty(search))

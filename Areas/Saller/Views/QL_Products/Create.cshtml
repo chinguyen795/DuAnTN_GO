@@ -2,24 +2,45 @@
 @{
     ViewData["Title"] = "Thêm Món Ăn";
 }
+
 <div class="content mb-4">
     <h3>Thêm Món Ăn Mới</h3>
+
+    @if (TempData["ToastMessage"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["ToastMessage"]
+        </div>
+    }
+
     <form asp-action="Create" method="post" enctype="multipart/form-data">
         <div class="form-group">
             <label asp-for="FoodName" class="control-label">Tên Món Ăn</label>
             <input asp-for="FoodName" class="form-control" />
             <span asp-validation-for="FoodName" class="text-danger"></span>
         </div>
+
         <div class="form-group">
             <label asp-for="Price" class="control-label">Giá</label>
             <input asp-for="Price" class="form-control" />
             <span asp-validation-for="Price" class="text-danger"></span>
         </div>
+
         <div class="form-group">
             <label asp-for="Description" class="control-label">Mô Tả</label>
             <textarea asp-for="Description" class="form-control"></textarea>
             <span asp-validation-for="Description" class="text-danger"></span>
         </div>
+
+        <!-- 🔹 THÊM CHỌN CỬA HÀNG -->
+        <div class="form-group">
+            <label asp-for="DinerId" class="control-label">Cửa Hàng</label>
+            <select asp-for="DinerId" asp-items="ViewBag.Diners" class="form-control">
+                <option value="">Chọn cửa hàng</option>
+            </select>
+            <span asp-validation-for="DinerId" class="text-danger"></span>
+        </div>
+
         <div class="form-group">
             <label asp-for="CategoryId" class="control-label">Danh Mục</label>
             <select asp-for="CategoryId" asp-items="ViewBag.Categories" class="form-control">
@@ -27,28 +48,31 @@
             </select>
             <span asp-validation-for="CategoryId" class="text-danger"></span>
         </div>
+
         <div class="form-group">
-            <label asp-for="Status" class="control-label">trạng thái</label>
+            <label asp-for="Status" class="control-label">Trạng Thái</label>
             <textarea asp-for="Status" class="form-control"></textarea>
             <span asp-validation-for="Status" class="text-danger"></span>
         </div>
+
         <div class="form-group">
             <label class="control-label">Ảnh Chính</label>
             <input type="file" name="MainImage" class="form-control" />
         </div>
+
         <div class="form-group">
             <label class="control-label">Ảnh Phụ 1</label>
             <input type="file" name="Image1" class="form-control" />
         </div>
+
         <div class="form-group">
             <label class="control-label">Ảnh Phụ 2</label>
             <input type="file" name="Image2" class="form-control" />
         </div>
+
         <div class="form-group mt-3">
             <button type="submit" class="btn btn-primary">Thêm Món Ăn</button>
             <a asp-action="Index" class="btn btn-secondary">Hủy</a>
         </div>
     </form>
 </div>
- 
-    

@@ -66,5 +66,28 @@ namespace DuAnTN.Services
             var response = await _httpClient.GetStringAsync($"{_apiUrl}?dinerId={dinerId}");
             return JsonConvert.DeserializeObject<List<Food>>(response);
         }
+
+        // 🔹 Lấy danh sách món ăn của nhiều cửa hàng (DinerIds)
+        public async Task<List<Food>> GetFoodsByDinerIdsAsync(List<int> dinerIds)
+        {
+            if (dinerIds == null || !dinerIds.Any()) return new List<Food>();
+
+            try
+            {
+                // Chuyển danh sách `DinerId` thành query string dạng `?dinerIds=1&dinerIds=2`
+                var query = string.Join("&dinerIds=", dinerIds);
+                var requestUrl = $"{_apiUrl}/ByDiners?dinerIds={query}";
+
+                var response = await _httpClient.GetAsync(requestUrl);
+                if (!response.IsSuccessStatusCode) return new List<Food>();
+
+                var json = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<List<Food>>(json) ?? new List<Food>();
+            }
+            catch
+            {
+                return new List<Food>();
+            }
+        }
     }
 }

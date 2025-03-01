@@ -1,6 +1,6 @@
 ﻿@model List<DuAnTN.Models.Food>
 
-<div class="content mb-4" style="">
+<div class="content mb-4">
     <h3 class="text-center text-dark">QUẢN LÝ MÓN ĂN</h3>
 
     <!-- Thanh tìm kiếm và nút thêm món ăn -->
@@ -11,32 +11,35 @@
         </a>
 
         <!-- Ô tìm kiếm -->
-        <input type="text" class="form-control w-25" placeholder="Tìm kiếm món ăn...">
+        <form method="get" class="d-flex">
+            <input type="text" name="search" class="form-control w-25" placeholder="Tìm kiếm món ăn..." value="@ViewBag.Search">
+            <button type="submit" class="btn btn-secondary ms-2">Tìm</button>
+        </form>
     </div>
 
-    <!-- Bảng danh sách món ăn -->
-    <div class="table-container">
-        <table class="table table-striped table-hover">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Tên món ăn <i class="bi bi-arrow-down-up px-1"></i></th>
-                    <th>Giá <i class="bi bi-arrow-down-up px-1"></i></th>
-                    <th>Mô tả</th>
-                    <th>Ảnh chính</th>
-                    <th>Ảnh phụ 1</th>
-                    <th>Ảnh phụ 2</th>
-                    <th>Hành động</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (Model != null && Model.Count > 0)
-                {
-                    int index = 1;
-                    @foreach (var food in Model)
+    <!-- Kiểm tra nếu có dữ liệu -->
+    @if (Model != null && Model.Count > 0)
+    {
+        <div class="table-container">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Tên món ăn <i class="bi bi-arrow-down-up px-1"></i></th>
+                        <th>Giá <i class="bi bi-arrow-down-up px-1"></i></th>
+                        <th>Mô tả</th>
+                        <th>Ảnh chính</th>
+                        <th>Ảnh phụ 1</th>
+                        <th>Ảnh phụ 2</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < Model.Count; i++)
                     {
+                        var food = Model[i];
                         <tr>
-                            <td>@index</td>
+                            <td>@(i + 1)</td>
                             <td>@food.FoodName</td>
                             <td>@food.Price.ToString("N0")đ</td>
                             <td>@food.Description</td>
@@ -55,16 +58,13 @@
                                 </div>
                             </td>
                         </tr>
-                        index++;
                     }
-                }
-                else
-                {
-                    <tr>
-                        <td colspan="8" class="text-center">Không có món ăn nào.</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <p class="text-center text-muted">Không có món ăn nào.</p>
+    }
 </div>

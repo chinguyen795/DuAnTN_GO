@@ -5,27 +5,36 @@
 <div class="content mb-4">
     <h3>Chỉnh sửa món ăn</h3>
     <form asp-action="Edit" method="post" enctype="multipart/form-data">
+        <!-- 🔹 Ẩn ID của món ăn -->
         <input type="hidden" asp-for="Id" />
+
+        <!-- 🔹 Ẩn DinerId để không thay đổi cửa hàng -->
+        <input type="hidden" asp-for="DinerId" />
+
         <div class="form-group">
             <label asp-for="FoodName" class="control-label">Tên món ăn</label>
             <input asp-for="FoodName" class="form-control" />
             <span asp-validation-for="FoodName" class="text-danger"></span>
         </div>
+
         <div class="form-group">
             <label asp-for="Price" class="control-label">Giá</label>
             <input asp-for="Price" class="form-control" />
             <span asp-validation-for="Price" class="text-danger"></span>
         </div>
+
         <div class="form-group">
             <label asp-for="Description" class="control-label">Mô tả</label>
             <textarea asp-for="Description" class="form-control"></textarea>
             <span asp-validation-for="Description" class="text-danger"></span>
         </div>
+
         <div class="form-group">
             <label asp-for="Status" class="control-label">Trạng thái</label>
             <textarea asp-for="Status" class="form-control"></textarea>
             <span asp-validation-for="Status" class="text-danger"></span>
         </div>
+
         <div class="form-group">
             <label asp-for="CategoryId" class="control-label">Danh mục</label>
             <select asp-for="CategoryId" asp-items="ViewBag.Categories" class="form-control">
@@ -33,6 +42,8 @@
             </select>
             <span asp-validation-for="CategoryId" class="text-danger"></span>
         </div>
+
+        <!-- Ảnh hiển thị và cập nhật ảnh -->
         <div class="form-group">
             <label class="control-label">Ảnh chính hiện tại</label>
             <br />
@@ -45,6 +56,7 @@
             <label class="control-label">Ảnh chính mới (nếu muốn thay đổi)</label>
             <input type="file" name="MainImage" class="form-control" />
         </div>
+
         <div class="form-group">
             <label class="control-label">Ảnh phụ 1 hiện tại</label>
             <br />
@@ -57,6 +69,7 @@
             <label class="control-label">Ảnh phụ 1 mới (nếu muốn thay đổi)</label>
             <input type="file" name="Image1" class="form-control" />
         </div>
+
         <div class="form-group">
             <label class="control-label">Ảnh phụ 2 hiện tại</label>
             <br />
@@ -69,10 +82,10 @@
             <label class="control-label">Ảnh phụ 2 mới (nếu muốn thay đổi)</label>
             <input type="file" name="Image2" class="form-control" />
         </div>
+
         <div class="form-group mt-3">
             <button type="submit" class="btn btn-primary">Cập nhật món ăn</button>
             <a asp-action="Index" class="btn btn-secondary">Hủy</a>
         </div>
     </form>
 </div>
- 
