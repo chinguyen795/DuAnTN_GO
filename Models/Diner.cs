@@ -21,8 +21,6 @@ namespace DuAnTN.Models
         public string? Image1 { get; set; }
         public string? Image2 { get; set; }
 
-        [Required(ErrorMessage = "Số điện thoại không được để trống.")]
-        [RegularExpression(@"^\d{10}$", ErrorMessage = "Số điện thoại phải có đúng 10 chữ số.")]
         public required string PhoneNumber { get; set; }
         [Required(ErrorMessage = "Mã số thuế không được để trống.")]
         [RegularExpression(@"^\d{10,13}$", ErrorMessage = "Mã số thuế phải có từ 10 đến 13 chữ số.")]

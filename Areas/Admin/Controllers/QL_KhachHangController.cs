@@ -33,8 +33,8 @@ namespace DuAnTN.Areas.Admin.Controllers
 
             if (!string.IsNullOrEmpty(search))
             {
-                userinfo = userinfo.Where(f => f.FullName.Contains(search, StringComparison.OrdinalIgnoreCase)).ToList();
-            }
+/*                userinfo = userinfo.Where(f => f.FullName.Contains(search, StringComparison.OrdinalIgnoreCase)).ToList();
+*/            }
 
             // Lấy danh sách khách hàng bị ẩn từ Cookies
             var hiddenCustomers = Request.Cookies["HiddenCustomers"]?.Split(',')
@@ -64,8 +64,8 @@ namespace DuAnTN.Areas.Admin.Controllers
             if (kh == null) return NotFound();
 
             await _userInfoService.DeleteUserInfoAsync(id);
-            TempData["SuccessMessage"] = $"Danh mục '{kh.FullName}' đã được xoá thành công.";
-            return RedirectToAction(nameof(Index));
+/*            TempData["SuccessMessage"] = $"Danh mục '{kh.FullName}' đã được xoá thành công.";
+*/            return RedirectToAction(nameof(Index));
         }
         [HttpPost]
         public IActionResult Hide(int id)

@@ -736,6 +736,7 @@
             <div class="modal-body">
                 <h2 class="modal-title">ĐĂNG NHẬP</h2>
                 <form id="loginForm" method="post" action="@Url.Action("Login", "Home")">
+
                     <div class="mb-3">
                         <input type="text" class="form-control" name="Email" placeholder="Email" required asp-for="Email">
                         <span class="text-danger" asp-validation-for="Email"></span>
@@ -768,23 +769,12 @@
             </div>
             <div class="modal-body">
                 <h2 class="modal-title">ĐĂNG KÍ</h2>
-                <form method="post" action="@Url.Action("Index", "Home")">
+                <form method="post" action="@Url.Action("CheckEmail", "Home")">
                     <div class="mb-3">
-                        <input type="text" class="form-control" name="Email" placeholder="Email" required asp-for="Email">
-                        <span class="text-danger" asp-validation-for="Email"></span>
+                        <input type="text" class="form-control" name="email" placeholder="Email" required>
+                        <span class="text-danger">@TempData["ToastMessage"]</span>
                     </div>
-
-                    <div class="mb-3">
-                        <input type="password" class="form-control" name="Password" placeholder="Mật khẩu" required asp-for="Password">
-                        <span class="text-danger" asp-validation-for="Password"></span>
-                    </div>
-
-                    <div class="mb-3">
-                        <input type="password" class="form-control" name="RePassword" placeholder="Nhập lại mật khẩu" required asp-for="RePassword">
-                        <span class="text-danger" asp-validation-for="RePassword"></span>
-                    </div>
-                    <button type="submit" class="btn-login">Đăng Kí</button>
-                    <p>Đã có tài khoản tại GO? <a class="text-danger" href="#">Đăng nhập</a></p>
+                    <button type="submit" class="btn-login">Xác nhận</button>
                 </form>
             </div>
         </div>
@@ -822,3 +812,4 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.11/jquery.validate.unobtrusive.min.js"></script>
+<script src="~/js/Registes.js"></script>

@@ -11,16 +11,23 @@ namespace DuAnTN.Models
         [Required(ErrorMessage = "Email không được để trống.")]
         [EmailAddress(ErrorMessage = "Email không hợp lệ.")]
         [MaxLength(150, ErrorMessage = "Email không được vượt quá 150 ký tự.")]
-        public required string Email { get; set; }
+        public string Email { get; set; }
+
+      
+        public string Phone { get; set; }
+
+        [Required(ErrorMessage = "Họ và tên không được để trống.")]
+        [MinLength(3, ErrorMessage = "Họ và tên không được ít hơn 3 ký tự.")]
+        public string FullName { get; set; }
 
         [Required(ErrorMessage = "Mật khẩu không được để trống.")]
         [MinLength(6, ErrorMessage = "Mật khẩu phải có ít nhất 6 ký tự.")]
-        public required string Password { get; set; }
+        public string Password { get; set; }
 
         [NotMapped] // Không lưu vào cơ sở dữ liệu
         [Required(ErrorMessage = "Vui lòng nhập lại mật khẩu.")]
         [Compare("Password", ErrorMessage = "Mật khẩu nhập lại không khớp.")]
-        public required string RePassword { get; set; }
+        public string RePassword { get; set; }
         // 1-1 với UserInfo
         [JsonIgnore]
         public virtual UserInfo? UserInfo { get; set; }
@@ -29,16 +36,16 @@ namespace DuAnTN.Models
         [JsonIgnore]
         public virtual ICollection<Order>? Orders { get; set; }
 
-        // 1-n với Diner
+        //1 1
         [JsonIgnore]
-        public virtual ICollection<Diner>? Diners { get; set; }
+        public virtual Diner? Diner { get; set; }
 
         // 1-n với Comment
         [JsonIgnore]
         public virtual ICollection<Comment>? Comments { get; set; }
 
-            [JsonIgnore]
-            public virtual ICollection<Address>? Addresses { get; set; }
+        [JsonIgnore]
+        public virtual ICollection<Address>? Addresses { get; set; }
 
         public int RoleId { get; set; }
 

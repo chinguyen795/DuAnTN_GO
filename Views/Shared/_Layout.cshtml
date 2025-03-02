@@ -48,8 +48,11 @@
                 <div class="actions-account d-flex align-items-center text-center">
                     @if (Context.Session.GetString("Id") != null)
                     {
-                        <p class="text-white">@Context.Session.GetString("FullName")</p>
-                        <a href="@Url.Action("Logout", "Home")" class="text-white">Đăng xuất</a>
+                        <select class="form-select text-white" id="accountOptions" onchange="handleAccountOption(this.value)">
+                            <option selected disabled>@Context.Session.GetString("FullName")</option>
+                            <option value="profile">🔹 Hồ sơ cá nhân</option>
+                            <option value="logout">🚪 Đăng xuất</option>
+                        </select>
                     }
                     else
                     {
@@ -157,5 +160,15 @@
 			crossorigin="anonymous"></script>
 	<script src="~/js/site.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
+
+    <script>
+        function handleAccountOption(value) {
+            if (value === "profile") {
+                window.location.href = "/Account/Profile"; // Điều hướng đến trang Hồ sơ cá nhân
+            } else if (value === "logout") {
+                window.location.href = "/Home/Logout"; // Điều hướng đến trang Đăng xuất
+            }
+        }
+    </script>
 </body>
 </html>
