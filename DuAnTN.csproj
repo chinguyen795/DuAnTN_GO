@@ -31,6 +31,7 @@
     <Folder Include="Areas\Admin\Models\" />
     <Folder Include="Areas\Saller\Data\" />
     <Folder Include="Areas\Saller\Models\" />
+    <Folder Include="wwwroot\uploads\avatars\" />
   </ItemGroup>
 
 </Project>

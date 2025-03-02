@@ -67,9 +67,8 @@ namespace DuAnTN.Services
         {
             var json = JsonConvert.SerializeObject(address);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
-
             var response = await _httpClient.PutAsync($"{_apiUrl}/{address.Id}", content);
-            return response.IsSuccessStatusCode; // Trả về true nếu cập nhật thành công
+            return response.IsSuccessStatusCode;
         }
     }
 }

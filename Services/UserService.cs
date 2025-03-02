@@ -61,24 +61,37 @@ namespace DuAnTN.Models
             return response.IsSuccessStatusCode;
         }
 
-       
+        public async Task<bool> IsEmailExistsAsync(string email)
+        {
+            var response = await _httpClient.GetAsync($"{_apiUrl}/CheckEmail?email={email}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadAsStringAsync();
+                return bool.Parse(result); // API trả về true nếu email tồn tại
+            }
+
+            return false; // Mặc định trả về false nếu có lỗi
+        }
+
         // Phương thức đổi mật khẩu
         public async Task<bool> ChangePasswordAsync(int userId, string currentPassword, string newPassword)
         {
-            var changePasswordRequest = new
+            var payload = new
             {
                 UserId = userId,
                 CurrentPassword = currentPassword,
                 NewPassword = newPassword
             };
 
-            var json = JsonConvert.SerializeObject(changePasswordRequest);
+            var json = JsonConvert.SerializeObject(payload);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await _httpClient.PutAsync($"{_apiUrl}/{userId}/ChangePassword", content);
+            var response = await _httpClient.PostAsync("https://localhost:7248/api/Users/ChangePassword", content);
 
             return response.IsSuccessStatusCode;
         }
+
 
         // Nguyen Them
         public async Task<bool> IsEmailExistsAsync(string email)
@@ -116,8 +129,21 @@ namespace DuAnTN.Models
 
             return response.IsSuccessStatusCode;
         }
+        // Gửi mã xác thực quên mật khẩu
+        public async Task<bool> SendResetPasswordOTPAsync(string email)
+        {
+            var content = new StringContent(JsonConvert.SerializeObject(email), Encoding.UTF8, "application/json");
+            var response = await _httpClient.PostAsync($"{_apiUrl}/SendResetPasswordOTP", content);
+            return response.IsSuccessStatusCode;
+        }
 
-
-
+        // Xác minh mã OTP quên mật khẩu
+        public async Task<bool> VerifyResetPasswordOTPAsync(string email, string code)
+        {
+            var request = new { Email = email, Code = code };
+            var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
+            var response = await _httpClient.PostAsync($"{_apiUrl}/VerifyResetPasswordOTP", content);
+            return response.IsSuccessStatusCode;
+        }
     }
 }

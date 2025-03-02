@@ -747,6 +747,10 @@
                         <span class="text-danger" asp-validation-for="Password"></span>
                     </div>
                     <button type="submit" class="btn-login">Đăng nhập</button>
+                    <div class="text-center mt-2">
+                        <a href="@Url.Action("ForgotPassword", "Account")" class="btn btn-outline-primary p-2 px-4 rounded-3">Quên mật khẩu?</a>
+                    </div>
+
                 </form>
 
 
@@ -756,7 +760,21 @@
     </div>
 </div>
 
+<style>
+    /* Nút "Quên mật khẩu?" */
+    .btn-outline-primary {
+        border: 2px solid #dc143c; /* Đặt màu viền */
+        color: #dc143c; /* Đặt màu chữ */
+        background-color: transparent; /* Nền trong suốt */
+    }
 
+        .btn-outline-primary:hover {
+            background-color: #dc143c; /* Thay đổi nền khi hover */
+            color: white; /* Đổi màu chữ khi hover */
+            border-color: #dc143c; /* Thay đổi màu viền khi hover */
+        }
+
+</style>
 
 <div class="modal fade" id="signin" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
      aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -775,6 +793,7 @@
                         <span class="text-danger">@TempData["ToastMessage"]</span>
                     </div>
                     <button type="submit" class="btn-login">Xác nhận</button>
+
                 </form>
             </div>
         </div>

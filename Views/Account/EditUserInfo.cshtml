@@ -1,50 +1,68 @@
-﻿@model DuAnTN.Models.UserInfo
+﻿@{
+    ViewData["Title"] = "Chỉnh sửa thông tin";
+}
+
+<div class="container d-flex flex-column justify-content-center align-items-center vh-100">
+    <h2 class="text-center mb-4">Chỉnh sửa thông tin</h2>
+
+    <div class="alert alert-warning text-center" role="alert" style="max-width: 600px;">
+        <h4 class="alert-heading">Chức năng đang phát triển!</h4>
+        <p>Chúng tôi xin lỗi vì sự bất tiện này. Trang chỉnh sửa hồ sơ người dùng hiện đang được phát triển. Xin vui lòng quay lại sau để tiếp tục chỉnh sửa thông tin của bạn.</p>
+        <hr>
+        <p class="mb-0">Cảm ơn bạn đã kiên nhẫn!</p>
+    </div>
+
+    <div class="d-flex justify-content-center mt-4" style="margin-top: 30px;">
+        <a href="javascript:history.back()" class="btn btn-secondary">Quay lại</a>
+    </div>
+</div>
+<style>
+    .container {
+        margin-bottom: 40px; /* Thêm khoảng trống dưới bảng hồ sơ */
+    }
+</style>
+@* @model DuAnTN.Models.UserInfo
 
 @{
-    ViewData["Title"] = "Chỉnh Sửa Thông Tin Người Dùng";
+    ViewData["Title"] = "Chỉnh sửa thông tin";
 }
-<!-- Hiển thị thông báo từ TempData -->
-@if (TempData["ToastMessage"] != null)
-{
-    <div class="alert alert-@TempData["ToastType"]" role="alert">
-        @TempData["ToastMessage"]
+
+<h2>Chỉnh sửa thông tin</h2>
+
+<form asp-action="EditUserInfo" asp-controller="Account" method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="form-group">
+        <label>Họ và Tên</label>
+        <input type="text" name="FullName" class="form-control" value="@ViewBag.FullName" required />
     </div>
-}
-<div class="container mt-4">
-    <h2>✏ Chỉnh Sửa Thông Tin Người Dùng</h2>
 
-    <form asp-controller="Account" asp-action="EditUserInfo" method="post">
-        <input type="hidden" asp-for="Id" />
+    <div class="form-group">
+        <label>Số điện thoại</label>
+        <input asp-for="User.Phone" class="form-control" required />
+    </div>
 
-       @*  <div class="form-group">
-            <label for="FullName">Họ và tên</label>
-            <input type="text" class="form-control" asp-for="FullName" required />
-        </div>
+    <div class="form-group">
+        <label>Ngày sinh</label>
+        <input asp-for="BirthDay" type="date" class="form-control" required />
+    </div>
 
-        <div class="form-group">
-            <label for="Gender">Giới tính</label>
-            <select class="form-control" asp-for="Gender">
-                <option value="Nam" selected="@Model.Gender == " Nam"">Nam</option>
-                <option value="Nữ" selected="@Model.Gender == " Nữ"">Nữ</option>
-            </select>
-        </div>
+    <div class="form-group">
+        <label>Giới tính</label><br />
+        <input type="radio" asp-for="Gender" value="Nam" checked="@(Model.Gender == "Nam")" /> Nam
+        <input type="radio" asp-for="Gender" value="Nữ" checked="@(Model.Gender == "Nữ")" /> Nữ
+        <input type="radio" asp-for="Gender" value="Khác" checked="@(Model.Gender == "Khác")" /> Khác
+    </div>
 
-        <div class="form-group">
-            <label for="Phone">Số điện thoại</label>
-            <input type="text" class="form-control" asp-for="Phone" required />
-        </div> *@
+    <div class="form-group">
+        <label>Ảnh đại diện</label>
+        <input type="file" name="AvatarFile" class="form-control" accept="image/*" />
+        @if (!string.IsNullOrEmpty(Model.Avatar))
+        {
+            <img src="~/uploads/avatars/@Model.Avatar" width="100" height="100" style="margin-top: 10px;" />
+        }
+    </div>
 
-        <div class="form-group">
-            <label for="BirthDay">Ngày sinh</label>
-            <input type="date" class="form-control" asp-for="BirthDay" />
-        </div>
-
-        <div class="form-group">
-            <label for="IdentityCard">Số CCCD</label>
-            <input type="text" class="form-control" asp-for="IdentityCard" required />
-        </div>
-
-        <button type="submit" class="btn btn-success">Lưu Thay Đổi</button>
-        <a asp-controller="Account" asp-action="UserInfo" class="btn btn-secondary">Hủy</a>
-    </form>
-</div>
+    <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+</form>
+ *@
