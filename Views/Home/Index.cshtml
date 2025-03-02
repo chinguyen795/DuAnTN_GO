@@ -736,6 +736,7 @@
             <div class="modal-body">
                 <h2 class="modal-title">ĐĂNG NHẬP</h2>
                 <form id="loginForm" method="post" action="@Url.Action("Login", "Home")">
+
                     <div class="mb-3">
                         <input type="text" class="form-control" name="Email" placeholder="Email" required asp-for="Email">
                         <span class="text-danger" asp-validation-for="Email"></span>
@@ -746,6 +747,10 @@
                         <span class="text-danger" asp-validation-for="Password"></span>
                     </div>
                     <button type="submit" class="btn-login">Đăng nhập</button>
+                    <div class="text-center mt-2">
+                        <a href="@Url.Action("ForgotPassword", "Account")" class="btn btn-outline-primary p-2 px-4 rounded-3">Quên mật khẩu?</a>
+                    </div>
+
                 </form>
 
 
@@ -755,7 +760,21 @@
     </div>
 </div>
 
+<style>
+    /* Nút "Quên mật khẩu?" */
+    .btn-outline-primary {
+        border: 2px solid #dc143c; /* Đặt màu viền */
+        color: #dc143c; /* Đặt màu chữ */
+        background-color: transparent; /* Nền trong suốt */
+    }
 
+        .btn-outline-primary:hover {
+            background-color: #dc143c; /* Thay đổi nền khi hover */
+            color: white; /* Đổi màu chữ khi hover */
+            border-color: #dc143c; /* Thay đổi màu viền khi hover */
+        }
+
+</style>
 
 <div class="modal fade" id="signin" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
      aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -768,23 +787,13 @@
             </div>
             <div class="modal-body">
                 <h2 class="modal-title">ĐĂNG KÍ</h2>
-                <form method="post" action="@Url.Action("Index", "Home")">
+                <form method="post" action="@Url.Action("CheckEmail", "Home")">
                     <div class="mb-3">
-                        <input type="text" class="form-control" name="Email" placeholder="Email" required asp-for="Email">
-                        <span class="text-danger" asp-validation-for="Email"></span>
+                        <input type="text" class="form-control" name="email" placeholder="Email" required>
+                        <span class="text-danger">@TempData["ToastMessage"]</span>
                     </div>
+                    <button type="submit" class="btn-login">Xác nhận</button>
 
-                    <div class="mb-3">
-                        <input type="password" class="form-control" name="Password" placeholder="Mật khẩu" required asp-for="Password">
-                        <span class="text-danger" asp-validation-for="Password"></span>
-                    </div>
-
-                    <div class="mb-3">
-                        <input type="password" class="form-control" name="RePassword" placeholder="Nhập lại mật khẩu" required asp-for="RePassword">
-                        <span class="text-danger" asp-validation-for="RePassword"></span>
-                    </div>
-                    <button type="submit" class="btn-login">Đăng Kí</button>
-                    <p>Đã có tài khoản tại GO? <a class="text-danger" href="#">Đăng nhập</a></p>
                 </form>
             </div>
         </div>
@@ -822,3 +831,4 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.11/jquery.validate.unobtrusive.min.js"></script>
+<script src="~/js/Registes.js"></script>

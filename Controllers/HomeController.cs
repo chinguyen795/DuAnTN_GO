@@ -1,7 +1,8 @@
 ﻿using DuAnTN.Models;
 using DuAnTN.Services;
-using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 
@@ -25,25 +26,125 @@ namespace DuAnTN.Controllers
             return View();
         }
 
+
+        public IActionResult Index()
+        {
+            return View();
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> CheckEmail(string email)
+        {
+            if (await _userService.IsEmailExistsAsync(email))
+            {
+                TempData["ToastMessage"] = "❌ Email đã tồn tại!";
+                return RedirectToAction("Index"); // Quay lại trang chính nếu email tồn tại
+            }
+
+            // Gửi mã xác thực
+            var isSent = await _userService.SendVerificationCodeAsync(email);
+            if (isSent)
+            {
+                return RedirectToAction("VerifyCode", new { email });
+            }
+
+            TempData["ToastMessage"] = "❌ Gửi mã xác thực thất bại!";
+            return RedirectToAction("Index");
+        }
+
         [HttpGet]
-        public IActionResult Index() 
-        { 
-            return View(); 
+        public IActionResult VerifyCode(string email)
+        {
+            if (string.IsNullOrEmpty(email))
+            {
+                return RedirectToAction("Index");
+            }
+
+            ViewBag.Email = email;
+            return View();
         }
 
         [HttpPost]
-        public async Task<IActionResult> Index(User user)
+        public async Task<IActionResult> VerifyCode(string email, string[] otp)
         {
-            if (ModelState.IsValid)
-            {
-                user.RoleId = 3;
-                await _userService.CreateUserAsync(user);
+            // Gộp 6 số nhập vào thành chuỗi duy nhất
+            string code = string.Join("", otp);
 
-                // Sau khi lưu thành công, chuyển hướng về trang danh sách danh mục
-                return RedirectToAction(nameof(Index));
+            // Gọi API để kiểm tra mã xác thực
+            if (await _userService.VerifyCodeAsync(email, code))
+            {
+                return RedirectToAction("Register", new { email });
             }
-            return View(user); // Nếu có lỗi, trả lại view và hiển thị thông báo lỗi
+
+            TempData["ToastMessage"] = "❌ Mã xác thực không đúng!";
+            return RedirectToAction("VerifyCode", new { email });
         }
+
+
+        [HttpGet]
+        public IActionResult Register(string email)
+        {
+            if (string.IsNullOrEmpty(email))
+            {
+                return RedirectToAction("Index");
+            }
+
+            ViewBag.Email = email;
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Register(User user)
+        {
+            if (!ModelState.IsValid)
+            {
+                TempData["ToastMessage"] = "❌ Dữ liệu không hợp lệ!";
+                TempData["ToastType"] = "danger";
+                return View(user); // Nếu model không hợp lệ, trả lại view với các lỗi
+            }
+
+
+            // Kiểm tra mật khẩu và xác nhận mật khẩu
+            if (user.Password != user.RePassword)
+            {
+                TempData["ToastMessage"] = "❌ Mật khẩu và xác nhận mật khẩu không khớp!";
+                TempData["ToastType"] = "danger";
+                return View(user);  // Nếu mật khẩu không khớp, trả lại view với lỗi
+            }
+
+            // Đảm bảo gán vai trò mặc định cho người dùng
+            user.RoleId = 3;
+
+            if (user.UserInfo == null)
+            {
+                user.UserInfo = new UserInfo
+                {
+                    Gender = "Trong", // Bạn có thể thay bằng giá trị mặc định hoặc yêu cầu người dùng nhập
+                    BirthDay = DateTime.Now, // Có thể là giá trị mặc định nếu không có dữ liệu
+                    IdentityCard = "111111111", // Cũng có thể để giá trị mặc định
+                    CreateAt = DateTime.Now,
+                    UserId = user.Id
+                };
+            }
+            // Lưu mật khẩu vào cơ sở dữ liệu (chú ý là không lưu RePassword)
+            var isCreated = await _userService.CreateUserAsync(user);
+            if (isCreated)
+            {
+                TempData["ToastMessage"] = "✅ Đăng ký thành công!";
+                TempData["ToastType"] = "success";
+                return RedirectToAction(nameof(Index)); // Sau khi tạo thành công, chuyển hướng về trang Index
+            }
+
+            TempData["ToastMessage"] = "❌ Đăng ký thất bại!";
+            TempData["ToastType"] = "danger";
+            return View(user); // Trả lại view và hiển thị lỗi
+        }
+
+
+
+
+
 
         [HttpPost]
         public async Task<IActionResult> Login(string Email, string Password)
@@ -57,44 +158,54 @@ namespace DuAnTN.Controllers
                 return RedirectToAction("Index");
             }
 
-            var handler = new JwtSecurityTokenHandler();
-            var jwtSecurityToken = handler.ReadJwtToken(token);
-
-            var userId = jwtSecurityToken.Claims.FirstOrDefault(c => c.Type == "id")?.Value;  // Kiểm tra đúng key của token
-            var fullName = jwtSecurityToken.Claims.FirstOrDefault(c => c.Type == "FullName")?.Value;
-
-            if (string.IsNullOrEmpty(userId))
+            try
             {
-                TempData["ToastMessage"] = "❌ Không lấy được thông tin người dùng!";
+                //Kiểm tra token trước khi giải mã
+                var handler = new JwtSecurityTokenHandler();
+                var jwtSecurityToken = handler.ReadJwtToken(token);
+
+                var userId = jwtSecurityToken.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+                var fullName = jwtSecurityToken.Claims.FirstOrDefault(c => c.Type == "fullName")?.Value;
+                var role = jwtSecurityToken.Claims.FirstOrDefault(c => c.Type == "role")?.Value;
+                var roleIDString = jwtSecurityToken.Claims.FirstOrDefault(c => c.Type == "roleID")?.Value;
+
+                if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(fullName))
+                {
+                    TempData["ToastMessage"] = "❌ Không lấy được thông tin người dùng!";
+                    return RedirectToAction("Index");
+                }
+
+                //Chuyển roleID từ string sang int (nếu lỗi thì mặc định là 3)
+                int roleID = int.TryParse(roleIDString, out int parsedRoleID) ? parsedRoleID : 3;
+
+                //Lưu thông tin vào session
+                HttpContext.Session.SetString("JwtToken", token);
+                HttpContext.Session.SetString("Id", userId);
+                HttpContext.Session.SetString("FullName", fullName);
+                HttpContext.Session.SetString("Role", role ?? "User");
+                HttpContext.Session.SetString("RoleID", roleID.ToString());
+
+                TempData["ToastMessage"] = $"✅ Chào mừng {fullName}, bạn đã đăng nhập thành công!";
+                TempData["ToastType"] = "success";
+
                 return RedirectToAction("Index");
             }
+            catch (Exception ex)
+            {
+                TempData["ToastMessage"] = "❌ Lỗi đăng nhập, vui lòng thử lại!";
+                TempData["ToastType"] = "danger";
+                return RedirectToAction("Index");
+            }
+        }
 
-            // Thêm log kiểm tra ID lưu vào Session
-            Console.WriteLine($"🟢 User ID lưu vào session: {userId}");
-
-            HttpContext.Session.SetString("JwtToken", token);
-            HttpContext.Session.SetString("Id", userId);  // Kiểm tra có đúng key không
-            HttpContext.Session.SetString("FullName", fullName ?? "");
-
-            TempData["ToastMessage"] = $"✅ Chào mừng {fullName}, bạn đã đăng nhập thành công!";
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            TempData["ToastMessage"] = "✅ Bạn đã đăng xuất thành công!";
             TempData["ToastType"] = "success";
 
             return RedirectToAction("Index");
         }
-
-
-        public IActionResult Logout()
-        {
-            HttpContext.Session.Remove("JwtToken");
-            HttpContext.Session.Remove("Id");
-            HttpContext.Session.Remove("FullName");
-
-            return RedirectToAction("Index");
-        }
-
-
-
-
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

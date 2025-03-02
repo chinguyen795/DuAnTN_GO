@@ -1,0 +1,105 @@
+﻿@model DuAnTN.Models.UserInfo
+
+@{
+    ViewData["Title"] = "Cập Nhật Hồ Sơ Cá Nhân";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0 rounded-lg">
+                <div class="card-header text-white text-center" style="background-color: #dc143c;">
+                    <h3>📝 Cập Nhật Hồ Sơ</h3>
+                </div>
+                <div class="card-body">
+                    <form asp-action="AddUserInfo" method="post">
+                        <input type="hidden" asp-for="Id" />
+
+                        <!-- Giới tính -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-primary">Giới Tính</label>
+                            <select class="form-select border-danger" asp-for="Gender" required>
+                                <option value="">Chọn giới tính</option>
+                                <option value="Nam">Nam</option>
+                                <option value="Nữ">Nữ</option>
+                                <option value="Khác">Khác</option>
+                            </select>
+                        </div>
+
+                        <!-- Ngày sinh -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-primary">Ngày Sinh</label>
+                            <input type="date" class="form-control border-danger" asp-for="BirthDay" required>
+                        </div>
+
+                        <!-- Số CMND/CCCD -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-primary">Số CMND/CCCD</label>
+                            <input type="text" class="form-control border-danger" asp-for="IdentityCard" required>
+                        </div>
+
+                        <!-- Ảnh CMND/CCCD -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-primary">Ảnh CMND/CCCD</label>
+                            <input type="file" class="form-control border-danger" id="identityImageInput" name="IdentityImageFile" accept="image/*">
+                        </div>
+
+                        <!-- Nút lưu -->
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn text-white px-4" style="background-color: #dc143c;">
+                                <i class="bi bi-save"></i> Lưu Thông Tin
+                            </button>
+                            <a class="btn btn-secondary px-4" asp-action="UserInfo">
+                                <i class="bi bi-arrow-left"></i> Quay Lại
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    .form-select {
+        background-color: white !important;
+        color: black !important;
+        border: 2px solid #dc143c !important;
+    }
+
+        .form-select:focus {
+            background-color: white !important;
+            color: black !important;
+            border-color: #dc143c !important;
+            box-shadow: none !important;
+        }
+
+        .form-select option {
+            color: black !important;
+            background-color: white !important;
+        }
+</style>
+
+<!-- Toast thông báo -->
+@if (TempData["ToastMessage"] != null)
+{
+    <div id="toast-container" class="position-fixed bottom-0 end-0 p-3" style="z-index: 1050;">
+        <div class="toast align-items-center text-bg-success border-0 show" role="alert">
+            <div class="d-flex">
+                <div class="toast-body">
+                    ✅ @TempData["ToastMessage"]
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    </div>
+}
+
+<script>
+    // Hiển thị toast khi có thông báo từ server
+    document.addEventListener("DOMContentLoaded", function () {
+        var toastContainer = document.getElementById("toast-container");
+        if (toastContainer) {
+            setTimeout(() => toastContainer.remove(), 5000);
+        }
+    });
+</script>

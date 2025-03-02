@@ -1,61 +1,120 @@
 ﻿@model DuAnTN.Models.UserInfo
 
 @{
-    ViewData["Title"] = "Thông Tin Người Dùng";
-    var isLoggedIn = Context.Session.GetString("JwtToken") != null;
+    ViewData["Title"] = "Hồ sơ cá nhân";
 }
-<!-- Hiển thị thông báo từ TempData -->
 @if (TempData["ToastMessage"] != null)
 {
-    <div class="alert alert-@TempData["ToastType"]" role="alert">
-        @TempData["ToastMessage"]
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+        <div id="liveToast" class="toast show" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="5000">
+            <div class="toast-header">
+                <strong class="me-auto @(TempData["ToastType"]?.ToString() == "success" ? "text-success" : "text-danger")">
+                    @((TempData["ToastType"]?.ToString() == "success") ? "✅ Thành công" : "❌ Lỗi")
+                </strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                @TempData["ToastMessage"]
+            </div>
+        </div>
     </div>
 }
-<div class="container mt-4">
-    @if (Model != null)
-    {
-        <h2>Thông Tin Người Dùng</h2>
-        <table class="table table-bordered mt-3">
-            <tr>
-                <th>Họ và tên</th>
-                <td>@Model.FullName</td>
-            </tr>
-            <tr>
-                <th>Giới tính</th>
-                <td>@Model.Gender</td>
-            </tr>
-            <tr>
-                <th>Số điện thoại</th>
-                <td>@Model.Phone</td>
-            </tr>
-            <tr>
-                <th>Ngày sinh</th>
-                <td>@Model.BirthDay.ToString("dd/MM/yyyy")</td>
-            </tr>
-            <tr>
-                <th>Số CCCD</th>
-                <td>@Model.IdentityCard</td>
-            </tr>
-            <tr>
-                <th>Ảnh đại diện</th>
-                <td>
-                    @if (!string.IsNullOrEmpty(Model.Avatar))
-                    {
-                        <img src="@Model.Avatar" alt="Avatar" class="img-thumbnail" style="width: 100px; height: 100px;" />
-                    }
-                    else
-                    {
-                        <span>Không có ảnh</span>
-                    }
-                </td>
-            </tr>
-        </table>
-        <a asp-controller="Account" asp-action="EditUserInfo" class="btn btn-primary">Sửa Thông Tin</a>
-    }
-    else
-    {
-        <div class="alert alert-warning" role="alert">
-            Vui lòng <a asp-controller="Home" asp-action="Index">đăng nhập</a> để xem thông tin cá nhân.
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var toastEl = document.getElementById("liveToast");
+        if (toastEl) {
+            var toast = new bootstrap.Toast(toastEl);
+            toast.show(); // Hiển thị Toast ngay khi trang load
+        }
+    });
+</script>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow-lg border-0 rounded-lg mb-4">
+                <div class="card-header text-white text-center" style="background-color: #dc143c;">
+                    <h3>📝 Hồ Sơ Cá Nhân</h3>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row align-items-center">
+                        <!-- Avatar bên trái -->
+                        <div class="col-md-3 text-center">
+                            @{
+                                string avatarUrl = Model.Gender.ToLower() == "nữ"
+                                ? "https://cdn1.iconfinder.com/data/icons/user-pictures/100/female1-512.png"
+                                : "https://cdn1.iconfinder.com/data/icons/user-pictures/100/male3-512.png";
+                            }
+                            <img src="@avatarUrl" alt="Avatar" class="rounded-circle shadow-lg border mb-3" width="120" height="120">
+                        </div>
+
+                        <!-- Thông tin cá nhân bên phải -->
+                        <div class="col-md-9">
+                            <table class="table table-borderless">
+                                <tbody>
+                                    <tr>
+                                        <th class="text-primary">Họ và Tên:</th>
+                                        <td class="fw-bold">@ViewBag.FullName</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-primary">Số Điện Thoại:</th>
+                                        <td>@ViewBag.Phone</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-primary">Giới Tính:</th>
+                                        <td>@Model.Gender</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-primary">Ngày Sinh:</th>
+                                        <td>@Model.BirthDay.ToString("dd/MM/yyyy")</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-primary">Số CMND/CCCD:</th>
+                                        <td>@Model.IdentityCard</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-primary">Ngày Tạo Tài Khoản:</th>
+                                        <td>@Model.CreateAt.ToString("dd/MM/yyyy")</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Nút hành động -->
+                    <div class="text-center mt-4">
+                        <a class="btn btn-primary px-4" asp-action="EditUserInfo">
+                            <i class="bi bi-pencil-square"></i> Chỉnh Sửa
+                        </a>
+                        <a class="btn btn-danger px-4" asp-action="ChangePassword">
+                            <i class="bi bi-lock"></i> Đổi mật khẩu
+                        </a>
+                        <a class="btn btn-outline-primary px-4" asp-action="Address">
+                            <i class="bi bi-geo-alt"></i> Quản Lý Địa Chỉ Giao Hàng
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
-    }
+    </div>
 </div>
+
+<style>
+    /* Tùy chỉnh khoảng cách và độ rộng tối ưu */
+    .table th {
+        width: 35%;
+    }
+
+    .table td {
+        width: 65%;
+    }
+
+    .btn {
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    .container {
+        margin-bottom: 40px; /* Thêm khoảng trống dưới bảng hồ sơ */
+    }
+</style>

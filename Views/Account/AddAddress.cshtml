@@ -1,134 +1,182 @@
 ﻿@using Newtonsoft.Json
 @{
-    ViewData["Title"] = "Thêm Địa Chỉ Giao Hàng";
+    ViewData["Title"] = ViewContext.RouteData.Values["action"].ToString() == "AddAddress" ? "Thêm Địa Chỉ Giao Hàng" : "Chỉnh Sửa Địa Chỉ";
 }
-<!-- Hiển thị thông báo từ TempData -->
-@if (TempData["ToastMessage"] != null)
-{
-    <div class="alert alert-@TempData["ToastType"]" role="alert">
-        @TempData["ToastMessage"]
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0 rounded-lg">
+                <div class="card-header text-white text-center" style="background-color: #dc143c;">
+                    <h3>@(ViewContext.RouteData.Values["action"].ToString() == "AddAddress" ? "📍 Thêm Địa Chỉ Giao Hàng" : "✏️ Chỉnh Sửa Địa Chỉ")</h3>
+                </div>
+
+                <div class="card-body">
+                    <!-- Hiển thị thông báo từ TempData -->
+                    @if (TempData["ToastMessage"] != null)
+                    {
+                        <div id="toastMessage" class="alert alert-@TempData["ToastType"] alert-dismissible fade show text-center" role="alert">
+                            <i class="bi bi-info-circle"></i> @TempData["ToastMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    <form method="post">
+                        <!-- Số nhà/Tên đường -->
+                        <div class="mb-3">
+                            <label class="form-label text-primary">Số nhà/Tên Đường</label>
+                            <input type="text" class="form-control border-red" id="NameAddress" name="NameAddress" required />
+                        </div>
+
+                        <!-- Tỉnh/Thành phố -->
+                        <div class="mb-3">
+                            <label class="form-label text-primary">Tỉnh/Thành phố</label>
+                            <select class="form-select border-red" id="Province" name="Province" required>
+                                <option value="">Chọn Tỉnh/Thành phố</option>
+                            </select>
+                        </div>
+
+                        <!-- Huyện/Quận -->
+                        <div class="mb-3">
+                            <label class="form-label text-primary">Huyện/Quận</label>
+                            <select class="form-select border-red" id="District" name="District" required>
+                                <option value="">Chọn Huyện/Quận</option>
+                            </select>
+                        </div>
+
+                        <!-- Xã/Phường -->
+                        <div class="mb-3">
+                            <label class="form-label text-primary">Xã/Phường</label>
+                            <select class="form-select border-red" id="Ward" name="Ward" required>
+                                <option value="">Chọn Xã/Phường</option>
+                            </select>
+                        </div>
+
+                        <!-- Địa chỉ (Read-Only) -->
+                        <div class="mb-3">
+                            <label class="form-label text-primary">Địa Chỉ (Không bao gồm số nhà/tên đường)</label>
+                            <input type="text" class="form-control border-red" id="Description" name="Description" readonly />
+                        </div>
+
+                        <!-- Nút Lưu & Quay Lại -->
+                        <div class="text-center mt-3">
+                            <button type="submit" class="btn text-white px-4" style="background-color: #dc143c;">
+                                <i class="bi bi-save"></i> @(ViewContext.RouteData.Values["action"].ToString() == "AddAddress" ? "Lưu Địa Chỉ" : "Cập Nhật")
+                            </button>
+                            <a class="btn btn-secondary px-4" asp-action="Address">
+                                <i class="bi bi-arrow-left"></i> Quay Lại
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-}
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-<div class="container">
-    <h2>Thêm Địa Chỉ Giao Hàng</h2>
-    <form method="post">
-        <!-- Tên địa chỉ -->
-        <div class="form-group">
-            <label for="NameAddress">Số nhà/Tên Đường</label>
-            <input type="text" class="form-control" id="NameAddress" name="NameAddress" required />
-        </div>
-
-        <!-- Tỉnh/Thành phố -->
-        <div class="form-group">
-            <label for="Province">Tỉnh/Thành phố</label>
-            <select class="form-control" id="Province" name="Province" required>
-                <option value="">Chọn Tỉnh/Thành phố</option>
-                @foreach (var province in ViewBag.Provinces)
-                {
-                    <option value="@province.name">@province.name</option>
-                }
-            </select>
-        </div>
-
-        <!-- Quận/Huyện -->
-        <div class="form-group">
-            <label for="District">Huyện/Quận</label>
-            <select class="form-control" id="District" name="District" required>
-                <option value="">Chọn Huyện/Quận</option>
-            </select>
-        </div>
-
-        <!-- Xã/Phường -->
-        <div class="form-group">
-            <label for="Ward">Xã/Phường</label>
-            <select class="form-control" id="Ward" name="Ward" required>
-                <option value="">Chọn Xã/Phường</option>
-            </select>
-        </div>
-
-        <!-- Địa chỉ (Read-Only) -->
-        <div class="form-group">
-            <label for="Description">Địa Chỉ</label>
-            <input type="text" class="form-control" id="Description" name="Description" readonly />
-        </div>
-
-        <button type="submit" class="btn btn-primary">Lưu Địa Chỉ</button>
-    </form>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- CSS: Viền đỏ mỏng cho dropdown -->
+<style>
+    .border-red {
+        border: 1.5px solid #dc143c !important; /* Viền đỏ mỏng */
+        background-color: white !important;
+        color: black !important;
+    }
 
+    .container {
+        margin-bottom: 30px; /* Thêm khoảng trống dưới bảng hồ sơ */
+    }
+</style>
+
+<!-- Script xử lý dropdown tỉnh/thành -->
 <script>
-    $(document).ready(function () {
-        // Pass the ViewBag data to a JavaScript variable
-        var provinces = @Html.Raw(JsonConvert.SerializeObject(ViewBag.Provinces));
+    document.addEventListener("DOMContentLoaded", function () {
+        fetch('/data/provinces.json')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Không thể tải dữ liệu provinces.json");
+                }
+                return response.json();
+            })
+            .then(data => {
+                let provinceSelect = document.getElementById("Province");
+                data.forEach(province => {
+                    let option = document.createElement("option");
+                    option.value = province.name;
+                    option.textContent = province.name;
+                    provinceSelect.appendChild(option);
+                });
 
-        function updateAddressField() {
-            var provinceName = $('#Province').val();
-            var districtName = $('#District').val();
-            var wardName = $('#Ward').val();
+                // Lắng nghe sự kiện thay đổi tỉnh/thành phố
+                provinceSelect.addEventListener("change", function () {
+                    let selectedProvince = this.value;
+                    let provinceData = data.find(p => p.name === selectedProvince);
+                    updateDistricts(provinceData);
+                });
 
-            var address = "";
+                function updateDistricts(provinceData) {
+                    let districtSelect = document.getElementById("District");
+                    districtSelect.innerHTML = '<option value="">Chọn Huyện/Quận</option>';
 
-            if (provinceName) {
-                address += provinceName;
-            }
-            if (districtName) {
-                address += ", " + districtName;
-            }
-            if (wardName) {
-                address += ", " + wardName;
-            }
+                    if (provinceData && provinceData.districts) {
+                        provinceData.districts.forEach(district => {
+                            let option = document.createElement("option");
+                            option.value = district.name;
+                            option.textContent = district.name;
+                            districtSelect.appendChild(option);
+                        });
+                    }
 
-            $('#Description').val(address);  // Set the "Description" field with the concatenated address
+                    // Lắng nghe sự kiện thay đổi quận/huyện
+                    districtSelect.addEventListener("change", function () {
+                        let selectedDistrict = this.value;
+                        let districtData = provinceData.districts.find(d => d.name === selectedDistrict);
+                        updateWards(districtData);
+                    });
+                }
+
+                function updateWards(districtData) {
+                    let wardSelect = document.getElementById("Ward");
+                    wardSelect.innerHTML = '<option value="">Chọn Xã/Phường</option>';
+
+                    if (districtData && districtData.wards) {
+                        districtData.wards.forEach(ward => {
+                            let option = document.createElement("option");
+                            option.value = ward.name;
+                            option.textContent = ward.name;
+                            wardSelect.appendChild(option);
+                        });
+                    }
+                }
+            })
+            .catch(error => {
+                console.error("Lỗi khi tải dữ liệu:", error);
+                alert("❌ Không thể tải dữ liệu tỉnh/thành. Vui lòng thử lại sau!");
+            });
+
+        // Tự động cập nhật trường địa chỉ khi người dùng chọn
+        function updateAddress() {
+            let province = document.getElementById("Province").value;
+            let district = document.getElementById("District").value;
+            let ward = document.getElementById("Ward").value;
+
+            let fullAddress = "";
+            if (ward) fullAddress += ward + ", ";
+            if (district) fullAddress += district + ", ";
+            if (province) fullAddress += province;
+
+            document.getElementById("Description").value = fullAddress;
         }
 
-        // Update address field on change
-        $('#Province, #District, #Ward').change(function () {
-            updateAddressField();
-        });
-
-        // Initial update in case the user selects something beforehand
-        updateAddressField();
-
-        $('#Province').change(function () {
-            var provinceName = $(this).val(); // Get selected province
-            if (provinceName) {
-                // Find the selected province data
-                var province = provinces.find(p => p.name === provinceName);
-
-                var districts = province.districts;
-                $('#District').empty().append('<option value="">Chọn Huyện/Quận</option>');
-
-                $.each(districts, function (index, district) {
-                    $('#District').append('<option value="' + district.name + '">' + district.name + '</option>');
-                });
-
-                $('#Ward').empty().append('<option value="">Chọn Xã/Phường</option>');
-            } else {
-                $('#District').empty().append('<option value="">Chọn Huyện/Quận</option>');
-                $('#Ward').empty().append('<option value="">Chọn Xã/Phường</option>');
-            }
-        });
-
-        $('#District').change(function () {
-            var districtName = $(this).val();
-            if (districtName) {
-                var provinceName = $('#Province').val();
-                var province = provinces.find(p => p.name === provinceName);
-                var district = province.districts.find(d => d.name === districtName);
-                var wards = district.wards;
-
-                $('#Ward').empty().append('<option value="">Chọn Xã/Phường</option>');
-
-                $.each(wards, function (index, ward) {
-                    $('#Ward').append('<option value="' + ward.name + '">' + ward.name + '</option>');
-                });
-            } else {
-                $('#Ward').empty().append('<option value="">Chọn Xã/Phường</option>');
-            }
-        });
+        document.getElementById("Province").addEventListener("change", updateAddress);
+        document.getElementById("District").addEventListener("change", updateAddress);
+        document.getElementById("Ward").addEventListener("change", updateAddress);
     });
+
+    // Tự động ẩn thông báo sau 4 giây
+    setTimeout(function () {
+        var toast = document.getElementById('toastMessage');
+        if (toast) {
+            toast.classList.remove("show");
+        }
+    }, 4000);
 </script>

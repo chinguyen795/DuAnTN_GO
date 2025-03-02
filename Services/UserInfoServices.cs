@@ -25,9 +25,19 @@ namespace DuAnTN.Services
 
         public async Task<UserInfo> GetUserInfoByIdAsync(int id)
         {
-            var response = await _httpClient.GetStringAsync($"{_userInfoapiUrl}/{id}");
-            return JsonConvert.DeserializeObject<UserInfo>(response);
+            try
+            {
+                var response = await _httpClient.GetStringAsync($"{_userInfoapiUrl}/{id}");
+                Console.WriteLine($"✅ API Response: {response}");
+                return JsonConvert.DeserializeObject<UserInfo>(response);
+            }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"❌ Lỗi gọi API: {ex.Message}");
+                return null;
+            }
         }
+
 
         public async Task<bool> CreateUserInfoAsync(UserInfo usif)
         {
@@ -57,25 +67,25 @@ namespace DuAnTN.Services
             return JsonConvert.DeserializeObject<UserInfo>(response);
         }
 
-        public async Task<bool> UpdateUserInfoAsync(UserInfo userInfo)
+        public async Task<bool> UpdateUserInfoAsync(UserInfo userInfo, string FullName)
         {
-            try
+            var data = new
             {
-                // Serialize object UserInfo thành JSON
-                var json = JsonConvert.SerializeObject(userInfo);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                Id = userInfo.Id,
+                UserId = userInfo.UserId,
+                Gender = userInfo.Gender,
+                BirthDay = userInfo.BirthDay,
+                IdentityCard = userInfo.IdentityCard,
+                Avatar = userInfo.Avatar,
+                FullName = FullName // ⚡ Cập nhật FullName trong bảng User
+            };
 
-                // Gửi PUT request đến API để cập nhật thông tin người dùng
-                var response = await _httpClient.PutAsync($"{_userInfoapiUrl}/{userInfo.Id}", content);
+            var json = JsonConvert.SerializeObject(data);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = await _httpClient.PutAsync($"https://localhost:7248/api/UserInfos/{userInfo.Id}", content);
 
-                return response.IsSuccessStatusCode; // Kiểm tra nếu yêu cầu thành công
-            }
-            catch (Exception ex)
-            {
-                // Log lỗi (nếu có) và trả về false nếu gặp lỗi
-                Console.WriteLine(ex.Message);
-                return false;
-            }
+            return response.IsSuccessStatusCode;
         }
+
     }
 }

@@ -3,48 +3,104 @@
 @{
     ViewData["Title"] = "Danh Sách Địa Chỉ Giao Hàng";
 }
-<!-- Hiển thị thông báo từ TempData -->
-@if (TempData["ToastMessage"] != null)
-{
-    <div class="alert alert-@TempData["ToastType"]" role="alert">
-        @TempData["ToastMessage"]
-    </div>
-}
-<div class="container mt-4">
-    <h2>📍 Danh Sách Địa Chỉ Giao Hàng</h2>
 
-    <a asp-controller="Account" asp-action="AddAddress" class="btn btn-primary mb-3">Thêm Địa Chỉ Giao Hàng Mới</a>
+<div class="container mt-4 mb-5">
+    <!-- Thêm mb-5 để tạo khoảng trống dưới footer -->
+    <!-- Hiển thị thông báo từ TempData -->
+    @if (TempData["ToastMessage"] != null)
+    {
+        <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+            <div id="liveToast" class="toast show" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="5000">
+                <div class="toast-header">
+                    <strong class="me-auto @(TempData["ToastType"]?.ToString() == "success" ? "text-success" : "text-danger")">
+                        @((TempData["ToastType"]?.ToString() == "success") ? "✅ Thành công" : "❌ Lỗi")
+                    </strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    @TempData["ToastMessage"]
+                </div>
+            </div>
+        </div>
+    }
 
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Số nhà/Tên đường</th>
-                <th>Địa chỉ</th>
-                <th>Chức Năng</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var address in Model)
-            {
-                <tr>
-                    <td>@address.NameAddress</td>
-                    <td>@address.Description</td>
-                    <td>
-                        <a asp-controller="Account" asp-action="EditAddress" asp-route-id="@address.Id" class="btn btn-warning btn-sm">Sửa</a>
-
-                        <!-- Nút xóa với xác nhận -->
-                        <form method="post" asp-controller="Account" asp-action="DeleteAddress" asp-route-id="@address.Id" style="display:inline;" onsubmit="return confirmDelete();">
-                            <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
-                        </form>
-                    </td>
-                </tr>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var toastEl = document.getElementById("liveToast");
+            if (toastEl) {
+                var toast = new bootstrap.Toast(toastEl);
+                toast.show(); // Hiển thị Toast ngay khi trang load
             }
-        </tbody>
-    </table>
+        });
+    </script>
+
+    <div class="card shadow-lg border-0 rounded-lg">
+        <div class="card-header text-white text-center" style="background-color: #dc143c;">
+            <h3>📍 Danh Sách Địa Chỉ Giao Hàng</h3>
+        </div>
+
+        <div class="card-body">
+            <div class="d-flex justify-content-end mb-3">
+                <a asp-controller="Account" asp-action="AddAddress" class="btn text-white" style="background-color: #dc143c;">
+                    <i class="bi bi-plus-circle"></i> Thêm Địa Chỉ Giao Hàng
+                </a>
+            </div>
+
+            <table class="table table-hover align-middle">
+                <thead class="table-danger text-center">
+                    <tr>
+                        <th>🏠 Số nhà/Tên đường</th>
+                        <th>📍 Địa chỉ</th>
+                        <th>⚙️ Chức Năng</th>
+                    </tr>
+                </thead>
+                <tbody class="text-center">
+                    @if (Model != null && Model.Count > 0)
+                    {
+                        @foreach (var address in Model)
+                        {
+                            <tr>
+                                <td>@address.NameAddress</td>
+                                <td>@address.Description</td>
+                                <td>
+                                    <a asp-controller="Account" asp-action="EditAddress" asp-route-id="@address.Id" class="btn btn-warning btn-sm">
+                                        <i class="bi bi-pencil-square"></i> Sửa
+                                    </a>
+
+                                    <!-- Nút xóa với xác nhận -->
+                                    <form method="post" asp-controller="Account" asp-action="DeleteAddress" asp-route-id="@address.Id" style="display:inline;" onsubmit="return confirmDelete();">
+                                        <button type="submit" class="btn btn-danger btn-sm">
+                                            <i class="bi bi-trash"></i> Xóa
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="3" class="text-muted text-center py-4">
+                                <i class="bi bi-emoji-frown"></i> Chưa có địa chỉ giao hàng nào!
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
 <script>
     function confirmDelete() {
         return confirm('Bạn chắc chắn muốn xóa địa chỉ này không?');
     }
+
+    // Tự động ẩn thông báo sau 4 giây
+    setTimeout(function () {
+        var toast = document.getElementById('toastMessage');
+        if (toast) {
+            toast.classList.remove("show");
+        }
+    }, 4000);
 </script>

@@ -1,0 +1,35 @@
+﻿@model DuAnTN.Models.User
+@{
+    ViewBag.Title = "Đăng ký tài khoản";
+}
+
+<h2 class="text-center">Nhập thông tin tài khoản</h2>
+
+<form method="post" asp-controller="Home" asp-action="Register">
+    <div class="mb-3">
+        <input class="form-control" type="text" name="Email" value="@ViewBag.Email" readonly />
+
+    </div>
+
+    <div class="mb-3">
+        <input type="text" class="form-control" name="FullName" placeholder="Họ & Tên" required />
+        <span class="text-danger" asp-validation-for="FullName"></span>
+    </div>
+
+    <div class="mb-3">
+        <input type="text" class="form-control" name="Phone" placeholder="Số điện thoại" />
+        <span class="text-danger" asp-validation-for="Phone"></span>
+    </div>
+
+    <div class="mb-3">
+        <input type="password" class="form-control" name="Password" placeholder="Mật khẩu" required />
+        <span class="text-danger" asp-validation-for="Password"></span>
+    </div>
+
+    <div class="mb-3">
+        <input type="password" class="form-control" name="RePassword" placeholder="Nhập lại mật khẩu" required />
+        <span class="text-danger" asp-validation-for="RePassword"></span>
+    </div>
+
+    <button type="submit" class="btn-login">Đăng Kí</button>
+</form>
