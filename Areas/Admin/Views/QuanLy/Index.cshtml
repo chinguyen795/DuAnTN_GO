@@ -25,11 +25,13 @@
     <table class="table table-striped table-hover">
         <thead>
             <tr>
-                <th>#</th>
+                <th>Id</th>
+                <th>Họ tên</th>
+                <th>Số điện thoại</th>
                 <th>Email</th>
-                <th>Password</th>
-                <th>RePassWord</th>
-                <th>Dinner Id</th>
+                @*                 <th>Password</th>
+ *@@*                 <th>RePassWord</th> *@
+                <th>Vai trò</th>
                 <th>Công cụ</th>
             </tr>
         </thead>
@@ -39,11 +41,13 @@
                 <tr>
                     @* <td>@userInfo.User?.Addresses?</td> *@ 
                     @* <td>@userInfo.User?.Role?</td> *@ 
-                    <td>@user.Id</td>
+                                    <td>@user.Id</td>
+                    <td>@user.FullName</td>
+                    <td>@user.Phone</td>
                     <td>@user.Email</td>
-                    <td>@user.Password</td>
-                    <td>@user.RePassword</td>
-                    <td>@user.RoleId</td>                
+                    @*                     <td>@user.Password</td> *@
+                    @*   <td>@user.RePassword</td> *@
+                    <td>@(user.role?.RoleName ?? "Chưa có vai trò")</td>
                     <td>
                         <div class="dropdown">
                             <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
@@ -51,21 +55,21 @@
                             </button>
                             <ul class="dropdown-menu">
                                 <li>
-                                    <a class="dropdown-item text-warning fw-bold" href="@Url.Action("Index", "QuanLy", new { area = "Admin", id = user.Id })">
+                                    @*                                     <a class="dropdown-item text-warning fw-bold" href="@Url.Action("Index", "QuanLy", new { area = "Admin", id = user.Id })">
                                         <i class="bi bi-pencil-square me-2"></i> Sửa
-                                    </a>
-                                    <form method="post" asp-action="Hide" asp-route-id="@user.Id">
-                                        <button type="submit" class="dropdown-item text-warning fw-bold">
-                                            <i class="bi @(ViewBag.HiddenCustomers != null && ((List<int>)ViewBag.HiddenCustomers).Contains(user.Id) ? "bi-eye-fill" : "bi-eye-slash-fill") me-2"></i>
-                                            @(ViewBag.HiddenCustomers != null && ((List<int>)ViewBag.HiddenCustomers).Contains(user.Id) ? "Hiện" : "Ẩn")
-                                        </button>
-                                    </form>
-                                </li>
+                                    </a> *@
                                 <li>
                                     <a asp-action="Delete" asp-route-id="@user.Id" class="dropdown-item text-danger fw-bold"
                                        onclick="return confirm('Bạn có chắc muốn xóa?')">
                                         <i class="bi bi-trash3-fill me-2"></i> Xóa
                                     </a>
+                                </li>
+                                <form method="post" asp-action="Hide" asp-route-id="@user.Id">
+                                    <button type="submit" class="dropdown-item text-warning fw-bold">
+                                        <i class="bi @(ViewBag.HiddenCustomers != null && ((List<int>)ViewBag.HiddenCustomers).Contains(user.Id) ? "bi-eye-fill" : "bi-eye-slash-fill") me-2"></i>
+                                            @(ViewBag.HiddenCustomers != null && ((List<int>)ViewBag.HiddenCustomers).Contains(user.Id) ? "Hiện" : "Ẩn")
+                                    </button>
+                                </form>
                                 </li>
                             </ul>
 
@@ -119,30 +123,51 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
             </div>
             <div class="modal-body">
-                <!-- Form Thêm Danh Mục -->
+                <!-- Form Thêm Người Dùng -->
                 <form method="post" action="@Url.Action("Create", "QuanLy", new { area = "Admin" })">
-                     <div class="mb-3">
-                        <label for="categoryName" class="form-label">Email</label>
-                        <input type="text" class="form-control" id="categoryName" name="Email" placeholder="Nhập email" required>
-                    </div>
-                     <div class="mb-3">
-                        <label for="categoryName" class="form-label">Password</label>
-                        <input type="text" class="form-control" id="categoryName" name="Password" placeholder="Nhập mật khẩu" required>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="text" class="form-control" id="email" name="Email" placeholder="Nhập email" required>
                     </div>
                     <div class="mb-3">
-                        <label for="categoryName" class="form-label">RePassword</label>
-                        <input type="text" class="form-control" id="categoryName" name="RePassword" placeholder="Nhập lại mật khẩu" required>
+                        <label for="phone" class="form-label">Phone</label>
+                        <input type="text" class="form-control" id="phone" name="Phone" placeholder="Nhập phone" required>
                     </div>
                     <div class="mb-3">
-                        <label for="categoryName" class="form-label">RoleId</label>
-                        <input type="text" class="form-control" id="categoryName" name="RoleId" placeholder="Nhập vai trò" required>
+                        <label for="fullName" class="form-label">FullName</label>
+                        <input type="text" class="form-control" id="fullName" name="FullName" placeholder="Nhập fullname" required>
                     </div>
-                    <button type="submit" class="btn btn-primary">Lưu</button>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="text" class="form-control" id="password" name="Password" placeholder="Nhập mật khẩu" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="repassword" class="form-label">RePassword</label>
+                        <input type="text" class="form-control" id="repassword" name="RePassword" placeholder="Nhập lại mật khẩu" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="role" class="form-label">Role Name</label>
+                        <select name="RoleId" class="form-control">
+                            <option value="">-- Chọn Vai Trò --</option>
+                            @if (ViewBag.Roles != null)
+                            {
+                                @foreach (var role in ViewBag.Roles)
+                                {
+                                    <option value="@role.Id">@role.RoleName</option> <!-- Sử dụng RoleId làm value -->
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Lưu</button> <!-- Nút Lưu -->
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button> <!-- Nút Đóng -->
+                    </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
 
 
 
@@ -162,28 +187,43 @@
                 <div class="modal-body">
                     <!-- Form Sửa Danh Mục -->
                     <form method="post" action="@Url.Action("Edit", "QuanLy", new { area = "Admin" })">
-                        <input type="hidden" name="Id" value="@categoryToEdit.Id" />
                         <div class="mb-3">
                             <label for="categoryName" class="form-label">Email</label>
-                            <input type="text" class="form-control" id="categoryName" name="Email" value="@categoryToEdit.Email" required>
+                            <input type="text" class="form-control" id="categoryName" name="Email" value="@categoryToEdit.Email" placeholder="Nhập email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="categoryName" class="form-label">Phone</label>
+                            <input type="text" class="form-control" id="categoryName" name="Phone" value="@categoryToEdit.Phone" placeholder="Nhập phone" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="categoryName" class="form-label">FullName</label>
+                            <input type="text" class="form-control" id="categoryName" name="FullName" value="@categoryToEdit.FullName" placeholder="Nhập fullname" required>
                         </div>
                         <div class="mb-3">
                             <label for="categoryName" class="form-label">Password</label>
-                            <input type="text" class="form-control" id="categoryName" name="Password" value="@categoryToEdit.Password" required>
+                            <input type="text" class="form-control" id="categoryName" name="Password" value="@categoryToEdit.Password" placeholder="Nhập mật khẩu" required>
                         </div>
                         <div class="mb-3">
-                            <label for="categoryName" class="form-label">RePassWord</label>
-                            <input type="text" class="form-control" id="categoryName" name="RePassWord" value="@categoryToEdit.RePassword" required>
+                            <label for="categoryName" class="form-label">RePassword</label>
+                            <input type="text" class="form-control" id="categoryName" name="RePassword" value="@categoryToEdit.RePassword" placeholder="Nhập lại mật khẩu" required>
                         </div>
                         <div class="mb-3">
-                            <label for="categoryName" class="form-label">RoleId</label>
-                            <input type="text" class="form-control" id="categoryName" name="RoleId" value="@categoryToEdit.RoleId" required>
+                            <label for="role" class="form-label">Role Name</label>
+                            <select name="RoleId" class="form-control">
+                                <option value="">-- Chọn Vai Trò --</option>
+                                @if (ViewBag.Roles != null)
+                                {
+                                    @foreach (var role in ViewBag.Roles)
+                                    {
+                                        <option value="@role.Id">@role.RoleName</option> <!-- Sử dụng RoleId làm value -->
+                                    }
+                                }
+                            </select>
                         </div>
-                        <div class="modal-footer">
-                            <a href="@Url.Action("Index", "QuanLy", new { area = "Admin" })" class="btn btn-secondary">Hủy</a>
-                            <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
-                        </div>
+
+                        <button type="submit" class="btn btn-primary">Lưu</button>
                     </form>
+
                 </div>
             </div>
         </div>

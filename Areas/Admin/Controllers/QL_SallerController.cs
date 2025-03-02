@@ -29,10 +29,17 @@ namespace DuAnTN.Areas.Admin.Controllers
             {
                 diner.User = await _userService.GetUserByIdAsync(diner.UserId);  // Liên kết thông tin danh mục
             }
-            // Tìm kiếm nếu có
+            // Tìm theo thuộc tính
             if (!string.IsNullOrEmpty(search))
             {
-                diners = diners.Where(u => u.DinerName.Contains(search, StringComparison.OrdinalIgnoreCase)).ToList();
+                diners = diners
+                    .Where(f =>
+                        ((f.User != null && f.User.Email != null && f.User.Email.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0) ||
+                        (f.User != null && f.User.FullName != null && f.User.FullName.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0) ||
+                         (f.DinerName != null && f.DinerName.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0) ||
+                         (f.DinerAddress != null && f.DinerAddress.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0) ||
+                         (f.PhoneNumber != null && f.PhoneNumber.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0)))
+                    .ToList();
             }
 
             // Lấy danh sách khách hàng bị ẩn từ Cookies

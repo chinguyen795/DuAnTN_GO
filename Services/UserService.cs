@@ -9,13 +9,14 @@ namespace DuAnTN.Models
     {
         private readonly HttpClient _httpClient;
         private readonly string _apiUrl = "https://localhost:7248/api/Users";  // API cho User
- private readonly ILogger<UserService> _logger; // Thêm đối tượng ILogger
+        private readonly string _roleApiUrl = "https://localhost:7248/api/Roles";
+        private readonly ILogger<UserService> _logger; // Thêm đối tượng ILogger
         public UserService(HttpClient httpClient)
         {
             _httpClient = httpClient;
         }
 
-       
+
 
         // Cập nhật constructor để nhận ILogger
         public UserService(HttpClient httpClient, ILogger<UserService> logger)
@@ -23,10 +24,27 @@ namespace DuAnTN.Models
             _httpClient = httpClient;
             _logger = logger;  // Khởi tạo _logger
         }
+        // Lấy tất cả User's
         public async Task<List<User>> GetUsersAsync()
         {
             var response = await _httpClient.GetStringAsync(_apiUrl);
-            return JsonConvert.DeserializeObject<List<User>>(response);
+            var users = JsonConvert.DeserializeObject<List<User>>(response) ?? new List<User>();
+
+            var roleResponse = await _httpClient.GetStringAsync(_roleApiUrl);
+            var roles = JsonConvert.DeserializeObject<List<Role>>(roleResponse) ?? new List<Role>();
+
+            foreach (var user in users)
+            {
+                var role = roles.FirstOrDefault(c => c.Id == user.RoleId);
+                user.role = role ?? new Role { RoleName = "Không xác định" };
+            }
+            return users;
+        }
+
+        public async Task<List<Role>> GetRoleAsync()
+        {
+            var response = await _httpClient.GetStringAsync(_roleApiUrl);
+            return JsonConvert.DeserializeObject<List<Role>>(response) ?? new List<Role>();
         }
 
         // Lấy User theo Id
@@ -61,7 +79,7 @@ namespace DuAnTN.Models
             return response.IsSuccessStatusCode;
         }
 
-       
+
         // Phương thức đổi mật khẩu
         public async Task<bool> ChangePasswordAsync(int userId, string currentPassword, string newPassword)
         {

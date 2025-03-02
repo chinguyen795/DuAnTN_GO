@@ -31,10 +31,17 @@ namespace DuAnTN.Areas.Admin.Controllers
                 user.User = await _userService.GetUserByIdAsync(user.UserId);
             }
 
+            // Tìm theo thuộc tính
             if (!string.IsNullOrEmpty(search))
             {
-/*                userinfo = userinfo.Where(f => f.FullName.Contains(search, StringComparison.OrdinalIgnoreCase)).ToList();
-*/            }
+                userinfo = userinfo
+                    .Where(f =>
+                        ((f.User != null && f.User.FullName != null && f.User.FullName.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0) ||
+                         (f.User != null && f.User.Email != null && f.User.Email.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0) ||
+                         (f.Gender != null && f.Gender.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0) ||
+                         (f.IdentityCard != null && f.IdentityCard.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0))) 
+                    .ToList();
+            }
 
             // Lấy danh sách khách hàng bị ẩn từ Cookies
             var hiddenCustomers = Request.Cookies["HiddenCustomers"]?.Split(',')
