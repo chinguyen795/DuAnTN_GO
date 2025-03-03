@@ -18,6 +18,7 @@
         <table class="table">
             <thead>
                 <tr>
+                    <th> <input type="checkbox" class="form-check-input" id="exampleCheck1"></label></th>
                     <th>Sản phẩm</th>
                     <th>Giá</th>
                     <th>Số lượng</th>
@@ -32,12 +33,14 @@
                     {
                         var quantity = cartItems.ContainsKey(item.Id) ? cartItems[item.Id] : 1;
                         <tr>
+                            <td> <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                        </td>
                             <td>
                                 <img src="@item.MainImage" alt="@item.FoodName" height="80px"> @item.FoodName
                             </td>
                             <td>@item.Price.ToString("N0")đ</td>
                             <td>@quantity</td>
-                            <td>@(item.Price * quantity).ToString("N0")đ</td>
+                            <td>@(item.Price * quantity)đ</td>
                             <td>
                                 <a href="@Url.Action("RemoveFromCart", "Cart", new { id = item.Id })" class="btn btn-danger btn-sm">Xóa</a>
                             </td>

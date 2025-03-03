@@ -30,13 +30,14 @@ namespace DuAnTN.Controllers
 
         public async Task<IActionResult> Addtocart(int id, int quantity = 1)
         {
-            var myCart = Foods;
+            var myCart = HttpContext.Session.Get<List<Food>>("GioHang") ?? new List<Food>();
+            var cartItems = HttpContext.Session.Get<Dictionary<int, int>>("CartQuantity") ?? new Dictionary<int, int>();
+
             var item = myCart.SingleOrDefault(p => p.Id == id);
 
             if (item == null)
             {
                 var food = await _foodService.GetFoodByIdAsync(id);
-
                 if (food != null)
                 {
                     item = new Food
@@ -48,30 +49,23 @@ namespace DuAnTN.Controllers
                         Status = food.Status
                     };
 
-                    // Lưu số lượng vào Session
-                    var cartItems = HttpContext.Session.Get<Dictionary<int, int>>("CartQuantity") ?? new Dictionary<int, int>();
-                    cartItems[item.Id] = quantity; // Lưu số lượng được chọn từ View
-                    HttpContext.Session.Set("CartQuantity", cartItems);
-
                     myCart.Add(item);
                 }
             }
+
+            // Cập nhật số lượng vào Session
+            if (cartItems.ContainsKey(id))
+            {
+                cartItems[id] += quantity; // Nếu sản phẩm đã có, tăng số lượng
+            }
             else
             {
-                // Nếu sản phẩm đã có trong giỏ, tăng số lượng
-                var cartItems = HttpContext.Session.Get<Dictionary<int, int>>("CartQuantity") ?? new Dictionary<int, int>();
-                if (cartItems.ContainsKey(item.Id))
-                {
-                    cartItems[item.Id] += quantity; // Cộng thêm số lượng được chọn
-                }
-                else
-                {
-                    cartItems[item.Id] = quantity;
-                }
-                HttpContext.Session.Set("CartQuantity", cartItems);
+                cartItems[id] = quantity; // Nếu chưa có, thêm mới
             }
 
             HttpContext.Session.Set("GioHang", myCart);
+            HttpContext.Session.Set("CartQuantity", cartItems);
+
             return RedirectToAction("Index");
         }
 

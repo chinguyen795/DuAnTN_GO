@@ -35,14 +35,15 @@
                 </div>
             </div>
 
-
             <p class="mt-3">Tạm tính: <span id="totalPrice" class="product-details__price">@Model.Price.ToString("N0")đ</span></p>
-            <form method="post" asp-controller="Cart" asp-action="Addtocart">
+            <a href="Pay.html" class="btn btn-buy mt-3">Mua ngay</a>
+            <form method="post" asp-controller="Cart" asp-action="AddToCart">
                 <input type="hidden" name="id" value="@Model.Id" />
                 <input type="hidden" id="quantityInput" name="quantity" value="1" />
 
                 <button type="submit" class="btn btn-cart mt-2">Thêm vào giỏ</button>
             </form>
+
 
         </div>
     </div>
@@ -63,14 +64,29 @@
 </div>
 
 
-
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
+    function updateQuantity(change) {
+        let quantityInput = $("#quantity");
+        let quantityHiddenInput = $("#quantityInput"); // Input ẩn để lưu số lượng gửi đi
+        let totalPriceLabel = $("#totalPrice");
+        let foodId = @Model.Id;
+        let currentQuantity = parseInt(quantityInput.val()) + change;
 
-    function updateTotalPrice() {
-        let price = @Model.Price; // Giá sản phẩm từ Razor
-        let quantity = document.getElementById("quantity").value;
-        document.getElementById("totalPrice").innerText = (price * quantity).toLocaleString("vi-VN") + "đ";
+        if (currentQuantity < 1) currentQuantity = 1;
+
+        $.ajax({
+            url: "/Food/UpdateQuantity",
+            type: "GET",
+            data: { foodId: foodId, quantity: currentQuantity },
+            success: function (response) {
+                quantityInput.val(response.quantity);
+                quantityHiddenInput.val(response.quantity); // Cập nhật input ẩn
+                totalPriceLabel.text(response.totalPrice.toLocaleString() + "đ");
+            },
+            error: function () {
+                alert("Có lỗi xảy ra khi cập nhật số lượng!");
+            }
+        });
     }
 </script>
-
-
