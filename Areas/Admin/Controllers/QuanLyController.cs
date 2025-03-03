@@ -27,15 +27,29 @@ namespace DuAnTN.Areas.Admin.Controllers
             // Lấy danh sách các món ăn
             var user = await _userService.GetUsersAsync();
 
+            // Lấy danh sách Role từ API thông qua UserService
+            var roles = await _userService.GetRoleAsync();
+
+            // Đẩy danh sách Role vào ViewBag để hiển thị trong dropdown
+            ViewBag.Roles = roles;
+
             //Lọc theo tìm kiếm nếu có
             //foreach (var user in users)
             //{
             //    user = await _userService.GetUserByIdAsync(user.Id);  // Liên kết thông tin danh mục
             //}
 
+            // Tìm theo thuộc tính
             if (!string.IsNullOrEmpty(search))
             {
-                user = user.Where(f => f.Email.Contains(search, StringComparison.OrdinalIgnoreCase)).ToList();
+                user = user
+                    .Where(f =>
+                        ((f.role != null && f.role.RoleName != null && f.role.RoleName.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0) ||
+                         (f.Email != null && f.Email.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0) ||
+                         (f.Phone != null && f.Phone.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0) ||
+                         (f.FullName != null && f.FullName.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0)))
+
+                    .ToList();
             }
             // Lấy danh sách khách hàng bị ẩn từ Cookies
             var hiddenCustomers = Request.Cookies["HiddenCustomers"]?.Split(',')
@@ -53,8 +67,7 @@ namespace DuAnTN.Areas.Admin.Controllers
                 ViewBag.CategoryToEdit = await _userService.GetUserByIdAsync(id.Value);
             }
 
-            var pagedFoods = user.Skip((page - 1) * 10).Take(10).ToList();
-            var totalFoods = user.Count();
+            var pagedFoods = user.Skip((page - 1) * 10).Take(10).ToList(); var totalFoods = user.Count();
             var totalPages = (int)Math.Ceiling(totalFoods / (double)10);
 
             ViewBag.TotalPages = totalPages;
@@ -63,12 +76,19 @@ namespace DuAnTN.Areas.Admin.Controllers
 
             return View(pagedFoods);
         }
-        [HttpGet]
-        public IActionResult Create() { return View(); }
+
+        public async Task<IActionResult> Create()
+        {
+            ViewBag.Roles = await _userService.GetRoleAsync();
+            return View();
+        }
+
 
         [HttpPost]
-        public async Task<IActionResult> Create(User category)
+        public async Task<IActionResult> Create(User user)
         {
+            // Gọi API tạo user
+            bool success = await _userService.CreateUserAsync(user);
 
             if (!success)
             {
@@ -90,21 +110,21 @@ namespace DuAnTN.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            var category = await _userService.GetUserByIdAsync(id);
-            if (category == null)
+            var us = await _userService.GetUserByIdAsync(id);
+            if (us == null)
             {
                 return NotFound();
             }
-            return View(category); // Trả về View có chứa Modal
+            return View(us); // Trả về View có chứa Modal
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(User category)
+        public async Task<IActionResult> Edit(User us)
         {
 
-                await _userService.UpdateUserAsync(category.Id, category);
-                return RedirectToAction(nameof(Index));
-            
+            await _userService.UpdateUserAsync(us.Id, us);
+            return RedirectToAction(nameof(Index));
+
         }
 
         [HttpGet]
@@ -128,7 +148,6 @@ namespace DuAnTN.Areas.Admin.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-
 
         [HttpPost]
         public IActionResult Hide(int id)
@@ -158,7 +177,5 @@ namespace DuAnTN.Areas.Admin.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-
-
     }
 }

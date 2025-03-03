@@ -10,6 +10,7 @@ namespace DuAnTN.Models
         private readonly HttpClient _httpClient;
         private readonly string _apiUrl = "https://localhost:7248/api/Users";  // API cho User
  private readonly ILogger<UserService> _logger; // Thêm đối tượng ILogger
+        private readonly string _roleApiUrl = "https://localhost:7248/api/Roles";
         public UserService(HttpClient httpClient)
         {
             _httpClient = httpClient;
@@ -26,7 +27,17 @@ namespace DuAnTN.Models
         public async Task<List<User>> GetUsersAsync()
         {
             var response = await _httpClient.GetStringAsync(_apiUrl);
-            return JsonConvert.DeserializeObject<List<User>>(response);
+            var users = JsonConvert.DeserializeObject<List<User>>(response) ?? new List<User>();
+
+            var roleResponse = await _httpClient.GetStringAsync(_roleApiUrl);
+            var roles = JsonConvert.DeserializeObject<List<Role>>(roleResponse) ?? new List<Role>();
+
+            foreach (var user in users)
+            {
+                var role = roles.FirstOrDefault(c => c.Id == user.RoleId);
+                user.role = role ?? new Role { RoleName = "Không xác định" };
+            }
+            return users;
         }
 
         // Lấy User theo Id
@@ -92,13 +103,6 @@ namespace DuAnTN.Models
             return response.IsSuccessStatusCode;
         }
 
-
-        // Nguyen Them
-        public async Task<bool> IsEmailExistsAsync(string email)
-        {
-            var response = await _httpClient.GetAsync($"{_apiUrl}/CheckEmail?email={email}");
-            return response.IsSuccessStatusCode && bool.Parse(await response.Content.ReadAsStringAsync());
-        }
         public async Task<bool> SendVerificationCodeAsync(string email)
         {
             var content = new StringContent(JsonConvert.SerializeObject(email), Encoding.UTF8, "application/json");
@@ -145,5 +149,12 @@ namespace DuAnTN.Models
             var response = await _httpClient.PostAsync($"{_apiUrl}/VerifyResetPasswordOTP", content);
             return response.IsSuccessStatusCode;
         }
+        public async Task<List<Role>> GetRoleAsync()
+        {
+            var response = await _httpClient.GetStringAsync(_roleApiUrl);
+            return JsonConvert.DeserializeObject<List<Role>>(response) ?? new List<Role>();
+        }
+
+
     }
 }

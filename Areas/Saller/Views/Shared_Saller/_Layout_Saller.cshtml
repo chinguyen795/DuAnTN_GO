@@ -43,4 +43,30 @@
     
     @RenderBody();
 </body>
+
+@if (TempData["ToastMessage"] != null)
+{
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+        <div id="liveToast" class="toast show" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="5000">
+            <div class="toast-header">
+                <strong class="me-auto @(TempData["ToastType"]?.ToString() == "success" ? "text-success" : "text-danger")">
+                    @((TempData["ToastType"]?.ToString() == "success") ? "✅ Thành công" : "❌ Lỗi")
+                </strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                @TempData["ToastMessage"]
+            </div>
+        </div>
+    </div>
+}
 </html>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var toastEl = document.getElementById("liveToast");
+        if (toastEl) {
+            var toast = new bootstrap.Toast(toastEl);
+            toast.show(); // Hiển thị Toast ngay khi trang load
+        }
+    });
+</script>

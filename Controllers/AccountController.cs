@@ -163,7 +163,14 @@ namespace DuAnTN.Controllers
             if (userInfo == null)
             {
                 TempData["ToastMessage"] = "⚠ Bạn chưa có thông tin, vui lòng thêm!";
-                return View();
+                return RedirectToAction("AddUserInfo"); // Chuyển hướng tới AddUserInfo nếu chưa có thông tin
+            }
+
+            // Kiểm tra xem Giới tính có tồn tại không
+            if (string.IsNullOrEmpty(userInfo.Gender)) // Thêm kiểm tra Giới tính
+            {
+                TempData["ToastMessage"] = "⚠ Bạn vui lòng thêm thông tin Giới tính!";
+                return RedirectToAction("AddUserInfo"); // Chuyển hướng đến form AddUserInfo
             }
 
             // Lấy thông tin FullName từ bảng User
