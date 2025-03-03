@@ -8,6 +8,7 @@ using Newtonsoft.Json.Linq;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using System.Text;
+using System.Security.Claims;
 
 namespace DuAnTN.Controllers
 {
@@ -20,15 +21,17 @@ namespace DuAnTN.Controllers
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly string _apiUrl = "https://localhost:7248/api/Users";
         private static Dictionary<string, string> _verificationCodes = new Dictionary<string, string>();
+        private readonly DinerService _dinerService;
 
 
-        public AccountController(HttpClient httpClient, AddressService addressService, UserService userService, UserInfoServices userInfoService, IWebHostEnvironment webHostEnvironment)
+        public AccountController(HttpClient httpClient, AddressService addressService, UserService userService, UserInfoServices userInfoService, DinerService dinerService, IWebHostEnvironment webHostEnvironment)
         {
             _httpClient = httpClient;
             _addressService = addressService;
             _userService = userService;
             _userInfoService = userInfoService;
             _webHostEnvironment = webHostEnvironment;
+            _dinerService = dinerService;
         }
 
         // Action to display the address list
@@ -518,6 +521,93 @@ namespace DuAnTN.Controllers
             return RedirectToAction("ResetPassword", new { Email });
         }
 
+        [HttpGet]
+        public async Task<IActionResult> RegisterSeller()
+        {
+            var userId = HttpContext.Session.GetString("Id");
+            if (string.IsNullOrEmpty(userId))
+            {
+                TempData["ToastMessage"] = "❌ Vui lòng đăng nhập để tiếp tục!";
+                TempData["ToastType"] = "danger";
+                return RedirectToAction("Login", "Account");
+            }
+
+            if (!int.TryParse(userId, out int parsedUserId))
+            {
+                TempData["ToastMessage"] = "❌ Lỗi: ID người dùng không hợp lệ!";
+                TempData["ToastType"] = "danger";
+                return RedirectToAction("Login", "Account");
+            }
+
+            var user = await _userService.GetUserByIdAsync(parsedUserId);
+            if (user == null) return NotFound();
+
+            ViewBag.Email = user.Email;
+            ViewBag.PhoneNumber = user.Phone;
+
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> RegisterSeller(string dinerName, string dinerAddress, string taxCode)
+        {
+            var userId = HttpContext.Session.GetString("Id");
+            if (string.IsNullOrEmpty(userId)) return Unauthorized();
+
+            if (!int.TryParse(userId, out int parsedUserId)) return Unauthorized();
+
+            var user = await _userService.GetUserByIdAsync(parsedUserId);
+            if (user == null) return NotFound();
+
+            // Kiểm tra nhập đủ thông tin
+            if (string.IsNullOrWhiteSpace(dinerName) || string.IsNullOrWhiteSpace(dinerAddress) || string.IsNullOrWhiteSpace(taxCode))
+            {
+                TempData["ToastMessage"] = "❌ Vui lòng điền đầy đủ thông tin!";
+                TempData["ToastType"] = "danger";
+                return RedirectToAction("RegisterSeller");
+            }
+
+            // Kiểm tra định dạng mã số thuế
+            if (!System.Text.RegularExpressions.Regex.IsMatch(taxCode, @"^\d{10,13}$"))
+            {
+                TempData["ToastMessage"] = "❌ Mã số thuế phải có từ 10 đến 13 chữ số!";
+                TempData["ToastType"] = "danger";
+                return RedirectToAction("RegisterSeller");
+            }
+
+            // Thêm quán ăn (Dùng ảnh mặc định)
+            var diner = new Diner
+            {
+                DinerName = dinerName,
+                DinerAddress = dinerAddress,
+                PhoneNumber = user.Phone,
+                TaxCode = taxCode,
+                MainImage = "/images/default-shop.jpg",
+                Image1 = "/images/default-shop.jpg",
+                Image2 = "/images/default-shop.jpg",
+                UserId = user.Id
+            };
+
+            var result = await _dinerService.CreateDinerAsync(diner);
+            if (result)
+            {
+                var updateRoleResult = await _userService.ChangeUserRoleAsync(user.Id, 2); // Chuyển thành Seller
+
+                if (!updateRoleResult)
+                {
+                    TempData["ToastMessage"] = "❌ Lỗi khi cập nhật quyền hạn!";
+                    TempData["ToastType"] = "danger";
+                    return RedirectToAction("RegisterSeller");
+                }
+
+                TempData["ToastMessage"] = "✅ Đăng ký thành công!";
+                TempData["ToastType"] = "success";
+                return RedirectToAction("Index", "Home");
+            }
+
+            TempData["ToastMessage"] = "❌ Đăng ký thất bại. Vui lòng thử lại!";
+            TempData["ToastType"] = "danger";
+            return RedirectToAction("RegisterSeller");
+        }
 
     }
 }

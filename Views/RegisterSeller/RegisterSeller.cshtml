@@ -1,0 +1,68 @@
+﻿@model DuAnTN.Models.User
+
+@{
+    ViewData["Title"] = "Đăng ký trở thành người bán";
+}
+
+<div class="container mt-4">
+    <div class="container-box">
+        <h2>Đăng kí trở thành người bán</h2>
+        <hr>
+        <div class="alert alert-danger" role="alert">
+            Hãy đảm bảo thông tin bạn đang cung cấp là hoàn toàn chính xác. Người bán hoàn toàn chịu trách nhiệm về tính chính xác của thông tin trước pháp luật.
+        </div>
+
+        <!-- Form đăng ký -->
+        <form asp-action="RegisterSeller" asp-controller="RegisterSeller" method="post" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label class="form-label"><strong>* Tên Shop</strong></label>
+                <input type="text" class="form-control" name="dinerName" placeholder="Nhập tên shop" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label"><strong>* Địa chỉ</strong></label>
+                <input type="text" class="form-control" name="dinerAddress" placeholder="Nhập địa chỉ lấy hàng" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label"><strong>Mã số thuế (nếu có)</strong></label>
+                <input type="text" class="form-control" name="taxCode" placeholder="Nhập mã số thuế">
+            </div>
+
+            <hr>
+
+            <h4>Thông tin cá nhân</h4>
+
+            <div class="mb-3">
+                <label class="form-label"><strong>* Email</strong></label>
+                <input type="email" class="form-control" value="@Model?.Email" readonly>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label"><strong>* Số điện thoại</strong></label>
+                <input type="text" class="form-control" value="@Model?.Phone" readonly>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label"><strong>* Số CCCD</strong></label>
+                <input type="text" class="form-control" name="identityCard" value="@Model?.UserInfo?.IdentityCard" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label"><strong>* Ảnh CCCD</strong></label>
+                <input type="file" class="form-control" name="identityImage" accept="image/*">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label"><strong>Ảnh cửa hàng</strong></label>
+                <input type="file" class="form-control" name="mainImage" accept="image/*">
+            </div>
+
+            <hr>
+
+            <div class="d-flex justify-content-end">
+                <button type="submit" class="btn btn-success">Xác nhận</button>
+            </div>
+        </form>
+    </div>
+</div>

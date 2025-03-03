@@ -56,14 +56,25 @@ namespace DuAnTN.Models
             return response.IsSuccessStatusCode;
         }
 
-        // Cập nhật thông tin User
-        public async Task<bool> UpdateUserAsync(int id, User User)
+        public async Task<bool> UpdateUserAsync(int id, User user)
         {
-            var json = JsonConvert.SerializeObject(User);
+            var json = JsonConvert.SerializeObject(user);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
+
             var response = await _httpClient.PutAsync($"{_apiUrl}/{id}", content);
-            return response.IsSuccessStatusCode;
+            var responseContent = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogError($"❌ Lỗi cập nhật User (ID: {id}): {responseContent}");
+                return false;
+            }
+
+            _logger.LogInformation($"✅ User (ID: {id}) cập nhật thành công: {responseContent}");
+            return true;
         }
+
+
 
         // Xóa User
         public async Task<bool> DeleteUserAsync(int id)
@@ -154,7 +165,24 @@ namespace DuAnTN.Models
             var response = await _httpClient.GetStringAsync(_roleApiUrl);
             return JsonConvert.DeserializeObject<List<Role>>(response) ?? new List<Role>();
         }
+        public async Task<bool> ChangeUserRoleAsync(int userId, int newRoleId)
+        {
+            var payload = new { UserId = userId, NewRoleId = newRoleId };
+            var json = JsonConvert.SerializeObject(payload);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
 
+            var response = await _httpClient.PostAsync($"{_apiUrl}/ChangeRole", content);
+            var responseContent = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogError($"❌ Lỗi khi thay đổi RoleId của User (ID: {userId}): {responseContent}");
+                return false;
+            }
+
+            _logger.LogInformation($"✅ RoleId của User (ID: {userId}) đã được cập nhật thành {newRoleId}");
+            return true;
+        }
 
     }
 }
