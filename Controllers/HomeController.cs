@@ -12,25 +12,50 @@ namespace DuAnTN.Controllers
     {
         private readonly UserService _userService;
         private readonly AuthService _authSevice;
+        private readonly FoodService _foodService;
+        private readonly DinerService _dinerService;
+        private readonly CategoryService _categoryService;
+
         private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ILogger<HomeController> logger, UserService userService, AuthService authSevice)
+        public HomeController(ILogger<HomeController> logger, CategoryService categoryService , UserService userService, AuthService authSevice, FoodService foodService, DinerService dinerService)
         {
             _logger = logger;
             _userService = userService;
             _authSevice = authSevice;
+            _foodService = foodService;
+            _dinerService = dinerService;
+            _categoryService = categoryService;
         }
 
         public IActionResult Privacy()
         {
             return View();
         }
+     
 
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index(int? categoryId)
         {
+            var diners = await _dinerService.GetDiningsAsync();
+            var foods = await _foodService.GetFoodsAsync();
+            var categories = await _categoryService.GetCategoriesAsync();
+
+            if (categoryId.HasValue && categoryId > 0)
+            {
+                foods = foods.Where(f => f.CategoryId == categoryId).ToList();   //Lọc theo CategoryId 
+            }
+            foreach (var food in foods)
+            {
+                food.Diner = diners.FirstOrDefault(d => d.Id == food.DinerId);
+            }
+            ViewBag.SelectedCategory = categoryId;
+            ViewBag.Diners = diners;
+            ViewBag.Foods = foods;
+            ViewBag.Categories = categories;
             return View();
         }
+
 
 
         [HttpPost]

@@ -69,7 +69,18 @@ namespace DuAnTN.Services
             return response.IsSuccessStatusCode;
         }
 
-         
+        public async Task<Diner?> GetDinerByUserIdAsync(int userId)
+        {
+            var response = await _httpClient.GetAsync($"{_apiUrl}/user/{userId}");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return null;  // Trả về null nếu không tìm thấy
+            }
+
+            return await response.Content.ReadFromJsonAsync<Diner>();
+        }
+
 
         // Xóa Diner
         public async Task<bool> DeleteDinerAsync(int id)

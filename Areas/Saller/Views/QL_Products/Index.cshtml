@@ -1,70 +1,84 @@
 ﻿@model List<DuAnTN.Models.Food>
 
 <div class="content mb-4">
-    <h3 class="text-center text-dark">QUẢN LÝ MÓN ĂN</h3>
+    <h3 class="text-center text-dark fw-bold">QUẢN LÝ MÓN ĂN</h3>
 
-    <!-- Thanh tìm kiếm và nút thêm món ăn -->
+    <!-- Thanh công cụ -->
     <div class="d-flex justify-content-between mb-3">
-        <!-- Nút Thêm món ăn -->
-        <a asp-controller="QL_Products" asp-action="Create" class="btn btn-primary">
+        <a asp-action="Create" class="btn btn-primary">
             <i class="bi bi-plus-lg"></i> Thêm món ăn
         </a>
 
         <!-- Ô tìm kiếm -->
         <form method="get" class="d-flex">
-            <input type="text" name="search" class="form-control w-25" placeholder="Tìm kiếm món ăn..." value="@ViewBag.Search">
-            <button type="submit" class="btn btn-secondary ms-2">Tìm</button>
+            <input type="text" name="search" class="form-control me-2" placeholder="Tìm món ăn..." value="@ViewBag.Search">
+            <button type="submit" class="btn btn-secondary"><i class="bi bi-search"></i></button>
         </form>
     </div>
 
-    <!-- Kiểm tra nếu có dữ liệu -->
-    @if (Model != null && Model.Count > 0)
-    {
-        <div class="table-container">
-            <table class="table table-striped table-hover">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Tên món ăn <i class="bi bi-arrow-down-up px-1"></i></th>
-                        <th>Giá <i class="bi bi-arrow-down-up px-1"></i></th>
-                        <th>Mô tả</th>
-                        <th>Ảnh chính</th>
-                        <th>Ảnh phụ 1</th>
-                        <th>Ảnh phụ 2</th>
-                        <th>Hành động</th>
-                    </tr>
-                </thead>
-                <tbody>
+    <!-- Bảng danh sách món ăn -->
+    <div class="table-responsive">
+        <table class="table table-hover table-bordered align-middle text-center">
+            <thead class="table-dark">
+                <tr>
+                    <th style="width: 5%;">#</th>
+                    <th style="width: 25%;">Tên món</th>
+                    <th style="width: 10%;">Giá</th>
+                    <th style="width: 15%;">Ảnh</th>
+                    <th style="width: 15%;">Trạng thái</th>
+                    <th style="width: 15%;">Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Count > 0)
+                {
                     @for (int i = 0; i < Model.Count; i++)
                     {
                         var food = Model[i];
                         <tr>
                             <td>@(i + 1)</td>
-                            <td>@food.FoodName</td>
-                            <td>@food.Price.ToString("N0")đ</td>
-                            <td>@food.Description</td>
-                            <td><img src="@food.MainImage" alt="Ảnh chính" height="60"></td>
-                            <td><img src="@food.Image1" alt="Ảnh phụ 1" height="60"></td>
-                            <td><img src="@food.Image2" alt="Ảnh phụ 2" height="60"></td>
+                            <!-- Giới hạn tên món ăn để không tràn -->
+                            <td class="fw-semibold text-truncate" style="max-width: 180px;" title="@food.FoodName">
+                                @food.FoodName
+                            </td>
+                            <td class="text-primary fw-bold">@food.Price.ToString("N0") đ</td>
+                            <td>
+                                <img src="@food.MainImage" class="rounded border shadow-sm" height="50" alt="Ảnh món ăn">
+                            </td>
+                            <td>
+                                <span class="badge bg-@(food.Status == "Hoạt động" ? "Không hoạt động" : "danger")">
+                                    @food.Status
+                                </span>
+                            </td>
                             <td>
                                 <div class="dropdown">
                                     <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                        &#8942;
+                                        <i class="bi bi-three-dots"></i>
                                     </button>
                                     <ul class="dropdown-menu">
-                                        <li><a class="dropdown-item text-warning" asp-action="Edit" asp-route-id="@food.Id">Chỉnh sửa</a></li>
-                                        <li><a class="dropdown-item text-danger" asp-action="Delete" asp-route-id="@food.Id">Xóa</a></li>
+                                        <li>
+                                            <a class="dropdown-item text-warning" asp-action="Edit" asp-route-id="@food.Id">
+                                                <i class="bi bi-pencil-square"></i> Chỉnh sửa
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item text-danger" asp-action="Delete" asp-route-id="@food.Id">
+                                                <i class="bi bi-trash"></i> Xóa
+                                            </a>
+                                        </li>
                                     </ul>
                                 </div>
                             </td>
                         </tr>
                     }
-                </tbody>
-            </table>
-        </div>
-    }
-    else
-    {
-        <p class="text-center text-muted">Không có món ăn nào.</p>
-    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="6" class="text-muted text-center py-3">Không có món ăn nào.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 </div>

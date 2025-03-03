@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.IO;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
@@ -26,125 +25,87 @@ namespace DuAnTN.Controllers
             _dinerService = dinerService;
         }
 
-        // 🔹 Lấy danh sách cửa hàng của User đăng nhập
-        private async Task<List<Diner>> GetUserDinersAsync()
+        // 🔹 Lấy quán ăn của User
+        private async Task<Diner?> GetUserDinerAsync()
         {
             var userId = HttpContext.Session.GetString("Id");
 
             if (string.IsNullOrEmpty(userId))
             {
-                return new List<Diner>(); // Trả về danh sách rỗng nếu không có userId
+                return null;
             }
 
-            return await _dinerService.GetDinersByUserIdAsync(int.Parse(userId));
+            return await _dinerService.GetDinerByUserIdAsync(int.Parse(userId));
         }
 
+        // 🔹 Hiển thị danh sách món ăn
         public async Task<IActionResult> Index(string search, int page = 1)
         {
-            var userId = HttpContext.Session.GetString("Id");
+            var diner = await GetUserDinerAsync();
 
-            if (string.IsNullOrEmpty(userId))
+            if (diner == null)
             {
-                TempData["ToastMessage"] = "❌ Vui lòng đăng nhập để xem thông tin!";
+                TempData["ToastMessage"] = "⚠ Bạn chưa có cửa hàng!";
                 return RedirectToAction("Index", "Home");
             }
 
-            var diners = await GetUserDinersAsync();
-            ViewBag.Diners = diners;
-
-            if (diners == null || diners.Count == 0)
-            {
-                TempData["ToastMessage"] = "⚠ Bạn chưa có cửa hàng nào!";
-                return View(new List<Food>()); // Trả về danh sách rỗng để tránh lỗi View
-            }
-
-            var dinerIds = diners.Select(d => d.Id).ToList();
-            var foods = await _foodService.GetFoodsByDinerIdsAsync(dinerIds);
+            var foods = await _foodService.GetFoodsByDinerIdAsync(diner.Id);
 
             if (!string.IsNullOrEmpty(search))
             {
                 foods = foods.Where(f => f.FoodName.Contains(search, StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
+            // ✅ Phân trang
             int pageSize = 10;
             var pagedFoods = foods.Skip((page - 1) * pageSize).Take(pageSize).ToList();
             ViewBag.TotalPages = (int)Math.Ceiling(foods.Count / (double)pageSize);
             ViewBag.Page = page;
             ViewBag.Search = search;
 
-            return View(pagedFoods); // 🔹 Truyền danh sách món ăn sang View
+            return View(pagedFoods);
         }
 
-
-        // 🔹 GET: Hiển thị form tạo món ăn mới
+        // 🔹 Hiển thị form tạo món ăn
         public async Task<IActionResult> Create()
         {
-            var userId = HttpContext.Session.GetString("Id");
-
-            if (string.IsNullOrEmpty(userId))
+            var diner = await GetUserDinerAsync();
+            if (diner == null)
             {
-                TempData["ToastMessage"] = "❌ Vui lòng đăng nhập trước khi thêm món ăn!";
-                return RedirectToAction("Index", "Home");
-            }
-
-            var diners = await GetUserDinersAsync();
-            if (!diners.Any())
-            {
-                TempData["ToastMessage"] = "⚠ Bạn chưa có cửa hàng nào để thêm món ăn!";
+                TempData["ToastMessage"] = "⚠ Bạn chưa có cửa hàng!";
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewBag.Diners = new SelectList(diners, "Id", "DinerName");
             ViewBag.Categories = new SelectList(await _categoryService.GetCategoriesAsync(), "Id", "CategoryName");
-            return View();
-        }
-        // 🔹 GET: Hiển thị trang xác nhận xóa món ăn
-        public async Task<IActionResult> Delete(int id)
-        {
-            var food = await _foodService.GetFoodByIdAsync(id);
-            if (food == null)
+            return View(new Food
             {
-                return NotFound();
-            }
-            return View(food); // 🔹 Trả về View xác nhận xóa
+                DinerId = diner.Id,
+                FoodName = string.Empty,
+                MainImage = "/images/default.png",
+                Status = "Active"
+            });
         }
 
-        // 🔹 POST: Xác nhận xóa món ăn
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            bool result = await _foodService.DeleteFoodAsync(id);
-            if (result)
-            {
-                return RedirectToAction(nameof(Index)); // 🔹 Xóa thành công, quay lại danh sách
-            }
-            return View();
-        }
-
+        // 🔹 Xử lý tạo món ăn
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Food food, IFormFile MainImage, IFormFile Image1, IFormFile Image2)
         {
-            var userId = HttpContext.Session.GetString("Id");
-
-            if (string.IsNullOrEmpty(userId))
+            var diner = await GetUserDinerAsync();
+            if (diner == null)
             {
-                TempData["ToastMessage"] = "❌ Vui lòng đăng nhập trước khi thêm món ăn!";
-                return RedirectToAction("Index", "Home");
+                TempData["ToastMessage"] = "⚠ Bạn chưa có cửa hàng!";
+                return RedirectToAction(nameof(Index));
             }
 
-            var diners = await GetUserDinersAsync();
-            if (!diners.Any(d => d.Id == food.DinerId))
-            {
-                ModelState.AddModelError("", "Bạn không có quyền tạo món ăn cho cửa hàng này.");
-                return View(food);
-            }
+            food.DinerId = diner.Id;
 
-            // 🔹 Lưu ảnh trước khi gửi dữ liệu lên API
-            food.MainImage = await SaveImageAsync(MainImage);
-            food.Image1 = await SaveImageAsync(Image1);
-            food.Image2 = await SaveImageAsync(Image2);
+            // ✅ Xử lý ảnh nếu trống
+            food.MainImage = MainImage != null ? await SaveImageAsync(MainImage) : "/images/default.png";
+            food.Image1 = Image1 != null ? await SaveImageAsync(Image1) : "/images/default.png";
+            food.Image2 = Image2 != null ? await SaveImageAsync(Image2) : "/images/default.png";
+
+            food.Status = string.IsNullOrEmpty(food.Status) ? "Active" : food.Status;
 
             bool result = await _foodService.CreateFoodAsync(food);
             if (result)
@@ -154,57 +115,49 @@ namespace DuAnTN.Controllers
             }
 
             ModelState.AddModelError("", "❌ Có lỗi xảy ra khi tạo món ăn.");
-            ViewBag.Diners = new SelectList(diners, "Id", "DinerName");
             ViewBag.Categories = new SelectList(await _categoryService.GetCategoriesAsync(), "Id", "CategoryName");
             return View(food);
         }
 
-
-        // 🔹 GET: Hiển thị form chỉnh sửa món ăn
+        // 🔹 Hiển thị form chỉnh sửa món ăn
         public async Task<IActionResult> Edit(int id)
         {
             var food = await _foodService.GetFoodByIdAsync(id);
-            var diners = await GetUserDinersAsync();
-            if (food == null || !diners.Any(d => d.Id == food.DinerId))
+            var diner = await GetUserDinerAsync();
+
+            if (food == null || diner == null || food.DinerId != diner.Id)
             {
                 return NotFound();
             }
 
-            ViewBag.Diners = new SelectList(diners, "Id", "DinerName", food.DinerId);
             ViewBag.Categories = new SelectList(await _categoryService.GetCategoriesAsync(), "Id", "CategoryName", food.CategoryId);
             return View(food);
         }
 
-        // 🔹 POST: Xử lý chỉnh sửa món ăn
+        // 🔹 Xử lý chỉnh sửa món ăn
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Food food, IFormFile MainImage, IFormFile Image1, IFormFile Image2)
         {
             var existingFood = await _foodService.GetFoodByIdAsync(id);
-            var diners = await GetUserDinersAsync();
+            var diner = await GetUserDinerAsync();
 
-            if (existingFood == null || !diners.Any(d => d.Id == existingFood.DinerId))
+            if (existingFood == null || diner == null || existingFood.DinerId != diner.Id)
             {
                 return NotFound();
             }
 
-            // 🔹 Cập nhật thông tin món ăn
+            // ✅ Cập nhật thông tin món ăn
             existingFood.FoodName = food.FoodName;
             existingFood.Price = food.Price;
             existingFood.Description = food.Description;
-            existingFood.CategoryId = food.CategoryId;// 🔹 Cập nhật ảnh mới nếu có
-            if (MainImage != null)
-            {
-                existingFood.MainImage = await SaveImageAsync(MainImage);
-            }
-            if (Image1 != null)
-            {
-                existingFood.Image1 = await SaveImageAsync(Image1);
-            }
-            if (Image2 != null)
-            {
-                existingFood.Image2 = await SaveImageAsync(Image2);
-            }
+            existingFood.CategoryId = food.CategoryId;
+            existingFood.Status = string.IsNullOrEmpty(food.Status) ? "Active" : food.Status;
+
+            // ✅ Cập nhật ảnh nếu có
+            if (MainImage != null) existingFood.MainImage = await SaveImageAsync(MainImage);
+            if (Image1 != null) existingFood.Image1 = await SaveImageAsync(Image1);
+            if (Image2 != null) existingFood.Image2 = await SaveImageAsync(Image2);
 
             bool result = await _foodService.UpdateFoodAsync(id, existingFood);
             if (result)
@@ -213,14 +166,44 @@ namespace DuAnTN.Controllers
             }
 
             ModelState.AddModelError("", "Có lỗi xảy ra khi cập nhật món ăn.");
-            ViewBag.Diners = new SelectList(diners, "Id", "DinerName", food.DinerId);
             ViewBag.Categories = new SelectList(await _categoryService.GetCategoriesAsync(), "Id", "CategoryName", food.CategoryId);
             return View(food);
         }
+
+        // 🔹 Xác nhận xóa món ăn
+        // ✅ Hiển thị trang xác nhận xóa món ăn
+        public async Task<IActionResult> Delete(int id)
+        {
+            var food = await _foodService.GetFoodByIdAsync(id);
+            if (food == null)
+            {
+                return NotFound();
+            }
+            return View(food); // Trả về trang xác nhận xóa
+        }
+
+        // ✅ Xử lý xóa món ăn (POST)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            bool result = await _foodService.DeleteFoodAsync(id);
+            if (result)
+            {
+                TempData["ToastMessage"] = "✅ Xóa món ăn thành công!";
+                return RedirectToAction(nameof(Index)); // Trở về danh sách món ăn
+            }
+
+            TempData["ToastMessage"] = "❌ Xóa thất bại!";
+            return RedirectToAction(nameof(Index));
+        }
+
+
+        // 🔹 Lưu ảnh
         private async Task<string> SaveImageAsync(IFormFile imageFile)
         {
             if (imageFile == null || imageFile.Length == 0)
-                return null;
+                return "/images/default.png";
 
             var folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
             if (!Directory.Exists(folderPath))
@@ -231,16 +214,9 @@ namespace DuAnTN.Controllers
             var fileName = $"{Guid.NewGuid()}_{Path.GetFileName(imageFile.FileName)}";
             var filePath = Path.Combine(folderPath, fileName);
 
-            try
+            using (var stream = new FileStream(filePath, FileMode.Create))
             {
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await imageFile.CopyToAsync(stream);
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Lỗi khi lưu file ảnh: " + ex.Message);
+                await imageFile.CopyToAsync(stream);
             }
 
             return "/images/" + fileName;

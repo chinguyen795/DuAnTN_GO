@@ -6,7 +6,7 @@ using System.IO;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace DuAnTN.Areas.Saller.Controllers
+namespace DuAnTN.Areas.Seller.Controllers
 {
     [Area("Saller")]
     public class QL_CuaHangController : Controller
@@ -18,39 +18,27 @@ namespace DuAnTN.Areas.Saller.Controllers
             _dinerService = dinerService;
         }
 
-        // Hiển thị thông tin cửa hàng của seller
+        // Hiển thị trang chỉnh sửa cửa hàng của seller
         public async Task<IActionResult> Index()
         {
             var userId = HttpContext.Session.GetString("Id");
             if (string.IsNullOrEmpty(userId))
             {
-                TempData["ToastMessage"] = "❌ Vui lòng đăng nhập để xem thông tin!";
+                TempData["ToastMessage"] = "❌ Vui lòng đăng nhập để tiếp tục!";
                 TempData["ToastType"] = "danger";
                 return RedirectToAction("Index", "Home");
             }
 
-            var diners = await _dinerService.GetDinersByUserIdAsync(int.Parse(userId));
-
-            if (diners == null || diners.Count == 0)  // Sửa điều kiện kiểm tra
-            {
-                TempData["ToastMessage"] = "⚠ Không tìm thấy cửa hàng nào!";
-                return View(new List<Diner>());  // Trả về danh sách rỗng, tránh lỗi View
-            }
-
-            return View(diners);  // Truyền danh sách quán ăn vào View
-        }
-
-        public async Task<IActionResult> Edit(int id)
-        {
-            var diner = await _dinerService.GetDinerByIdAsync(id);
+            // Lấy duy nhất một cửa hàng của user thay vì danh sách
+            var diner = await _dinerService.GetDinerByUserIdAsync(int.Parse(userId));
 
             if (diner == null)
             {
-                TempData["ToastMessage"] = "⚠ Không tìm thấy cửa hàng!";
-                return RedirectToAction("Index");
+                TempData["ToastMessage"] = "⚠ Bạn chưa có cửa hàng nào!";
+                return RedirectToAction("Index", "Home");
             }
 
-            return View(diner);
+            return View(diner); // ✅ Trả về một đối tượng duy nhất
         }
 
 
@@ -61,7 +49,7 @@ namespace DuAnTN.Areas.Saller.Controllers
             if (diner.Id == 0)
             {
                 TempData["ToastMessage"] = "❌ ID không hợp lệ!";
-                return View("Edit", diner);
+                return RedirectToAction(nameof(Index));
             }
 
             var existingDiner = await _dinerService.GetDinerByIdAsync(diner.Id);
@@ -71,10 +59,13 @@ namespace DuAnTN.Areas.Saller.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
+            // Cập nhật thông tin
             existingDiner.DinerName = diner.DinerName;
             existingDiner.DinerAddress = diner.DinerAddress;
             existingDiner.PhoneNumber = diner.PhoneNumber;
+            existingDiner.TaxCode = diner.TaxCode;
 
+            // Cập nhật ảnh nếu có
             if (mainImageFile != null) existingDiner.MainImage = await UploadFile(mainImageFile);
             if (image1File != null) existingDiner.Image1 = await UploadFile(image1File);
             if (image2File != null) existingDiner.Image2 = await UploadFile(image2File);
@@ -84,15 +75,14 @@ namespace DuAnTN.Areas.Saller.Controllers
             if (!success)
             {
                 TempData["ToastMessage"] = "❌ Cập nhật thất bại!";
-                return View("Edit", diner);
+                return RedirectToAction(nameof(Index));
             }
 
             TempData["ToastMessage"] = "✅ Cập nhật thành công!";
             return RedirectToAction(nameof(Index));
         }
 
-
-        // Hàm xử lý upload file, lưu vào thư mục wwwroot/images và trả về đường dẫn tương đối
+        // Hàm upload file ảnh
         private async Task<string> UploadFile(IFormFile file)
         {
             if (file == null || file.Length == 0)
@@ -100,25 +90,19 @@ namespace DuAnTN.Areas.Saller.Controllers
 
             var fileName = Path.GetFileName(file.FileName);
             var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
+
             if (!Directory.Exists(uploadPath))
             {
                 Directory.CreateDirectory(uploadPath);
             }
-            var filePath = Path.Combine(uploadPath, fileName);
 
+            var filePath = Path.Combine(uploadPath, fileName);
             using (var stream = new FileStream(filePath, FileMode.Create))
             {
                 await file.CopyToAsync(stream);
             }
 
             return "/images/" + fileName;
-        }
-
-        // Hàm lấy UserId của seller từ Claims (trong Identity)
-        private int GetCurrentUserId()
-        {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-            return userIdClaim != null ? int.Parse(userIdClaim.Value) : 0;
         }
     }
 }

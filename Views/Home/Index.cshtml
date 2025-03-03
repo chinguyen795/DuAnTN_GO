@@ -2,7 +2,11 @@
 @{
     ViewData["Title"] = "Home Page";
 }
-
+@{
+    var diners = ViewBag.Diners as List<DuAnTN.Models.Diner>;
+    var foods = ViewBag.Foods as List<DuAnTN.Models.Food>;
+    var categories = ViewBag.Categories as List<DuAnTN.Models.Category>;
+}
   <main>
     <div class="slideshow">
       <div class="slide-show-items d-flex">
@@ -448,276 +452,93 @@
       </div>
     </div>
 
-    <div class="filter-basic container mt-4">
-      <div class="d-flex justify-content-between align-items-center combo-box">
-        <select class="form-select me-3">
-          <option selected>Đồ ăn</option>
-          <option value="1">Pizza</option>
-          <option value="2">Bánh mì</option>
-          <option value="3">Mì Ý</option>
-        </select>
+     <div class="filter-basic container mt-4">
+       <div class="d-flex justify-content-between align-items-center combo-box">
+         <select class="form-select me-3">
+           <option selected>Đồ ăn</option>
+           <option value="1">Pizza</option>
+           <option value="2">Bánh mì</option>
+           <option value="3">Mì Ý</option>
+         </select>
 
-        <select class="form-select me-3">
-          <option selected>Thức uống</option>
-          <option value="1">Cà phê</option>
-          <option value="2">Trà sữa</option>
-          <option value="3">Sinh tố</option>
-        </select>
+         <select class="form-select me-3">
+           <option selected>Thức uống</option>
+           <option value="1">Cà phê</option>
+           <option value="2">Trà sữa</option>
+           <option value="3">Sinh tố</option>
+         </select>
 
-        <select class="form-select me-3">
-          <option selected>Hot</option>
-          <option value="1">Giảm giá</option>
-          <option value="2">Mới nhất</option>
-          <option value="3">Bán chạy</option>
-        </select>
+         <select class="form-select me-3">
+           <option selected>Hot</option>
+           <option value="1">Giảm giá</option>
+           <option value="2">Mới nhất</option>
+           <option value="3">Bán chạy</option>
+         </select>
 
-        <select class="form-select me-3">
-          <option selected>Tỉnh/Thành phố</option>
-          <option value="1">Hà Nội</option>
-          <option value="2">TP. Hồ Chí Minh</option>
-          <option value="3">Đà Nẵng</option>
-        </select>
+         <select class="form-select me-3">
+           <option selected>Tỉnh/Thành phố</option>
+           <option value="1">Hà Nội</option>
+           <option value="2">TP. Hồ Chí Minh</option>
+           <option value="3">Đà Nẵng</option>
+         </select>
 
-        <!-- ComboBox 5 -->
-        <select class="form-select">
-          <option selected>Quận/Huyện</option>
-          <option value="1">Quận 1</option>
-          <option value="2">Quận 3</option>
-          <option value="3">Quận 7</option>
-        </select>
-      </div>
-    </div>
-
+         <!-- ComboBox 5 -->
+         <select class="form-select">
+           <option selected>Quận/Huyện</option>
+           <option value="1">Quận 1</option>
+           <option value="2">Quận 3</option>
+           <option value="3">Quận 7</option>
+         </select>
+       </div>
+     </div>
+    @* <form method="get" action="/">
+        <div class="filter-basic container mt-4">
+            <div class="d-flex justify-content-between align-items-center combo-box">
+                <select id="categoryFilter" name="categoryId" class="form-select me-3" onchange="this.form.submit()">
+                    <option value="0">Chọn danh mục</option>
+                    @foreach (var cate in ViewBag.Categories as List<DuAnTN.Models.Category>)
+                    {
+                        <option value="@cate.Id" selected="@(ViewBag.SelectedCategory != null && ViewBag.SelectedCategory == cate.Id ? "selected" : null)">
+                            @cate.CategoryName
+                        </option>
+                    }
+                </select>
+            </div>
+        </div>
+    </form> *@
     <div class="my-4">
-      <div class="list-product row">
-
-        <div class="col-md-3 product my-3">
-          <div class="product-card">
-            <img src="Cơm(1)(1).png" alt="Combo Hàn Quốc">
-            <div class="p-3">
-              <h5 class="product-title">Combo Hàn Quốc</h5>
-              <div class="d-flex align-items-center mb-2">
-                <span class="product-price me-3">299.000đ</span>
-                <span class="product-discount">-23%</span>
-              </div>
-              <div class="product-stats d-flex align-items-center mb-3">
-                <span class="me-3"><i class="bi bi-cart"></i> 378</span>
-                <span class="me-3"><i class="bi bi-heart"></i> 843</span>
-                <span><i class="bi bi-eye"></i> 1K8</span>
-              </div>
-              <div class="seller-info">
-                <img src="https://via.placeholder.com/40" alt="Seller">
-                <div>
-                  <span class="product-seller">Meo Meo</span>
-                  <p class="product-location mb-0">Thường Thạnh, Cái Răng, Cần</p>
-                </div>
-              </div>
-              <div class="product-rating mt-2">
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
-              </div>
-            </div>
-          </div>
+        <div class="list-product row">
+            @if (ViewBag.Foods != null && ((List<DuAnTN.Models.Food>)ViewBag.Foods).Any())
+            {
+                @foreach (var food in ViewBag.Foods as List<DuAnTN.Models.Food>)
+                {
+                    <div class="col-md-3 product my-3">
+                        <div class="product-card">
+                            <img src="@food.MainImage" alt="@food.FoodName" style="width: 100%; height: 360px;">
+                            <div class="p-3">
+                                <h5 class="product-title">@food.FoodName</h5>
+                                <div class="d-flex align-items-center mb-2">
+                                    <span class="product-price me-3">@food.Price.ToString("N0")đ</span>
+                                </div>
+                                <div class="seller-info">
+                                    <img src="@food.Diner?.MainImage" alt="Seller" style="width: 40px; height: 40px;">
+                                    <div>
+                                        <span class="product-seller">@food.Diner?.DinerName</span>
+                                        <p class="product-location mb-0">@food.Diner?.DinerAddress</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <p class="text-center">Không có sản phẩm nào.</p>
+            }
         </div>
-
-        <div class="col-md-3 product my-3">
-          <div class="product-card">
-            <img src="Cơm(1)(1).png" alt="Combo Hàn Quốc">
-            <div class="p-3">
-              <h5 class="product-title">Combo Hàn Quốc</h5>
-              <div class="d-flex align-items-center mb-2">
-                <span class="product-price me-3">299.000đ</span>
-                <span class="product-discount">-23%</span>
-              </div>
-              <div class="product-stats d-flex align-items-center mb-3">
-                <span class="me-3"><i class="bi bi-cart"></i> 378</span>
-                <span class="me-3"><i class="bi bi-heart"></i> 843</span>
-                <span><i class="bi bi-eye"></i> 1K8</span>
-              </div>
-              <div class="seller-info">
-                <img src="https://via.placeholder.com/40" alt="Seller">
-                <div>
-                  <span class="product-seller">Meo Meo</span>
-                  <p class="product-location mb-0">Thường Thạnh, Cái Răng, Cần</p>
-                </div>
-              </div>
-              <div class="product-rating mt-2">
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-3 product my-3">
-          <div class="product-card">
-            <img src="Cơm(1)(1).png" alt="Combo Hàn Quốc">
-            <div class="p-3">
-              <h5 class="product-title">Combo Hàn Quốc</h5>
-              <div class="d-flex align-items-center mb-2">
-                <span class="product-price me-3">299.000đ</span>
-                <span class="product-discount">-23%</span>
-              </div>
-              <div class="product-stats d-flex align-items-center mb-3">
-                <span class="me-3"><i class="bi bi-cart"></i> 378</span>
-                <span class="me-3"><i class="bi bi-heart"></i> 843</span>
-                <span><i class="bi bi-eye"></i> 1K8</span>
-              </div>
-              <div class="seller-info">
-                <img src="https://via.placeholder.com/40" alt="Seller">
-                <div>
-                  <span class="product-seller">Meo Meo</span>
-                  <p class="product-location mb-0">Thường Thạnh, Cái Răng, Cần</p>
-                </div>
-              </div>
-              <div class="product-rating mt-2">
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-3 product my-3">
-          <div class="product-card">
-            <img src="Cơm(1)(1).png" alt="Combo Hàn Quốc">
-            <div class="p-3">
-              <h5 class="product-title">Combo Hàn Quốc</h5>
-              <div class="d-flex align-items-center mb-2">
-                <span class="product-price me-3">299.000đ</span>
-                <span class="product-discount">-23%</span>
-              </div>
-              <div class="product-stats d-flex align-items-center mb-3">
-                <span class="me-3"><i class="bi bi-cart"></i> 378</span>
-                <span class="me-3"><i class="bi bi-heart"></i> 843</span>
-                <span><i class="bi bi-eye"></i> 1K8</span>
-              </div>
-              <div class="seller-info">
-                <img src="https://via.placeholder.com/40" alt="Seller">
-                <div>
-                  <span class="product-seller">Meo Meo</span>
-                  <p class="product-location mb-0">Thường Thạnh, Cái Răng, Cần</p>
-                </div>
-              </div>
-              <div class="product-rating mt-2">
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-3 product my-3">
-          <div class="product-card">
-            <img src="Cơm(1)(1).png" alt="Combo Hàn Quốc">
-            <div class="p-3">
-              <h5 class="product-title">Combo Hàn Quốc</h5>
-              <div class="d-flex align-items-center mb-2">
-                <span class="product-price me-3">299.000đ</span>
-                <span class="product-discount">-23%</span>
-              </div>
-              <div class="product-stats d-flex align-items-center mb-3">
-                <span class="me-3"><i class="bi bi-cart"></i> 378</span>
-                <span class="me-3"><i class="bi bi-heart"></i> 843</span>
-                <span><i class="bi bi-eye"></i> 1K8</span>
-              </div>
-              <div class="seller-info">
-                <img src="https://via.placeholder.com/40" alt="Seller">
-                <div>
-                  <span class="product-seller">Meo Meo</span>
-                  <p class="product-location mb-0">Thường Thạnh, Cái Răng, Cần</p>
-                </div>
-              </div>
-              <div class="product-rating mt-2">
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-3 product my-3">
-          <div class="product-card">
-            <img src="Cơm(1)(1).png" alt="Combo Hàn Quốc">
-            <div class="p-3">
-              <h5 class="product-title">Combo Hàn Quốc</h5>
-              <div class="d-flex align-items-center mb-2">
-                <span class="product-price me-3">299.000đ</span>
-                <span class="product-discount">-23%</span>
-              </div>
-              <div class="product-stats d-flex align-items-center mb-3">
-                <span class="me-3"><i class="bi bi-cart"></i> 378</span>
-                <span class="me-3"><i class="bi bi-heart"></i> 843</span>
-                <span><i class="bi bi-eye"></i> 1K8</span>
-              </div>
-              <div class="seller-info">
-                <img src="https://via.placeholder.com/40" alt="Seller">
-                <div>
-                  <span class="product-seller">Meo Meo</span>
-                  <p class="product-location mb-0">Thường Thạnh, Cái Răng, Cần</p>
-                </div>
-              </div>
-              <div class="product-rating mt-2">
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-3 product my-3">
-          <div class="product-card">
-            <img src="Cơm(1)(1).png" alt="Combo Hàn Quốc">
-            <div class="p-3">
-              <h5 class="product-title">Combo Hàn Quốc</h5>
-              <div class="d-flex align-items-center mb-2">
-                <span class="product-price me-3">299.000đ</span>
-                <span class="product-discount">-23%</span>
-              </div>
-              <div class="product-stats d-flex align-items-center mb-3">
-                <span class="me-3"><i class="bi bi-cart"></i> 378</span>
-                <span class="me-3"><i class="bi bi-heart"></i> 843</span>
-                <span><i class="bi bi-eye"></i> 1K8</span>
-              </div>
-              <div class="seller-info">
-                <img src="https://via.placeholder.com/40" alt="Seller">
-                <div>
-                  <span class="product-seller">Meo Meo</span>
-                  <p class="product-location mb-0">Thường Thạnh, Cái Răng, Cần</p>
-                </div>
-              </div>
-              <div class="product-rating mt-2">
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
     </div>
+
 
     <div class="seemore text-center my-3 w-100">
       <a asp-controller="Food" asp-action="Food" class="btn btn-seemore">Xem thêm</a>
@@ -808,7 +629,8 @@
         }
     });
 </script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.11/jquery.validate.unobtrusive.min.js"></script>
