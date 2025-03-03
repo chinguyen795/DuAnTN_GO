@@ -3,60 +3,107 @@
 }
 
 <div class="content mb-4">
-    <h2 class="text-center">QUẢN LÝ ĐƠN HÀNG</h2>
-    <div class="row mt-4">
+    <h2 class="text-center text-dark fw-bold">QUẢN LÝ ĐƠN HÀNG</h2>
+
+    <!-- Thống kê đơn hàng (Giảm chiều cao card) -->
+    <div class="row mt-3">
         <div class="col-md-3">
-            <div class="card text-center p-3">
-                <h4>Danh sách cần làm</h4>
-                <h2>@ViewBag.PendingOrders</h2>
-                <p>Chờ Lấy Hàng</p>
+            <div class="card shadow-sm text-center p-2 border-primary" style="height: 120px;">
+                <h6 class="text-primary mb-1">Danh sách cần làm</h6>
+                <h4 class="fw-bold text-primary">@ViewBag.PendingOrders</h4>
+                <p class="text-muted small">Chờ lấy hàng</p>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card text-center p-3">
-                <h4>Đã Xử Lý</h4>
-                <h2>@ViewBag.ProcessedOrders</h2>
-                <p>Đã Xử Lý</p>
+            <div class="card shadow-sm text-center p-2 border-success" style="height: 120px;">
+                <h6 class="text-success mb-1">Đã Xử Lý</h6>
+                <h4 class="fw-bold text-success">@ViewBag.ProcessedOrders</h4>
+                <p class="text-muted small">Đã xử lý</p>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card text-center p-3">
-                <h4>Đơn Trả hàng/Hoàn tiền/Hủy</h4>
-                <h2>@ViewBag.CanceledOrders</h2>
-                <p>Đơn Trả Hàng</p>
+            <div class="card shadow-sm text-center p-2 border-danger" style="height: 120px;">
+                <h6 class="text-danger mb-1">Đơn Trả hàng/Hoàn tiền/Hủy</h6>
+                <h4 class="fw-bold text-danger">@ViewBag.CanceledOrders</h4>
+                <p class="text-muted small">Đơn trả hàng</p>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card text-center p-3">
-                <h4>Sản Phẩm Bị Tạm Khóa</h4>
-                <h2>0</h2>
-                <p>Sản Phẩm Bị Tạm Khóa</p>
+            <div class="card shadow-sm text-center p-2 border-secondary" style="height: 120px;">
+                <h6 class="text-secondary mb-1">Sản Phẩm Bị Tạm Khóa</h6>
+                <h4 class="fw-bold text-secondary">0</h4>
+                <p class="text-muted small">Sản phẩm bị khóa</p>
             </div>
         </div>
     </div>
 
-    <div class="mt-4">
-        <h3>Phân Tích Bán Hàng</h3>
-        <p>Doanh số: <strong>@ViewBag.Revenue</strong></p>
-        <p>Lượt truy cập: <strong>@ViewBag.TotalVisits</strong></p>
-        <p>Đơn hàng: <strong>@ViewBag.TotalOrders</strong></p>
+    <!-- Biểu đồ phân tích bán hàng -->
+    <div class="row mt-3">
+        <div class="col-md-8">
+            <div class="card shadow-sm p-3">
+                <h5 class="text-center">Phân Tích Bán Hàng</h5>
+                <canvas id="salesChart" style="height: 220px;"></canvas>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm p-3">
+                <h5>Doanh số</h5>
+                <h4 class="text-success fw-bold">@ViewBag.Revenue</h4>
+                <hr>
+                <h6>Lượt truy cập</h6>
+                <h5 class="text-primary fw-bold">@ViewBag.TotalVisits</h5>
+                <hr>
+                <h6>Đơn hàng</h6>
+                <h5 class="text-danger fw-bold">@ViewBag.TotalOrders</h5>
+            </div>
+        </div>
     </div>
 
-    <div class="mt-4">
-        <h4>Tối đa hóa doanh số bán hàng với Quảng cáo Go!</h4>
-        <button class="btn btn-primary">Tìm hiểu thêm</button>
-    </div>
-
-    <div class="row mt-4">
+    <!-- Quảng cáo & Livestream -->
+    <div class="row mt-3">
         <div class="col-md-6">
-            <h4>Quảng cáo đang chạy</h4>
-            <p>Chưa có</p>
-            <button class="btn btn-primary">Go</button>
+            <div class="card shadow-sm p-3">
+                <h5>Quảng cáo Go!</h5>
+                <p class="text-muted small">Tăng đơn hàng với quảng cáo thông minh.</p>
+                <button class="btn btn-primary btn-sm w-100">Tìm hiểu thêm</button>
+            </div>
         </div>
         <div class="col-md-6">
-            <h4>Live stream</h4>
-            <p>Chưa có</p>
-            <button class="btn btn-primary">Bắt đầu ngay</button>
+            <div class="card shadow-sm p-3">
+                <h5>Live stream</h5>
+                <p class="text-muted small">Bán hàng nhanh chóng bằng livestream.</p>
+                <button class="btn btn-danger btn-sm w-100">Bắt đầu ngay</button>
+            </div>
         </div>
     </div>
 </div>
+
+<!-- Thư viện Chart.js để vẽ biểu đồ -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var ctx = document.getElementById("salesChart").getContext("2d");
+        var salesChart = new Chart(ctx, {
+            type: "bar",
+            data: {
+                labels: ["Doanh số", "Lượt truy cập", "Đơn hàng"],
+                datasets: [{
+                    label: "Phân tích bán hàng",
+                    data: [@ViewBag.Revenue, @ViewBag.TotalVisits, @ViewBag.TotalOrders],
+                    backgroundColor: ["#198754", "#0d6efd", "#dc3545"],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { enabled: true }
+                },
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    });
+</script>

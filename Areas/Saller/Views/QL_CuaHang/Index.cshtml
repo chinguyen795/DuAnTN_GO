@@ -1,37 +1,89 @@
-﻿@model List<Diner>
+﻿@model DuAnTN.Models.Diner
+
+@{
+    ViewData["Title"] = "Chỉnh Sửa Cửa Hàng";
+}
 
 <div class="content mb-4">
+    <h3 class="text-center text-dark fw-bold">CHỈNH SỬA CỬA HÀNG</h3>
 
-<h2>Danh sách cửa hàng của bạn</h2>
+    <div class="card shadow-sm p-4">
+        <form id="editDinerForm" asp-action="Update" method="post" enctype="multipart/form-data">
+            <div class="row">
+                <!-- Ảnh cửa hàng -->
+                <div class="col-md-4 text-center">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Ảnh Chính</label>
+                        <input type="file" class="form-control" id="mainImageInput" asp-for="MainImage" name="mainImageFile" onchange="previewImage(event, 'mainImagePreview')">
+                        <img id="mainImagePreview" src="@(!string.IsNullOrEmpty(Model.MainImage) ? Model.MainImage : "/images/default.png")"
+                             class="img-thumbnail mt-2 shadow-sm" width="150">
+                    </div>
 
-@if (Model.Count == 0)
-{
-    <p>❌ Bạn chưa có cửa hàng nào.</p>
-}
-else
-{
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Tên quán</th>
-                    <th>Địa chỉ</th>
-                    <th>Điện thoại</th>
-                    <th>Hành động</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var diner in Model)
-                {
-                    <tr>
-                        <td>@diner.DinerName</td>
-                        <td>@diner.DinerAddress</td>
-                        <td>@diner.PhoneNumber</td>
-                        <td>
-                            <a href="@Url.Action("Edit", "QL_CuaHang", new { id = diner.Id })" class="btn btn-warning">Sửa</a>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-}
+                    <div class="row">
+                        <div class="col-6 text-center">
+                            <label class="form-label fw-bold">Ảnh Phụ 1</label>
+                            <input type="file" class="form-control" id="image1Input" asp-for="Image1" name="image1File" onchange="previewImage(event, 'image1Preview')">
+                            <img id="image1Preview" src="@(!string.IsNullOrEmpty(Model.Image1) ? Model.Image1 : "/images/default.png")"
+                                 class="img-thumbnail mt-2 shadow-sm" width="100">
+                        </div>
+                        <div class="col-6 text-center">
+                            <label class="form-label fw-bold">Ảnh Phụ 2</label>
+                            <input type="file" class="form-control" id="image2Input" asp-for="Image2" name="image2File" onchange="previewImage(event, 'image2Preview')">
+                            <img id="image2Preview" src="@(!string.IsNullOrEmpty(Model.Image2) ? Model.Image2 : "/images/default.png")"
+                                 class="img-thumbnail mt-2 shadow-sm" width="100">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Thông tin cửa hàng -->
+                <div class="col-md-8">
+                    <h4 class="fw-bold">Thông Tin Cửa Hàng</h4>
+
+                    <!-- Hidden fields -->
+                    <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="CreateAt" />
+                    <input type="hidden" asp-for="UserId" />
+
+                    <div class="mb-3">
+                        <label for="DinerName" class="form-label fw-bold">Tên cửa hàng:</label>
+                        <input type="text" class="form-control" id="DinerName" asp-for="DinerName" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="DinerAddress" class="form-label fw-bold">Địa chỉ:</label>
+                        <input type="text" class="form-control" id="DinerAddress" asp-for="DinerAddress" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="PhoneNumber" class="form-label fw-bold">Số điện thoại:</label>
+                        <input type="text" class="form-control" id="PhoneNumber" asp-for="PhoneNumber" required pattern="^\d{10}$"
+                               title="Số điện thoại phải có đúng 10 chữ số.">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="TaxCode" class="form-label fw-bold">Mã số thuế:</label>
+                        <input type="text" class="form-control" id="TaxCode" asp-for="TaxCode" required pattern="^\d{10,13}$"
+                               title="Mã số thuế phải có từ 10 đến 13 chữ số.">
+                    </div>
+
+                    <div class="d-flex justify-content-end mt-3">
+                        <button type="submit" class="btn btn-success px-4"><i class="bi bi-check-lg"></i> Lưu</button>
+                        <a asp-action="Index" class="btn btn-secondary ms-3 px-4"><i class="bi bi-x-lg"></i> Hủy</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
 </div>
+
+<!-- Script xem trước ảnh -->
+<script>
+    function previewImage(event, previewId) {
+        var reader = new FileReader();
+        reader.onload = function () {
+            var output = document.getElementById(previewId);
+            output.src = reader.result;
+        };
+        reader.readAsDataURL(event.target.files[0]);
+    }
+</script>
