@@ -1,56 +1,73 @@
 ﻿@{
-    ViewData["Title"] = "RegisterSeller Page";
+    ViewData["Title"] = "Đăng ký người bán";
 }
-
 
 <div class="container mt-4">
     <div class="container-box">
-        <h2>Đăng kí trở thành người bán</h2>
+        <h2>Đăng ký trở thành người bán</h2>
         <hr>
-        <div class="alert alert-danger" role="alert">
-            Hãy đảm bảo thông tin bạn đang cung cấp là hoàn toàn chính xác. Người bán hoàn toàn chịu trách nhiệm về tính chính xác của thông tin trước pháp luật.
-        </div>
-        <!-- Form nhập thông tin -->
-        <form>
-            <div class="mb-3">
-                <label class="form-label"><strong>* Tên Shop</strong></label>
-                <input type="text" class="form-control" placeholder="Nhập tên shop" value="nguyench124">
+
+        <!-- Toast thông báo -->
+        @if (TempData["ToastMessage"] != null)
+        {
+            <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+                <div id="liveToast" class="toast align-items-center text-bg-@TempData["ToastType"] border-0 show" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="5000">
+                    <div class="toast-header">
+                        <strong class="me-auto">
+                            @((TempData["ToastType"]?.ToString() == "success") ? "✅ Thành công" : "❌ Lỗi")
+                        </strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                    <div class="toast-body">
+                        @TempData["ToastMessage"]
+                    </div>
+                </div>
             </div>
-            <label class="form-label"><strong>Địa chỉ</strong></label>
-            <input type="text" class="form-control" placeholder="Nhập địa chỉ lấy hàng">
-            <label class="form-label"><strong>Chi tiết</strong></label>
-            <textarea class="form-control" placeholder="Chi tiết"></textarea>
+        }
+
+        <div class="alert alert-danger">
+            Hãy đảm bảo thông tin bạn cung cấp là chính xác. Người bán chịu trách nhiệm trước pháp luật.
+        </div>
+
+        <form asp-action="RegisterSeller" method="post">
+            <div class="mb-3">
+                <label class="form-label"><strong>* Tên quán</strong></label>
+                <input type="text" class="form-control" name="dinerName" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label"><strong>* Địa chỉ</strong></label>
+                <input type="text" class="form-control" name="dinerAddress" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label"><strong>* Mã số thuế</strong></label>
+                <input type="text" class="form-control" name="taxCode" required>
+            </div>
 
             <div class="mb-3">
                 <label class="form-label"><strong>* Email</strong></label>
-                <input type="email" class="form-control">
+                <input type="email" class="form-control" value="@ViewBag.Email" readonly>
             </div>
 
             <div class="mb-3">
                 <label class="form-label"><strong>* Số điện thoại</strong></label>
-                <input type="text" class="form-control">
+                <input type="text" class="form-control" value="@ViewBag.PhoneNumber" readonly>
             </div>
-
-            <div class="mb-3">
-                <label class="form-label"><strong>* Số CCCD</strong></label>
-                <input type="text" class="form-control" placeholder="Nhập số CCCD" required>
-            </div>
-
-            <div class="preview-box" id="previewBox">
-                <strong>Ảnh CCCD đã chọn:</strong>
-                <img id="previewImage" class="preview-img">
-            </div><!-- Upload ảnh CCCD -->
-            <div class="mb-3">
-                <label class="form-label"><strong>* Ảnh CCCD</strong></label>
-                <input type="file" class="form-control" id="uploadCCCD" accept="image/*" required>
-                <img id="previewImage" class="preview-img">
-            </div>
-
-            <hr>
 
             <div class="d-flex justify-content-end">
-                <button type="button" class="btn btn-danger">Xác nhận</button>
+                <button type="submit" class="btn btn-danger">Xác nhận</button>
             </div>
         </form>
     </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var toastElement = document.getElementById("liveToast");
+        if (toastElement) {
+            var toast = new bootstrap.Toast(toastElement);
+            toast.show();
+        }
+    });
+</script>
