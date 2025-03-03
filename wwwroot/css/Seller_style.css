@@ -102,3 +102,63 @@
 .sidebar.collapsed + .content {
     margin-left: 0;
 }
+/* Nút dropdown chính */
+.account-btn {
+    background-color: #d1001c; /* Màu đỏ */
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    font-weight: bold;
+    border-radius: 5px;
+}
+
+    /* Khi hover vào dropdown */
+    .account-btn:hover {
+        background-color: #b00018; /* Màu đỏ đậm hơn */
+    }
+
+/* Thiết lập dropdown menu */
+.account-menu {
+    background-color: #d1001c; /* Màu đỏ */
+    border: none;
+    border-radius: 8px;
+    min-width: 180px;
+    padding: 8px;
+}
+
+/* Tiêu đề trong dropdown */
+.dropdown-header {
+    font-size: 14px;
+    font-weight: bold;
+    color: white;
+    padding: 10px 15px;
+    text-align: left;
+}
+
+/* Mục trong dropdown */
+.dropdown-item {
+    color: white;
+    padding: 8px 12px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+}
+
+    /* Icon trong dropdown */
+    .dropdown-item::before {
+        margin-right: 8px;
+    }
+
+    /* Khi hover vào mục dropdown */
+    .dropdown-item:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+    }
+
+/* Đăng xuất có màu xám */
+.logout {
+    color: #bbb;
+}
+
+    .logout:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+    }

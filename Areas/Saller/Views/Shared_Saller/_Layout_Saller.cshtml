@@ -21,11 +21,36 @@
             <img src="~/image/IMG-GO.png" alt="Logo" height="90">
         </div>
 
-        <!-- Admin Info -->
-        <div class="admin-info d-flex align-items-center">
-            <i class="bi bi-person-circle text-white fs-5 me-2"></i>
-            <span class="text-white">Admin</span>
+        <div class="actions-account d-flex align-items-center text-center">
+            @if (Context.Session.GetString("Id") != null)
+            {
+                <div class="dropdown">
+                    <button class="btn dropdown-toggle account-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        @Context.Session.GetString("FullName")
+                    </button>
+                    <ul class="dropdown-menu account-menu">
+                        <li class="dropdown-header">@Context.Session.GetString("FullName")</li>
+                        <li>
+                            <a class="dropdown-item" href="/profile">
+                                🔹 Hồ Sơ Cá Nhân
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item logout" href="/logout">
+                                🚪 Đăng Xuất
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            }
+            else
+            {
+                <div class="actions-account-login" data-bs-toggle="modal" data-bs-target="#login">
+                    <a href="#">Log In</a>
+                </div>
+            }
         </div>
+
     </header>
 
     <!-- Sidebar -->
