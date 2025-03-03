@@ -35,10 +35,15 @@
                 </div>
             </div>
 
-            <p class="mt-3">Tạm tính: <span id="totalPrice" class="product-details__price">@Model.Price.ToString("N0")đ</span></p>
 
-            <a href="Pay.html" class="btn btn-buy mt-3">Mua ngay</a>
-            <button type="button" class="btn btn-cart mt-2" onclick="addToCart()">Thêm vào giỏ</button>
+            <p class="mt-3">Tạm tính: <span id="totalPrice" class="product-details__price">@Model.Price.ToString("N0")đ</span></p>
+            <form method="post" asp-controller="Cart" asp-action="Addtocart">
+                <input type="hidden" name="id" value="@Model.Id" />
+                <input type="hidden" id="quantityInput" name="quantity" value="1" />
+
+                <button type="submit" class="btn btn-cart mt-2">Thêm vào giỏ</button>
+            </form>
+
         </div>
     </div>
 
@@ -50,7 +55,7 @@
         <div class="col-6">
             <div class="product-details__shipping">
                 <img src="icon-shipping.png" alt="Shipping Icon">
-                <p>Hãy nhập địa chỉ nhận hàng để được dự báo thời gian & chi phí giao hàng chính xác nhất.</p>
+                <p>Hãy nhập địa chỉ nhận hàng</p>
             </div>
             <button class="btn btn-primary mt-2">Nhập địa chỉ</button>
         </div>
@@ -58,41 +63,14 @@
 </div>
 
 
-    <script>
-        function changeMainImage(thumbnail) {
-            let mainImage = document.getElementById("mainImage");
-            mainImage.src = thumbnail.src;
-        }
 
-    function updateQuantity(change) {
-        let quantitySpan = document.getElementById("quantity");
-        let totalPriceSpan = document.getElementById("totalPrice");
+<script>
 
-        let quantity = parseInt(quantitySpan.textContent) + change;
-        if (quantity < 1) quantity = 1;
-
-        quantitySpan.textContent = quantity;
-        totalPriceSpan.textContent = (quantity * price).toLocaleString() + "đ";
-    }
-
-    let price = @Model.Price;
-
-    function addToCart() {
-        let foodId = "@Model.Id";
-        let foodName = "@Model.FoodName";
-        let foodImage = "@Model.MainImage";
-        let quantity = parseInt(document.getElementById("quantity").textContent); // Lấy số lượng đúng cách
-
-        let cart = JSON.parse(localStorage.getItem("cart")) || [];
-
-        let existingItem = cart.find(item => item.foodId == foodId);
-        if (existingItem) {
-            existingItem.quantity += quantity;
-        } else {
-            cart.push({ foodId, foodName, foodImage, price, quantity });
-        }
-
-        localStorage.setItem("cart", JSON.stringify(cart));
-        alert("🛒 Sản phẩm đã được thêm vào giỏ hàng!");
+    function updateTotalPrice() {
+        let price = @Model.Price; // Giá sản phẩm từ Razor
+        let quantity = document.getElementById("quantity").value;
+        document.getElementById("totalPrice").innerText = (price * quantity).toLocaleString("vi-VN") + "đ";
     }
 </script>
+
+

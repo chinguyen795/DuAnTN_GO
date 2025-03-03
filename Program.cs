@@ -26,6 +26,7 @@ builder.Services.AddScoped<AddressService>();
 builder.Services.AddScoped<UserInfoServices>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<OrderService>();
+builder.Services.AddScoped<OrderDetails>();
 
 // Đăng ký HttpClient cho các Service
 builder.Services.AddHttpClient<OrderService>();
@@ -34,6 +35,7 @@ builder.Services.AddHttpClient<DinerService>();
 builder.Services.AddHttpClient<AddressService>();
 builder.Services.AddHttpClient<UserInfoServices>();
 builder.Services.AddHttpClient<AuthService>();
+builder.Services.AddHttpClient<OrderDetailsService>();
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();

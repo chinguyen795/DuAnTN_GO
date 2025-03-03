@@ -1,7 +1,8 @@
-﻿using DuAnTN.Services;
+﻿using DuAnTN.Models;
+using DuAnTN.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
-
+using DuAnTN.Extensions;
 namespace DuAnTN.Controllers
 {
     public class FoodController : Controller
@@ -80,9 +81,6 @@ namespace DuAnTN.Controllers
             return Json(new { quantity, totalPrice = quantity * food.Price });
         }
 
-        public async Task<IActionResult> Cart()
-        {
-            return View();
-        }
+
     }
 }

@@ -33,11 +33,4 @@
     <Folder Include="Areas\Saller\Models\" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Content Update="Views\Food\Cart.cshtml">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-  </ItemGroup>
-
 </Project>
