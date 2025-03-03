@@ -70,10 +70,21 @@ namespace DuAnTN.Areas.Admin.Controllers
             var kh = await _userInfoService.GetUserInfoByIdAsync(id);
             if (kh == null) return NotFound();
 
-            await _userInfoService.DeleteUserInfoAsync(id);
-/*            TempData["SuccessMessage"] = $"Danh mục '{kh.FullName}' đã được xoá thành công.";
-*/            return RedirectToAction(nameof(Index));
+            var result = await _userInfoService.DeleteUserInfoAsync(id);
+            if (result)
+            {
+                TempData["ToastMessage"] = $"✅ Người dùng '{kh.User?.FullName}' đã được xóa!";
+                TempData["ToastType"] = "success";
+            }
+            else
+            {
+                TempData["ToastMessage"] = "❌ Không thể xóa người dùng!";
+                TempData["ToastType"] = "danger";
+            }
+            return RedirectToAction(nameof(Index));
         }
+
+
         [HttpPost]
         public IActionResult Hide(int id)
         {

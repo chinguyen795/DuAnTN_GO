@@ -70,10 +70,21 @@ namespace DuAnTN.Areas.Admin.Controllers
             var diner = await _dinerService.GetDinerByIdAsync(id);
             if (diner == null) return NotFound();
 
-            await _dinerService.DeleteDinerAsync(id);
-            TempData["SuccessMessage"] = $"Danh mục '{diner.DinerName}' đã được xoá thành công.";
+            var result = await _dinerService.DeleteDinerAsync(id);
+            if (result)
+            {
+                TempData["ToastMessage"] = $"✅ Saler '{diner.DinerName}' đã được xóa!";
+                TempData["ToastType"] = "success";
+            }
+            else
+            {
+                TempData["ToastMessage"] = "❌ Không thể xóa saler!";
+                TempData["ToastType"] = "danger";
+            }
+
             return RedirectToAction(nameof(Index));
         }
+
         [HttpPost]
         public IActionResult Hide(int id)
         {
