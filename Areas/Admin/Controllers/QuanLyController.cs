@@ -70,14 +70,22 @@ namespace DuAnTN.Areas.Admin.Controllers
         public async Task<IActionResult> Create(User category)
         {
 
-                // Gọi service để lưu danh mục vào cơ sở dữ liệu
-                await _userService.CreateUserAsync(category);
+            if (!success)
+            {
+                // Nếu API lỗi, hiển thị danh sách Roles để tránh lỗi View
+                ViewBag.Roles = await _userService.GetRoleAsync();
+                ModelState.AddModelError("", "❌ Không thể thêm người dùng. Kiểm tra lại API!");
+                return View(user);
+            }
 
-                // Sau khi lưu thành công, chuyển hướng về trang danh sách danh mục
-                return RedirectToAction(nameof(Index));
-   
-            return View(category); // Nếu có lỗi, trả lại view và hiển thị thông báo lỗi
+            // Hiển thị thông báo thành công
+            TempData["ToastMessage"] = $"✅ Người dùng '{user.FullName}' đã được thêm thành công!";
+            TempData["ToastType"] = "success";
+
+            return RedirectToAction(nameof(Index));
         }
+
+
 
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
@@ -99,7 +107,6 @@ namespace DuAnTN.Areas.Admin.Controllers
             
         }
 
-
         [HttpGet]
         [Route("Users/Delete/{id}")]
         public async Task<IActionResult> Delete(int id)
@@ -107,10 +114,21 @@ namespace DuAnTN.Areas.Admin.Controllers
             var user = await _userService.GetUserByIdAsync(id);
             if (user == null) return NotFound();
 
-            await _userService.DeleteUserAsync(id);
-            TempData["SuccessMessage"] = $"Danh mục '{user.Email}' đã được xoá thành công.";
+            var result = await _userService.DeleteUserAsync(id);
+            if (result)
+            {
+                TempData["ToastMessage"] = $"✅ Người dùng '{user.FullName}' đã được xóa!";
+                TempData["ToastType"] = "success";
+            }
+            else
+            {
+                TempData["ToastMessage"] = "❌ Không thể xóa người dùng!";
+                TempData["ToastType"] = "danger";
+            }
+
             return RedirectToAction(nameof(Index));
         }
+
 
         [HttpPost]
         public IActionResult Hide(int id)
