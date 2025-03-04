@@ -58,16 +58,16 @@ namespace DuAnTN.Controllers
 
         public async Task<IActionResult> Detail(int id)
         {
-            var food = await _foodService.GetFoodByIdAsync(id); // Trả về một Food duy nhất
+            var food = await _foodService.GetFoodByIdAsync(id);
 
             if (food == null)
             {
-                return View("NotFound"); // Nếu không tìm thấy sản phẩm, hiển thị trang lỗi
+                return View("NotFound");
             }
 
             food.Diner = await _dinerService.GetDinerByIdAsync(food.DinerId);
 
-            return View(food); // Truyền Food duy nhất cho View, bao gồm cả thông tin Diner
+            return View(food);
         }
 
         [HttpGet]

@@ -34,7 +34,6 @@ namespace DuAnTN.Controllers
             _dinerService = dinerService;
         }
 
-        // Action to display the address list
         public async Task<IActionResult> Address()
         {
             var userId = HttpContext.Session.GetString("Id");
@@ -52,7 +51,6 @@ namespace DuAnTN.Controllers
 
         private readonly string _jsonFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "data", "provinces.json");
 
-        // GET: Show Add Address Form
         public IActionResult AddAddress()
         {
             var json = System.IO.File.ReadAllText(_jsonFilePath);
@@ -61,7 +59,6 @@ namespace DuAnTN.Controllers
             return View();
         }
 
-        // POST: Handle Add Address Submission
         [HttpPost]
         public async Task<IActionResult> AddAddress(Address address, string Province, string District, string Ward)
         {
@@ -73,11 +70,9 @@ namespace DuAnTN.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            // Combine the address fields into one
             address.Description = $"{Province}, {District}, {Ward}";
             address.UserId = int.Parse(userId);
 
-            // Save the address using the service
             var result = await _addressService.AddAddressAsync(address);
             if (result)
             {
@@ -91,7 +86,6 @@ namespace DuAnTN.Controllers
             return View(address); // If error, return to the form
         }
 
-        // POST: Handle Delete Address
         [HttpPost]
         public async Task<IActionResult> DeleteAddress(int id)
         {
@@ -118,12 +112,11 @@ namespace DuAnTN.Controllers
                 return NotFound();
             }
 
-            // Pass provinces data to the view
             var json = System.IO.File.ReadAllText(_jsonFilePath);
             var data = JsonConvert.DeserializeObject<List<dynamic>>(json);
             ViewBag.Provinces = data;
 
-            return View(address); // Return the edit view with the existing address
+            return View(address);
         }
 
         // Xử lý cập nhật địa chỉ
@@ -197,6 +190,7 @@ namespace DuAnTN.Controllers
             if (string.IsNullOrEmpty(userId))
             {
                 TempData["ToastMessage"] = "❌ Bạn cần đăng nhập trước khi thêm thông tin!";
+                TempData["ToastType"] = "danger";
                 return RedirectToAction("Index", "Home");
             }
 
@@ -206,10 +200,12 @@ namespace DuAnTN.Controllers
             if (result)
             {
                 TempData["ToastMessage"] = "✅ Thêm thông tin thành công!";
+                TempData["ToastType"] = "success";
                 return RedirectToAction("UserInfo");
             }
 
             TempData["ToastMessage"] = "❌ Thêm thông tin thất bại!";
+            TempData["ToastType"] = "danger";
             return View(userInfo);
         }
 
@@ -221,6 +217,7 @@ namespace DuAnTN.Controllers
             if (string.IsNullOrEmpty(userId))
             {
                 TempData["ToastMessage"] = "❌ Bạn cần đăng nhập để chỉnh sửa thông tin!";
+                TempData["ToastType"] = "danger";
                 return RedirectToAction("Index", "Home");
             }
 
@@ -228,6 +225,7 @@ namespace DuAnTN.Controllers
             if (userInfo == null)
             {
                 TempData["ToastMessage"] = "⚠ Bạn chưa có hồ sơ, vui lòng thêm thông tin!";
+                TempData["ToastType"] = "danger";
                 return RedirectToAction("AddUserInfo");
             }
 
@@ -244,12 +242,14 @@ namespace DuAnTN.Controllers
             if (string.IsNullOrEmpty(userId))
             {
                 TempData["ToastMessage"] = "❌ Bạn cần đăng nhập để chỉnh sửa thông tin!";
+                TempData["ToastType"] = "danger";
                 return RedirectToAction("Index", "Home");
             }
 
             if (!ModelState.IsValid)
             {
                 TempData["ToastMessage"] = "❌ Dữ liệu không hợp lệ!";
+                TempData["ToastType"] = "danger";
                 return View(userInfo);
             }
 
@@ -396,6 +396,7 @@ namespace DuAnTN.Controllers
             }
 
             TempData["ToastMessage"] = "✅ Mật khẩu đã được đặt lại thành công!";
+            TempData["ToastType"] = "success";
             return RedirectToAction("Login", "Home");
         }
 
@@ -457,6 +458,7 @@ namespace DuAnTN.Controllers
             }
 
             TempData["ToastMessage"] = "✅ Mật khẩu đã được đặt lại thành công!";
+            TempData["ToastType"] = "success";
 
             return RedirectToAction("Index", "Home");
         }
@@ -604,7 +606,7 @@ namespace DuAnTN.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            TempData["ToastMessage"] = "❌ Đăng ký thất bại. Vui lòng thử lại!";
+            TempData["ToastMessage"] = "❌ Đăng ký thất bại. Bạn đã có tài khoản bán hàng!";
             TempData["ToastType"] = "danger";
             return RedirectToAction("RegisterSeller");
         }

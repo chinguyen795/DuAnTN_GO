@@ -25,7 +25,6 @@ namespace DuAnTN.Controllers
             _dinerService = dinerService;
         }
 
-        // 🔹 Lấy quán ăn của User
         private async Task<Diner?> GetUserDinerAsync()
         {
             var userId = HttpContext.Session.GetString("Id");
@@ -38,7 +37,6 @@ namespace DuAnTN.Controllers
             return await _dinerService.GetDinerByUserIdAsync(int.Parse(userId));
         }
 
-        // 🔹 Hiển thị danh sách món ăn
         public async Task<IActionResult> Index(string search, int page = 1)
         {
             var diner = await GetUserDinerAsync();
@@ -56,7 +54,6 @@ namespace DuAnTN.Controllers
                 foods = foods.Where(f => f.FoodName.Contains(search, StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
-            // ✅ Phân trang
             int pageSize = 10;
             var pagedFoods = foods.Skip((page - 1) * pageSize).Take(pageSize).ToList();
             ViewBag.TotalPages = (int)Math.Ceiling(foods.Count / (double)pageSize);
@@ -66,7 +63,6 @@ namespace DuAnTN.Controllers
             return View(pagedFoods);
         }
 
-        // 🔹 Hiển thị form tạo món ăn
         public async Task<IActionResult> Create()
         {
             var diner = await GetUserDinerAsync();
@@ -86,7 +82,6 @@ namespace DuAnTN.Controllers
             });
         }
 
-        // 🔹 Xử lý tạo món ăn
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Food food, IFormFile MainImage, IFormFile Image1, IFormFile Image2)
@@ -100,7 +95,6 @@ namespace DuAnTN.Controllers
 
             food.DinerId = diner.Id;
 
-            // ✅ Xử lý ảnh nếu trống
             food.MainImage = MainImage != null ? await SaveImageAsync(MainImage) : "/images/default.png";
             food.Image1 = Image1 != null ? await SaveImageAsync(Image1) : "/images/default.png";
             food.Image2 = Image2 != null ? await SaveImageAsync(Image2) : "/images/default.png";
@@ -119,7 +113,6 @@ namespace DuAnTN.Controllers
             return View(food);
         }
 
-        // 🔹 Hiển thị form chỉnh sửa món ăn
         public async Task<IActionResult> Edit(int id)
         {
             var food = await _foodService.GetFoodByIdAsync(id);
@@ -134,7 +127,6 @@ namespace DuAnTN.Controllers
             return View(food);
         }
 
-        // 🔹 Xử lý chỉnh sửa món ăn
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Food food, IFormFile MainImage, IFormFile Image1, IFormFile Image2)
@@ -170,8 +162,6 @@ namespace DuAnTN.Controllers
             return View(food);
         }
 
-        // 🔹 Xác nhận xóa món ăn
-        // ✅ Hiển thị trang xác nhận xóa món ăn
         public async Task<IActionResult> Delete(int id)
         {
             var food = await _foodService.GetFoodByIdAsync(id);
@@ -179,10 +169,9 @@ namespace DuAnTN.Controllers
             {
                 return NotFound();
             }
-            return View(food); // Trả về trang xác nhận xóa
+            return View(food); 
         }
 
-        // ✅ Xử lý xóa món ăn (POST)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -191,7 +180,7 @@ namespace DuAnTN.Controllers
             if (result)
             {
                 TempData["ToastMessage"] = "✅ Xóa món ăn thành công!";
-                return RedirectToAction(nameof(Index)); // Trở về danh sách món ăn
+                return RedirectToAction(nameof(Index));
             }
 
             TempData["ToastMessage"] = "❌ Xóa thất bại!";
@@ -199,7 +188,6 @@ namespace DuAnTN.Controllers
         }
 
 
-        // 🔹 Lưu ảnh
         private async Task<string> SaveImageAsync(IFormFile imageFile)
         {
             if (imageFile == null || imageFile.Length == 0)

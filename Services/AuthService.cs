@@ -27,18 +27,15 @@ namespace DuAnTN.Services
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    Console.WriteLine($"🔴 API login failed. Status: {response.StatusCode}");
                     return null;
                 }
 
                 var responseContent = await response.Content.ReadAsStringAsync();
-                Console.WriteLine($"🟢 API Response: {responseContent}");
 
                 var result = JsonConvert.DeserializeObject<LoginResponse>(responseContent);
 
                 if (result == null || string.IsNullOrEmpty(result.Token))
                 {
-                    Console.WriteLine($"🔴 API returned null or empty token.");
                     return null;
                 }
 
@@ -55,7 +52,6 @@ namespace DuAnTN.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"🔴 Exception in Login(): {ex.Message}");
                 return null;
             }
         }

@@ -24,22 +24,13 @@ namespace DuAnTN.Areas.Admin.Controllers
 
         public async Task<IActionResult> Index(int? id, string search, int page = 1)
         {
-            // Lấy danh sách các món ăn
             var user = await _userService.GetUsersAsync();
 
-            // Lấy danh sách Role từ API thông qua UserService
             var roles = await _userService.GetRoleAsync();
 
-            // Đẩy danh sách Role vào ViewBag để hiển thị trong dropdown
             ViewBag.Roles = roles;
 
-            //Lọc theo tìm kiếm nếu có
-            //foreach (var user in users)
-            //{
-            //    user = await _userService.GetUserByIdAsync(user.Id);  // Liên kết thông tin danh mục
-            //}
 
-            // Tìm theo thuộc tính
             if (!string.IsNullOrEmpty(search))
             {
                 user = user
@@ -51,14 +42,12 @@ namespace DuAnTN.Areas.Admin.Controllers
 
                     .ToList();
             }
-            // Lấy danh sách khách hàng bị ẩn từ Cookies
             var hiddenCustomers = Request.Cookies["HiddenCustomers"]?.Split(',')
                                      .Where(s => !string.IsNullOrEmpty(s))
                                      .Select(int.Parse)
                                      .ToList() ?? new List<int>();
 
-            // Loại bỏ khách hàng bị ẩn khỏi danh sách hiển thị
-            ViewBag.HiddenCustomers = hiddenCustomers; // Lưu vào ViewBag để dùng trong View
+            ViewBag.HiddenCustomers = hiddenCustomers;
             user = user.Where(u => !hiddenCustomers.Contains(u.Id)).ToList();
 
             // Nếu có id, lấy danh mục cần chỉnh sửa
@@ -87,18 +76,15 @@ namespace DuAnTN.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(User user)
         {
-            // Gọi API tạo user
             bool success = await _userService.CreateUserAsync(user);
 
             if (!success)
             {
-                // Nếu API lỗi, hiển thị danh sách Roles để tránh lỗi View
                 ViewBag.Roles = await _userService.GetRoleAsync();
                 ModelState.AddModelError("", "❌ Không thể thêm người dùng. Kiểm tra lại API!");
                 return View(user);
             }
 
-            // Hiển thị thông báo thành công
             TempData["ToastMessage"] = $"✅ Người dùng '{user.FullName}' đã được thêm thành công!";
             TempData["ToastType"] = "success";
 
@@ -115,7 +101,7 @@ namespace DuAnTN.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-            return View(us); // Trả về View có chứa Modal
+            return View(us);
         }
 
         [HttpPost]
@@ -152,26 +138,24 @@ namespace DuAnTN.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult Hide(int id)
         {
-            // Lấy danh sách ID khách hàng bị ẩn từ Cookies
             var hiddenCustomers = Request.Cookies["HiddenCustomers"]?.Split(',')
                                      .Where(s => !string.IsNullOrEmpty(s))
                                      .Select(int.Parse)
                                      .ToList() ?? new List<int>();
 
-            // Nếu khách hàng đã bị ẩn, xóa khỏi danh sách để hiện lên lại
             if (hiddenCustomers.Contains(id))
             {
                 hiddenCustomers.Remove(id);
             }
             else
             {
-                hiddenCustomers.Add(id); // Nếu chưa bị ẩn, thêm vào danh sách
+                hiddenCustomers.Add(id);
             }
 
             // Cập nhật lại Cookies với danh sách mới
             Response.Cookies.Append("HiddenCustomers", string.Join(",", hiddenCustomers), new CookieOptions
             {
-                Expires = DateTime.UtcNow.AddDays(7), // Lưu trong 7 ngày
+                Expires = DateTime.UtcNow.AddDays(1), 
                 HttpOnly = true
             });
 

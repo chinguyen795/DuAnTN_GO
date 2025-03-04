@@ -31,12 +31,12 @@
                     <ul class="dropdown-menu account-menu">
                         <li class="dropdown-header">@Context.Session.GetString("FullName")</li>
                         <li>
-                            <a class="dropdown-item" href="/profile">
+                            <a class="dropdown-item" asp-area="" asp-action="UserInfo" asp-controller="Account">
                                 🔹 Hồ Sơ Cá Nhân
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item logout" href="/logout">
+                            <a class="dropdown-item logout" asp-area="" asp-action="Logout" asp-controller="Account">
                                 🚪 Đăng Xuất
                             </a>
                         </li>

@@ -66,11 +66,11 @@ namespace DuAnTN.Models
 
             if (!response.IsSuccessStatusCode)
             {
-                _logger.LogError($"❌ Lỗi cập nhật User (ID: {id}): {responseContent}");
+                _logger.LogError($"Lỗi cập nhật User (ID: {id}): {responseContent}");
                 return false;
             }
 
-            _logger.LogInformation($"✅ User (ID: {id}) cập nhật thành công: {responseContent}");
+            _logger.LogInformation($"User (ID: {id}) cập nhật thành công: {responseContent}");
             return true;
         }
 
@@ -90,10 +90,10 @@ namespace DuAnTN.Models
             if (response.IsSuccessStatusCode)
             {
                 var result = await response.Content.ReadAsStringAsync();
-                return bool.Parse(result); // API trả về true nếu email tồn tại
+                return bool.Parse(result);
             }
 
-            return false; // Mặc định trả về false nếu có lỗi
+            return false; 
         }
 
         // Phương thức đổi mật khẩu

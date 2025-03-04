@@ -18,7 +18,6 @@ namespace DuAnTN.Areas.Seller.Controllers
             _dinerService = dinerService;
         }
 
-        // Hiển thị trang chỉnh sửa cửa hàng của seller
         public async Task<IActionResult> Index()
         {
             var userId = HttpContext.Session.GetString("Id");
@@ -29,7 +28,6 @@ namespace DuAnTN.Areas.Seller.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            // Lấy duy nhất một cửa hàng của user thay vì danh sách
             var diner = await _dinerService.GetDinerByUserIdAsync(int.Parse(userId));
 
             if (diner == null)
@@ -38,11 +36,10 @@ namespace DuAnTN.Areas.Seller.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            return View(diner); // ✅ Trả về một đối tượng duy nhất
+            return View(diner);
         }
 
 
-        // Xử lý cập nhật thông tin cửa hàng
         [HttpPost]
         public async Task<IActionResult> Update(Diner diner, IFormFile mainImageFile, IFormFile image1File, IFormFile image2File)
         {
@@ -82,7 +79,6 @@ namespace DuAnTN.Areas.Seller.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // Hàm upload file ảnh
         private async Task<string> UploadFile(IFormFile file)
         {
             if (file == null || file.Length == 0)

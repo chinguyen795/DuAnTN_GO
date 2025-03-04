@@ -16,26 +16,22 @@ namespace DuAnTN.Areas.Admin.Controllers
 
         public async Task<IActionResult> Index(int? id, string search, int page = 1)
         {
-            int pageSize = 10; // Số danh mục trên mỗi trang
+            int pageSize = 10;
             var categories = await _categoryService.GetCategoriesAsync();
 
-            // Lọc theo tìm kiếm nếu có
             if (!string.IsNullOrEmpty(search))
             {
                 categories = categories.Where(c => c.CategoryName.Contains(search, StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
-            // Phân trang
             int totalItems = categories.Count();
             var pagedCategories = categories.Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
-            // Nếu có id, lấy danh mục cần chỉnh sửa
             if (id.HasValue)
             {
                 ViewBag.CategoryToEdit = await _categoryService.GetCategoryByIdAsync(id.Value);
             }
 
-            // Truyền dữ liệu vào ViewBag
             ViewBag.Search = search;
             ViewBag.Page = page;
             ViewBag.TotalPages = (int)Math.Ceiling((double)totalItems / pageSize);
@@ -59,13 +55,11 @@ namespace DuAnTN.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Gọi service để lưu danh mục vào cơ sở dữ liệu
                 await _categoryService.CreateCategoryAsync(category);
 
-                // Sau khi lưu thành công, chuyển hướng về trang danh sách danh mục
                 return RedirectToAction(nameof(Index));
             }
-            return View(category); // Nếu có lỗi, trả lại view và hiển thị thông báo lỗi
+            return View(category);
         }
 
         [HttpGet]
@@ -76,7 +70,7 @@ namespace DuAnTN.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-            return View(category); // Trả về View có chứa Modal
+            return View(category);
         }
 
         [HttpPost]
@@ -88,7 +82,7 @@ namespace DuAnTN.Areas.Admin.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            return RedirectToAction(nameof(Index), new { id = category.Id }); // Nếu có lỗi, giữ lại modal
+            return RedirectToAction(nameof(Index), new { id = category.Id });
         }
 
 

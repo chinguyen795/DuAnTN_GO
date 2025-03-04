@@ -14,7 +14,7 @@ public class OrderService
         _httpClient = httpClient;
     }
 
-    // 1. Lấy danh sách đơn hàng
+    // Lấy danh sách đơn hàng
     public async Task<List<Order>> GetOrdersAsync()
     {
         return await _httpClient.GetFromJsonAsync<List<Order>>(_apiUrl) ?? new List<Order>();
@@ -38,7 +38,7 @@ public class OrderService
     }
 
 
-    // 3. Lấy thống kê doanh số, truy cập, đơn hàng
+    // Lấy thống kê doanh số, truy cập, đơn hàng
     public async Task<dynamic> GetOrderStatisticsAsync()
     {
         var response = await _httpClient.GetAsync($"{_apiUrl}/statistics");

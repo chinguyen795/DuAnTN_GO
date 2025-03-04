@@ -67,7 +67,6 @@ namespace DuAnTN.Controllers
                 return RedirectToAction("Index"); // Quay lại trang chính nếu email tồn tại
             }
 
-            // Gửi mã xác thực
             var isSent = await _userService.SendVerificationCodeAsync(email);
             if (isSent)
             {
@@ -96,7 +95,6 @@ namespace DuAnTN.Controllers
             // Gộp 6 số nhập vào thành chuỗi duy nhất
             string code = string.Join("", otp);
 
-            // Gọi API để kiểm tra mã xác thực
             if (await _userService.VerifyCodeAsync(email, code))
             {
                 return RedirectToAction("Register", new { email });
@@ -126,11 +124,10 @@ namespace DuAnTN.Controllers
             {
                 TempData["ToastMessage"] = "❌ Dữ liệu không hợp lệ!";
                 TempData["ToastType"] = "danger";
-                return View(user); // Nếu model không hợp lệ, trả lại view với các lỗi
+                return View(user);
             }
 
 
-            // Kiểm tra mật khẩu và xác nhận mật khẩu
             if (user.Password != user.RePassword)
             {
                 TempData["ToastMessage"] = "❌ Mật khẩu và xác nhận mật khẩu không khớp!";
@@ -138,32 +135,30 @@ namespace DuAnTN.Controllers
                 return View(user);  // Nếu mật khẩu không khớp, trả lại view với lỗi
             }
 
-            // Đảm bảo gán vai trò mặc định cho người dùng
             user.RoleId = 3;
 
             if (user.UserInfo == null)
             {
                 user.UserInfo = new UserInfo
                 {
-                    Gender = "Trong", // Bạn có thể thay bằng giá trị mặc định hoặc yêu cầu người dùng nhập
-                    BirthDay = DateTime.Now, // Có thể là giá trị mặc định nếu không có dữ liệu
-                    IdentityCard = "111111111", // Cũng có thể để giá trị mặc định
+                    Gender = "Trong", 
+                    BirthDay = DateTime.Now,
+                    IdentityCard = "111111111",
                     CreateAt = DateTime.Now,
                     UserId = user.Id
                 };
             }
-            // Lưu mật khẩu vào cơ sở dữ liệu (chú ý là không lưu RePassword)
             var isCreated = await _userService.CreateUserAsync(user);
             if (isCreated)
             {
                 TempData["ToastMessage"] = "✅ Đăng ký thành công!";
                 TempData["ToastType"] = "success";
-                return RedirectToAction(nameof(Index)); // Sau khi tạo thành công, chuyển hướng về trang Index
+                return RedirectToAction(nameof(Index));
             }
 
             TempData["ToastMessage"] = "❌ Đăng ký thất bại!";
             TempData["ToastType"] = "danger";
-            return View(user); // Trả lại view và hiển thị lỗi
+            return View(user);
         }
 
 
@@ -185,7 +180,6 @@ namespace DuAnTN.Controllers
 
             try
             {
-                //Kiểm tra token trước khi giải mã
                 var handler = new JwtSecurityTokenHandler();
                 var jwtSecurityToken = handler.ReadJwtToken(token);
 
@@ -200,10 +194,8 @@ namespace DuAnTN.Controllers
                     return RedirectToAction("Index");
                 }
 
-                //Chuyển roleID từ string sang int (nếu lỗi thì mặc định là 3)
                 int roleID = int.TryParse(roleIDString, out int parsedRoleID) ? parsedRoleID : 3;
 
-                //Lưu thông tin vào session
                 HttpContext.Session.SetString("JwtToken", token);
                 HttpContext.Session.SetString("Id", userId);
                 HttpContext.Session.SetString("FullName", fullName);
@@ -213,7 +205,15 @@ namespace DuAnTN.Controllers
                 TempData["ToastMessage"] = $"✅ Chào mừng {fullName}, bạn đã đăng nhập thành công!";
                 TempData["ToastType"] = "success";
 
-                return RedirectToAction("Index");
+                // Điều hướng theo RoleID
+                string redirectUrl = roleID switch
+                {
+                    1 => "https://localhost:7297/Admin/QL_KhachHang/",
+                    2 => "https://localhost:7297/Saller/QL_CuaHang/",
+                    3 => Url.Action("Index", "Home")
+                };
+
+                return Redirect(redirectUrl);
             }
             catch (Exception ex)
             {

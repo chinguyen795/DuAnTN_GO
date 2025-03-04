@@ -3,13 +3,11 @@
 <div class="content mb-4">
     <h3 class="text-center text-dark fw-bold">QUẢN LÝ MÓN ĂN</h3>
 
-    <!-- Thanh công cụ -->
     <div class="d-flex justify-content-between mb-3">
         <a asp-action="Create" class="btn btn-primary">
             <i class="bi bi-plus-lg"></i> Thêm món ăn
         </a>
 
-        <!-- Ô tìm kiếm -->
         <form method="get" class="d-flex">
             <input type="text" name="search" class="form-control me-2" placeholder="Tìm món ăn..." value="@ViewBag.Search">
             <button type="submit" class="btn btn-secondary"><i class="bi bi-search"></i></button>

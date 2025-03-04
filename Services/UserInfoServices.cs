@@ -28,12 +28,10 @@ namespace DuAnTN.Services
             try
             {
                 var response = await _httpClient.GetStringAsync($"{_userInfoapiUrl}/{id}");
-                Console.WriteLine($"✅ API Response: {response}");
                 return JsonConvert.DeserializeObject<UserInfo>(response);
             }
             catch (HttpRequestException ex)
             {
-                Console.WriteLine($"❌ Lỗi gọi API: {ex.Message}");
                 return null;
             }
         }

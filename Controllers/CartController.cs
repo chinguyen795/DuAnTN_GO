@@ -11,7 +11,7 @@ namespace DuAnTN.Controllers
 {
     public class CartController : Controller
     {
-        private readonly FoodService _foodService; // Sử dụng FoodService
+        private readonly FoodService _foodService;
         private readonly OrderDetailsService _orderDetailsService;
         public CartController(FoodService foodService , OrderDetailsService orderDetailsService)
         {
@@ -56,11 +56,11 @@ namespace DuAnTN.Controllers
             // Cập nhật số lượng vào Session
             if (cartItems.ContainsKey(id))
             {
-                cartItems[id] += quantity; // Nếu sản phẩm đã có, tăng số lượng
+                cartItems[id] += quantity; 
             }
             else
             {
-                cartItems[id] = quantity; // Nếu chưa có, thêm mới
+                cartItems[id] = quantity;
             }
 
             HttpContext.Session.Set("GioHang", myCart);
@@ -75,7 +75,7 @@ namespace DuAnTN.Controllers
             // Lấy danh sách sản phẩm từ Session
             var myCart = HttpContext.Session.Get<List<Food>>("GioHang") ?? new List<Food>();
 
-            return View(myCart); // Truyền danh sách sản phẩm vào View
+            return View(myCart);
         }
 
         public IActionResult Pay()

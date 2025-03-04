@@ -29,12 +29,12 @@ namespace DuAnTN.Controllers
             var userId = GetCurrentUserId();
             User? user = null;
 
-            if (userId != null) // Nếu đã đăng nhập
+            if (userId != null) 
             {
                 user = await _userService.GetUserByIdAsync(userId.Value);
             }
 
-            return View(user); // Trả User Model về View
+            return View(user);
         }
 
         [HttpPost]
@@ -60,12 +60,10 @@ namespace DuAnTN.Controllers
             string identityImagePath = identityImage != null ? await UploadFile(identityImage) : userInfo.IdentityImageCard ?? "/images/default-cccd.jpg";
             string mainImagePath = mainImage != null ? await UploadFile(mainImage) : "/images/default-shop.jpg";
 
-            // Cập nhật thông tin UserInfo
             userInfo.IdentityCard = taxCode;
             userInfo.IdentityImageCard = identityImagePath;
             await _userInfoService.UpdateUserInfoAsync(userId.Value, userInfo);
 
-            // Thêm quán ăn
             var diner = new Diner
             {
                 DinerName = dinerName,
@@ -82,7 +80,6 @@ namespace DuAnTN.Controllers
                 user.RoleId = 2; // Chuyển role thành seller
                 await _userService.UpdateUserAsync(userId.Value, user);
 
-                // ✅ Chuyển hướng tới trang Seller -> QL_CuaHang -> Index
                 return RedirectToAction("Index", "QL_CuaHang", new { area = "Seller" });
             }
 
@@ -90,7 +87,7 @@ namespace DuAnTN.Controllers
         }
 
 
-        // 🔹 Hàm Upload File (lưu vào wwwroot/images và trả về đường dẫn)
+        // Hàm Upload File wwwroot images và trả về đường dẫn
         private async Task<string> UploadFile(IFormFile file)
         {
             if (file == null || file.Length == 0) return null;
@@ -108,7 +105,6 @@ namespace DuAnTN.Controllers
             return "/images/" + fileName;
         }
 
-        // 🔹 Lấy UserId từ Claims (trả về `null` nếu chưa đăng nhập)
         private int? GetCurrentUserId()
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);

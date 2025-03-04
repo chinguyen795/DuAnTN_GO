@@ -16,7 +16,6 @@
     @model List<Category>
 
 <div class="container">
-    <!-- Các ô danh mục (5 cột, khoảng cách g-2) -->
     <div class="row row-cols-1 row-cols-md-5 g-2">
         @foreach (var category in Model)
         {
@@ -28,7 +27,6 @@
                         <button class="btn btn-light border-0 dropdown-toggle" type="button" data-bs-toggle="dropdown"></button>
                         <ul class="dropdown-menu">
                             
-                            <!-- Nút xóa -->
                             <a class="dropdown-item text-warning" href="@Url.Action("Index", "Catelogy", new { area = "Admin", id = category.Id })">
                                 Sửa
                             </a>

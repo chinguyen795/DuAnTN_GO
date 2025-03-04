@@ -36,13 +36,11 @@ namespace DuAnTN.Areas.Admin.Controllers
 /*                userinfo = userinfo.Where(f => f.FullName.Contains(search, StringComparison.OrdinalIgnoreCase)).ToList();
 */            }
 
-            // Lấy danh sách khách hàng bị ẩn từ Cookies
             var hiddenCustomers = Request.Cookies["HiddenCustomers"]?.Split(',')
                                      .Where(s => !string.IsNullOrEmpty(s))
                                      .Select(int.Parse)
                                      .ToList() ?? new List<int>();
 
-            // Loại bỏ khách hàng bị ẩn khỏi danh sách hiển thị
             ViewBag.HiddenCustomers = hiddenCustomers; // Lưu vào ViewBag để dùng trong View
             userinfo = userinfo.Where(u => !hiddenCustomers.Contains(u.Id)).ToList();
 
@@ -81,26 +79,23 @@ namespace DuAnTN.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult Hide(int id)
         {
-            // Lấy danh sách ID khách hàng bị ẩn từ Cookies
             var hiddenCustomers = Request.Cookies["HiddenCustomers"]?.Split(',')
                                      .Where(s => !string.IsNullOrEmpty(s))
                                      .Select(int.Parse)
                                      .ToList() ?? new List<int>();
 
-            // Nếu khách hàng đã bị ẩn, xóa khỏi danh sách để hiện lên lại
             if (hiddenCustomers.Contains(id))
             {
                 hiddenCustomers.Remove(id);
             }
             else
             {
-                hiddenCustomers.Add(id); // Nếu chưa bị ẩn, thêm vào danh sách
+                hiddenCustomers.Add(id);
             }
 
-            // Cập nhật lại Cookies với danh sách mới
             Response.Cookies.Append("HiddenCustomers", string.Join(",", hiddenCustomers), new CookieOptions
             {
-                Expires = DateTime.UtcNow.AddDays(7), // Lưu trong 7 ngày
+                Expires = DateTime.UtcNow.AddDays(1),
                 HttpOnly = true
             });
 

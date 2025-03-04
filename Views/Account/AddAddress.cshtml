@@ -22,13 +22,11 @@
                     }
 
                     <form method="post">
-                        <!-- Số nhà/Tên đường -->
                         <div class="mb-3">
                             <label class="form-label text-primary">Số nhà/Tên Đường</label>
                             <input type="text" class="form-control border-red" id="NameAddress" name="NameAddress" required />
                         </div>
 
-                        <!-- Tỉnh/Thành phố -->
                         <div class="mb-3">
                             <label class="form-label text-primary">Tỉnh/Thành phố</label>
                             <select class="form-select border-red" id="Province" name="Province" required>
@@ -36,7 +34,6 @@
                             </select>
                         </div>
 
-                        <!-- Huyện/Quận -->
                         <div class="mb-3">
                             <label class="form-label text-primary">Huyện/Quận</label>
                             <select class="form-select border-red" id="District" name="District" required>
@@ -44,7 +41,6 @@
                             </select>
                         </div>
 
-                        <!-- Xã/Phường -->
                         <div class="mb-3">
                             <label class="form-label text-primary">Xã/Phường</label>
                             <select class="form-select border-red" id="Ward" name="Ward" required>
@@ -52,13 +48,11 @@
                             </select>
                         </div>
 
-                        <!-- Địa chỉ (Read-Only) -->
                         <div class="mb-3">
                             <label class="form-label text-primary">Địa Chỉ (Không bao gồm số nhà/tên đường)</label>
                             <input type="text" class="form-control border-red" id="Description" name="Description" readonly />
                         </div>
 
-                        <!-- Nút Lưu & Quay Lại -->
                         <div class="text-center mt-3">
                             <button type="submit" class="btn text-white px-4" style="background-color: #dc143c;">
                                 <i class="bi bi-save"></i> @(ViewContext.RouteData.Values["action"].ToString() == "AddAddress" ? "Lưu Địa Chỉ" : "Cập Nhật")

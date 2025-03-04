@@ -10,7 +10,7 @@ namespace DuAnTN.Areas.Admin.Controllers
         private readonly FoodService _foodService;
         private readonly CategoryService _categoryService;
         private readonly DinerService _dinerService;
-        private const int PageSize = 10; // Số sản phẩm mỗi trang
+        private const int PageSize = 10;
 
         public ProductsController(FoodService foodService, CategoryService categoryService, DinerService dinerService)
         {
@@ -19,13 +19,10 @@ namespace DuAnTN.Areas.Admin.Controllers
             _dinerService = dinerService;
         }
 
-        // Hàm Index lấy danh sách sản phẩm
         public async Task<IActionResult> Index(string search, int page = 1)
         {
-            // Lấy danh sách các món ăn
             var foods = await _foodService.GetFoodsAsync();
 
-            // Lấy thông tin danh mục cho mỗi món ăn
             foreach (var food in foods)
             {
                 food.Category = await _categoryService.GetCategoryByIdAsync(food.CategoryId);  // Liên kết thông tin danh mục
@@ -39,20 +36,17 @@ namespace DuAnTN.Areas.Admin.Controllers
                 foods = foods.Where(f => f.FoodName.Contains(search, StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
-            // Phân trang: lấy các sản phẩm cho trang hiện tại
             var pagedFoods = foods.Skip((page - 1) * 10).Take(10).ToList(); // Số lượng sản phẩm mỗi trang là 10
 
-            // Lấy tổng số trang
             var totalFoods = foods.Count();
             var totalPages = (int)Math.Ceiling(totalFoods / (double)10);
 
-            // Truyền dữ liệu vào ViewBag
             ViewBag.TotalPages = totalPages;
             ViewBag.Page = page;
-            ViewBag.Search = search; // Truyền lại giá trị tìm kiếm vào ViewBag
+            ViewBag.Search = search; 
 
             return View(pagedFoods);
-            return View(foods);  // Trả lại View với danh sách món ăn đã liên kết thông tin danh mục
+            return View(foods); 
         }
 
 

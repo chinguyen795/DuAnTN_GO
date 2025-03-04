@@ -67,7 +67,7 @@ namespace DuAnTN.Services
             return JsonConvert.DeserializeObject<List<Food>>(response);
         }
 
-        // 🔹 Lấy danh sách món ăn của nhiều cửa hàng (DinerIds)
+        // Lấy danh sách món ăn của nhiều cửa hàng (DinerIds)
         public async Task<List<Food>> GetFoodsByDinerIdsAsync(List<int> dinerIds)
         {
             if (dinerIds == null || !dinerIds.Any()) return new List<Food>();
